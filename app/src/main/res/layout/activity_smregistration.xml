@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <ScrollView
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activity.SMRegistration">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="8dp">
+                <!-- First name-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="First name *" />
+
+                <EditText
+                    android:id="@+id/edit_first_name"
+                    style="@style/AppEditTextStyle" />
+
+                <!-- Last name-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Last name *" />
+
+                <EditText
+                    android:id="@+id/edit_last_name"
+                    style="@style/AppEditTextStyle" />
+
+                <!--Mobile number-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mobile number *" />
+
+                <EditText
+                    android:id="@+id/edit_mobile_number"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="numberSigned"
+                    android:maxLength="10"
+                    android:maxLines="1"/>
+
+                <!-- Password-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Password *" />
+
+                <EditText
+                    android:id="@+id/edit_password"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text"
+                    android:maxLength="15"/>
+                <!-- Confirm Password-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Confirm Password *" />
+                <EditText
+                    android:id="@+id/edit_confirm_password"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text"
+                    android:maxLength="15"/>
+
+                <Button
+                    android:id="@+id/btn_register"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="24dp"
+                    android:text="Register" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <ScrollView
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/page_background_colour"
+        tools:context=".activity.RetailOutReach">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:orientation="vertical">
+                <!-- Retails shop or outlet name -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/retail_shop_or_outlet_name" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Contact person -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contact_person" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Contact person phone number -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shop_contact_person_phone_number" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Address line 1 -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address line 1 * " />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Address line 2 -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address line 2 *" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Village -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/village" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Locality -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Locality" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Block -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/block" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- District -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/district" />
+
+                <EditText style="@style/AppEditTextStyle" />
+                <!-- State -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/state" />
+
+                <EditText style="@style/AppEditTextStyle" />
+                <!-- Pincode -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pin_code" />
+
+                <EditText
+                    style="@style/AppEditTextStyle"
+                    android:inputType="numberSigned"
+                    android:maxLength="6" />
+
+                <!-- ITC product that shop keeps -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ITC product that shop keeps*" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!--Competitors product available-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/competitors_products_available" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Interested in selling 'savlon' hand wash or not -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interested_in_selling_savlon_handwash" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/rdo_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Yes" />
+
+                    <RadioButton
+                        android:id="@+id/rdo_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No" />
+                </RadioGroup>
+
+                <!-- Handwash pouches sold -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/handwash_pouches_sold" />
+
+                <EditText
+                    style="@style/AppEditTextStyle"
+                    android:inputType="number"
+                    android:maxLength="3" />
+
+                <!-- Salvon sold -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/savlon_soap_sold" />
+
+                <EditText
+                    style="@style/AppEditTextStyle"
+                    android:inputType="number"
+                    android:maxLength="3" />
+
+                <!-- Select branding -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select branding" />
+
+                <!-- FMCG branding information -->
+
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FMCG sourcing information" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Distributer / Stockist details * " />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <!-- Nearby wholesale market -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nearby whole sale market details" />
+
+                <EditText style="@style/AppEditTextStyle" />
+
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Image of the shop *" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/image_grey_border"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="140dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/image_border"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/img_camera_1"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center|center_horizontal"
+
+                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btn_capture_1"
+                        style="@style/SmallButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical"
+                        android:text="Capture" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            tools:context=".activity.VenueData">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:orientation="vertical">
+                <!-- Venue Name -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Venue name *" />
+
+                <EditText
+                    android:id="@+id/edit_venue_name"
+                    style="@style/AppEditTextStyle" />
+
+                <!-- Address line 1 -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address line 1 *" />
+
+                <EditText
+                    android:id="@+id/edit_address_line1"
+                    style="@style/AppEditTextStyle" />
+
+                <!-- Address line 2 -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address line 2 (Optional)" />
+
+                <EditText
+                    android:id="@+id/edit_address_line2"
+                    style="@style/AppEditTextStyle" />
+
+                <!--City-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="City name *" />
+
+                <EditText
+                    android:id="@+id/edit_city"
+                    style="@style/AppEditTextStyle" />
+
+                <!-- District -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="District *" />
+
+                <EditText
+                    android:id="@+id/edit_district"
+                    style="@style/AppEditTextStyle" />
+
+                <!--State-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="State *" />
+
+                <EditText
+                    android:id="@+id/edit_state"
+                    style="@style/AppEditTextStyle" />
+
+                <!--Pin code-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pin code *" />
+
+                <EditText
+                    android:id="@+id/edit_pin_code"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="numberSigned"
+                    android:maxLength="6"
+                    android:maxLines="1"/>
+
+                <!-- Venue images-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="Venue Image *" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/image_grey_border"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="140dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/image_border"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/img_venue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|center_horizontal"
+
+                            android:src="@drawable/icon_images" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btn_capture_venue"
+                        style="@style/SmallButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical"
+                        android:text="@string/capture" />
+
+
+                </LinearLayout>
+                <!-- Submit-->
+                <Button
+                    android:id="@+id/btn_register"
+                    style="@style/AppButtonStyle"
+                    android:layout_gravity="center"
+                    android:layout_margin="8dp"
+                    android:text="@string/submit" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</layout>

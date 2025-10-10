@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- For Android <=28, writing external storage might be needed; request only when necessary. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <application
+        android:name=".AppController"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SikshaMitra"
+        tools:targetApi="31">
+        <activity
+            android:name=".activity.SchoolDetailsEntry"
+            android:exported="false" />
+        <activity
+            android:name=".activity.TrainingToSM"
+            android:exported="false" />
+        <activity
+            android:name=".activity.Login"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SMRegistration"
+            android:exported="false" />
+        <activity
+            android:name=".activity.VenueData"
+            android:exported="false" />
+        <activity
+            android:name=".activity.RetailOutReach"
+            android:exported="false"
+            android:label="Retail Outreach" />
+        <activity
+            android:name=".activity.FinalSession"
+            android:exported="false"
+            android:label="Final Session" />
+        <activity
+            android:name=".activity.ConductedSessionBySM"
+            android:exported="false"
+            android:label="Activity Reporting" />
+        <activity
+            android:name=".activity.Home"
+            android:exported="false"
+            android:label="Home" />
+        <activity
+            android:name=".activity.SplashScreen"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="sce.itc.sikshamitra.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/original_image_provider" />
+        </provider>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="sce.itc.sikshamitra.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/compressed_image_provider" />
+        </provider>
+    </application>
+
+</manifest>
