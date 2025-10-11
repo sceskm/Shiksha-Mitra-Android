@@ -25,6 +25,9 @@
         android:theme="@style/Theme.SikshaMitra"
         tools:targetApi="31">
         <activity
+            android:name=".activity.AgencyHome"
+            android:exported="false" />
+        <activity
             android:name=".activity.SchoolDetailsEntry"
             android:exported="false" />
         <activity

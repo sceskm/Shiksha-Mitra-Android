@@ -42,14 +42,6 @@ public class PreferenceCommon {
         prefs.edit().putString("SchoolGUID", key).apply();
     }
 
-    public String getActivityGUID() {
-        return prefs.getString("ActivityGUID", "");
-    }
-
-    public void setActivityGUID(String key) {
-        prefs.edit().putString("ActivityGUID", key).apply();
-    }
-
     public String getSessionGUID() {
         return prefs.getString("SessionGUID", "");
     }
@@ -106,12 +98,12 @@ public class PreferenceCommon {
         prefs.edit().putString("SessionNO", key).apply();
     }
 
-    public String getLastDate() {
-        return prefs.getString("LastDate", "2001-01-01");
+    public String getLastLoggedInDateTime() {
+        return prefs.getString("LastLoggedDate", "2001-01-01");
     }
 
-    public void setLastdate(String key) {
-        prefs.edit().putString("LastDate", key).apply();
+    public void setLastLoggedInDateTime(String key) {
+        prefs.edit().putString("LastLoggedDate", key).apply();
     }
 
     /*public void resetPreferences() {

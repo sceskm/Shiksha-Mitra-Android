@@ -22,4 +22,16 @@ public class ConstantField {
     //north
     public static final double IND_LATITUDE_2 = 38;
     public static final double IND_LONGITUDE_2 = 98;
+
+    public static final int ACTIVE = 1;
+    public static final int IN_ACTIVE = 0;
+
+    /*
+    * User table data
+    * */
+    public static final String USER_NAME = "7278555141";
+    public static final String PASSWORD = "S@12345678";
+
+    public static final int ROLE_ID_AGENCY = 5; //5 for agency
+    public static final int ROLE_ID_SHIKSHA_MITRA = 6; //6 for shiksha mitra
 }

@@ -17,6 +17,10 @@ import java.io.OutputStream;
 
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.model.PreRegistration;
+import sce.itc.sikshamitra.model.SchoolData;
+import sce.itc.sikshamitra.model.Session;
+import sce.itc.sikshamitra.model.TrainingSM;
+import sce.itc.sikshamitra.model.User;
 import sce.itc.sikshamitra.model.Venue;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -239,8 +243,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    * Save venue data
-    * */
+     * Save venue data
+     * */
     public boolean saveVenueData(Venue venueDetails) {
         boolean dataSaved = false;
         try {
@@ -273,8 +277,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    * Save pre-registration data
-    * */
+     * Save pre-registration data
+     * */
     public boolean savePreRegistration(PreRegistration preRegDetails) {
         boolean dataSaved = false;
         try {
@@ -307,7 +311,252 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return dataSaved;
     }
 
+    public boolean saveTrainingData(TrainingSM trainingDetails) {
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
 
+            newEntry.put("VenueName", trainingDetails.getVenueName());
+            newEntry.put("ScheduledDateTime", trainingDetails.getScheduledDateTime());
+            newEntry.put("Latitude", trainingDetails.getLatitude());
+            newEntry.put("Longitude", trainingDetails.getLongitude());
+            newEntry.put("SMCount", trainingDetails.getSMCount());
+            newEntry.put("Image1", trainingDetails.getImage1());
+            newEntry.put("Image2", trainingDetails.getImage2());
+            newEntry.put("Image3", trainingDetails.getImage3());
+            newEntry.put("Image4", trainingDetails.getImage4());
+            newEntry.put("Remarks", trainingDetails.getRemarks());
+
+            // Insert into sp_training table
+            long retVal = myDataBase.insertOrThrow("sp_training", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveTraining: EXCEPTION", ex);
+            throw ex;
+        }
+
+        return dataSaved;
+    }
+
+    /*
+     * Insert session data
+     * */
+    public boolean saveSession(Session sessionDetails) {
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("SessionGUID", sessionDetails.getSessionGUID());
+            newEntry.put("SessionNo", sessionDetails.getSessionNo());
+            newEntry.put("Img1", sessionDetails.getImg1());
+            newEntry.put("Img2", sessionDetails.getImg2());
+            newEntry.put("Img3", sessionDetails.getImg3());
+            newEntry.put("Img4", sessionDetails.getImg4());
+            newEntry.put("Img5", sessionDetails.getImg5());
+            newEntry.put("Img6", sessionDetails.getImg6());
+            newEntry.put("Img7", sessionDetails.getImg7());
+            newEntry.put("Img8", sessionDetails.getImg8());
+            newEntry.put("Img9", sessionDetails.getImg9());
+            newEntry.put("Img10", sessionDetails.getImg10());
+            newEntry.put("Img11", sessionDetails.getImg11());
+            newEntry.put("Img12", sessionDetails.getImg12());
+            newEntry.put("SessionStartedOn", sessionDetails.getSessionStartedOn());
+            newEntry.put("SessionEndedOn", sessionDetails.getSessionEndedOn());
+            newEntry.put("CommunicationStatus", sessionDetails.getCommunicationStatus());
+            newEntry.put("CommunicationAttempt", sessionDetails.getCommunicationAttempt());
+            newEntry.put("SessionStatus", sessionDetails.getSessionStatus());
+            newEntry.put("SchoolGUID", sessionDetails.getSchoolGUID());
+            newEntry.put("CommunicationGUID", sessionDetails.getCommunicationGUID());
+            newEntry.put("Latitude", sessionDetails.getLatitude());
+            newEntry.put("Longitude", sessionDetails.getLongitude());
+            newEntry.put("CameraIssue", sessionDetails.getCameraIssue());
+            newEntry.put("VenueGUID", sessionDetails.getVenueGUID());
+            newEntry.put("UserGUID", sessionDetails.getUserGUID());
+            newEntry.put("ShikshaMitraGUID", sessionDetails.getShikshaMitraGUID());
+
+            long retVal = myDataBase.insertOrThrow("sp_session", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveSession: EXCEPTION", ex);
+            throw ex;
+        }
+
+        return dataSaved;
+    }
+
+    /*
+     * School data entry
+     * */
+    public boolean saveSchool(SchoolData schoolDetails) {
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("FirstName", schoolDetails.getFirstName());
+            newEntry.put("LastName", schoolDetails.getLastName());
+            newEntry.put("Mobile", schoolDetails.getMobile());
+            newEntry.put("Username", schoolDetails.getUsername());
+            newEntry.put("UserGUID", schoolDetails.getUserGUID());
+            newEntry.put("VenueGUID", schoolDetails.getVenueGUID());
+            newEntry.put("AssosiateSchoolName", schoolDetails.getSchoolName());
+            newEntry.put("SchoolGUID", schoolDetails.getSchoolGUID());
+            newEntry.put("SchoolAddress1", schoolDetails.getSchoolAddress1());
+            newEntry.put("SchoolAddress2", schoolDetails.getSchoolAddress2());
+            newEntry.put("City", schoolDetails.getCity());
+            newEntry.put("Locality", schoolDetails.getLocality());
+            newEntry.put("District", schoolDetails.getDistrict());
+            newEntry.put("State", schoolDetails.getState());
+            newEntry.put("Pin", schoolDetails.getPin());
+            newEntry.put("Email", schoolDetails.getEmail());
+            newEntry.put("ContactName", schoolDetails.getContactName());
+            newEntry.put("ContactNumber", schoolDetails.getContactNumber());
+            newEntry.put("CreatedOn", schoolDetails.getCreatedOn());
+
+            long retVal = myDataBase.insertOrThrow("sp_school", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+            if (dataSaved) {
+                // Optional post-insert action
+                dataSaved = false;
+            }
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveSchool: EXCEPTION", ex);
+            throw ex;
+        }
+
+        return dataSaved;
+    }
+
+    /*
+     * Update school data entry
+     * */
+    public boolean updateSchool(SchoolData schoolDetails) {
+        boolean dataUpdated = false;
+        try {
+            ContentValues updateValues = new ContentValues();
+
+            updateValues.put("FirstName", schoolDetails.getFirstName());
+            updateValues.put("LastName", schoolDetails.getLastName());
+            updateValues.put("Mobile", schoolDetails.getMobile());
+            updateValues.put("Username", schoolDetails.getUsername());
+            updateValues.put("VenueGUID", schoolDetails.getVenueGUID());
+            updateValues.put("SchoolName", schoolDetails.getSchoolName());
+            updateValues.put("SchoolGUID", schoolDetails.getSchoolGUID());
+            updateValues.put("SchoolAddress1", schoolDetails.getSchoolAddress1());
+            updateValues.put("SchoolAddress2", schoolDetails.getSchoolAddress2());
+            updateValues.put("City", schoolDetails.getCity());
+            updateValues.put("Locality", schoolDetails.getLocality());
+            updateValues.put("District", schoolDetails.getDistrict());
+            updateValues.put("State", schoolDetails.getState());
+            updateValues.put("Pin", schoolDetails.getPin());
+            updateValues.put("Email", schoolDetails.getEmail());
+            updateValues.put("ContactName", schoolDetails.getContactName());
+            updateValues.put("ContactNumber", schoolDetails.getContactNumber());
+
+            String whereClause = "UserGUID = ? AND CreatedOn = ?";
+            String[] whereArgs = {schoolDetails.getUserGUID(), schoolDetails.getCreatedOn()};
+
+            int rows = myDataBase.update("sp_school", updateValues, whereClause, whereArgs);
+
+            if (rows > 0)
+                dataUpdated = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "updateSchool: EXCEPTION", ex);
+            throw ex;
+        }
+
+        return dataUpdated;
+    }
+
+    /*
+     * Save user data
+     * */
+    public boolean saveUser(User userDetails) {
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("UserId", userDetails.getUserId());
+            newEntry.put("UserName", userDetails.getUserName());
+            newEntry.put("Password", userDetails.getPassword());
+            newEntry.put("FirstName", userDetails.getFirstName());
+            newEntry.put("LastName", userDetails.getLastName());
+            newEntry.put("MobileNumber", userDetails.getMobileNumber());
+            newEntry.put("Email", userDetails.getEmail());
+            newEntry.put("LoggedIn", userDetails.getLoggedIn());
+            newEntry.put("UserGUID", userDetails.getUserGUID());
+            newEntry.put("SchoolGUID", userDetails.getSchoolGUID());
+            newEntry.put("RoleId", userDetails.getRoleId());
+            newEntry.put("LastLoggedIn", userDetails.getLastLoggedIn());
+            newEntry.put("UserRole", userDetails.getUserRole());
+            newEntry.put("AgencyId", userDetails.getAgencyId());
+
+            long retVal = myDataBase.insertOrThrow("sp_user", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveUser: EXCEPTION", ex);
+            throw ex;
+        }
+        return dataSaved;
+    }
+
+    public boolean updateUser(User userDetails) {
+        boolean dataUpdated = false;
+        try {
+            ContentValues updateValues = new ContentValues();
+
+            updateValues.put("UserName", userDetails.getUserName());
+            updateValues.put("Password", userDetails.getPassword());
+            updateValues.put("FirstName", userDetails.getFirstName());
+            updateValues.put("LastName", userDetails.getLastName());
+            updateValues.put("MobileNumber", userDetails.getMobileNumber());
+            updateValues.put("Email", userDetails.getEmail());
+            updateValues.put("LoggedIn", userDetails.getLoggedIn());
+            updateValues.put("SchoolGUID", userDetails.getSchoolGUID());
+            updateValues.put("RoleId", userDetails.getRoleId());
+            updateValues.put("LastLoggedIn", userDetails.getLastLoggedIn());
+            updateValues.put("UserRole", userDetails.getUserRole());
+            updateValues.put("AgencyId", userDetails.getAgencyId());
+
+            int rows = myDataBase.update(
+                    "sp_user",
+                    updateValues,
+                    "UserGUID = ?",
+                    new String[]{userDetails.getUserGUID()}
+            );
+
+            if (rows > 0)
+                dataUpdated = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "updateUser: EXCEPTION", ex);
+            throw ex;
+        }
+
+        return dataUpdated;
+    }
+
+    /*
+     * Get user details
+     * */
+    public Cursor getUser(String userGuid) {
+        String sql = "SELECT * FROM sp_user WHERE UserGUID = '" + userGuid + "'";
+        return QueryDatabase(sql);
+    }
 
 
 }

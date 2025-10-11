@@ -12,23 +12,178 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activity.SchoolDetailsEntry">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <include
-                layout="@layout/toolbar"
-                android:id="@+id/toolbar" />
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_margin="8dp">
+                <!--Sm name-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Work in progress - Not completed" />
+                    android:text="Shiksha Mitra Name" />
+
+                <EditText
+                    android:id="@+id/edit_sm_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="none"
+                    android:enabled="false"
+                    android:focusableInTouchMode="false"/>
+                <!--Mobile number-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shiksha Mitra's Mobile Number " />
+
+                <EditText
+                    android:id="@+id/edit_sm_mobile"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="none"
+                    android:enabled="false"
+                    android:focusableInTouchMode="false"/>
+
+                <!--Email-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shiksha Mitra's email (Optional)" />
+
+                <EditText
+                    android:id="@+id/edit_sm_email"
+                    style="@style/AppEditTextStyle" />
+
+
+
+                <!--Name of school-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Assosiate name of school" />
+
+                <EditText
+                    android:id="@+id/edit_school_name"
+                    style="@style/AppEditTextStyle" />
+                <!--Address of school-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address 1 *" />
+
+                <EditText
+                    android:id="@+id/edit_address1"
+                    style="@style/AppEditTextStyle" />
+                <!--Address 2-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address 2 *" />
+
+                <EditText
+                    android:id="@+id/edit_address2"
+                    style="@style/AppEditTextStyle" />
+                <!--City-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="City *" />
+
+                <EditText
+                    android:id="@+id/edit_city"
+                    style="@style/AppEditTextStyle" />
+                <!--Locality-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Locality *" />
+
+                <EditText
+                    android:id="@+id/edit_locality"
+                    style="@style/AppEditTextStyle" />
+                <!--District -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="District *" />
+
+                <EditText
+                    android:id="@+id/edit_district"
+                    style="@style/AppEditTextStyle" />
+                <!--Pin code-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pin code *" />
+
+                <EditText
+                    android:id="@+id/edit_pincode"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="number" />
+                <!--State-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="State *" />
+
+                <EditText
+                    android:id="@+id/edit_state"
+                    style="@style/AppEditTextStyle" />
+                <!--Contact-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contact Name *" />
+                <EditText
+                    android:id="@+id/edit_contact"
+                    style="@style/AppEditTextStyle"
+                    />
+                <!--Phone number-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Phone number *" />
+                <EditText
+                    android:id="@+id/edit_phone"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="phone" />
+                <!--Email-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email *" />
+                <EditText
+                    android:id="@+id/edit_email"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="textEmailAddress" />
+                <!--Submit button-->
+                <Button
+                    android:id="@+id/button_submit"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="16dp"
+                    android:text="Submit" />
 
             </LinearLayout>
         </LinearLayout>
