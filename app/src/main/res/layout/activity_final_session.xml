@@ -417,6 +417,12 @@
 
                 <EditText style="@style/AppEditTextStyle" />
 
+                <Button
+                    android:id="@+id/btn_submit_final_session"
+                    style="@style/AppButtonStyle2"
+                    android:text="Submit"
+                    android:layout_margin="8dp"/>
+
             </LinearLayout>
 
 

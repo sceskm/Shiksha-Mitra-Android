@@ -9,10 +9,10 @@
     <string name="photo_of_students_getting_rewarded_2">Photo of students getting rewarded - 2 *</string>
     <string name="photo_of_students_getting_rewarded_1">Photo of students getting rewarded -1 *</string>
     <string name="photo_of_quiz_in_progress_2">Photo of quiz in progress 2 *</string>
-    <string name="name_of_the_students">Name of the students *</string>
+    <string name="name_of_the_students">No. of students attended *</string>
     <string name="photograph_of_school_facade_exterior">Photograph of school facade / exterior *</string>
     <string name="name_of_the_school_being_visited">Name of the school being visited *</string>
-    <string name="contact_person">Contact person</string>
+    <string name="contact_person">Contact person\'s name</string>
     <string name="shop_contact_person_phone_number">Shop / Contact person phone number</string>
     <string name="village">Village</string>
     <string name="block">Block</string>

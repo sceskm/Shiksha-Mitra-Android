@@ -22,12 +22,14 @@ public class FinalSession extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_final_session);
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Change title programmatically
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.White));
-        toolbar.setTitle("Final Session");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Module 7 By Agency");
+        }
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

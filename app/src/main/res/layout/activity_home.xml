@@ -60,48 +60,17 @@
                 android:text="Start Date - 15-Mar-2025"
                 android:textColor="@color/colorPrimary"
                 android:textStyle="italic" />
-
-            <!-- Data Entry Button -->
-            <Button
-                android:id="@+id/btn_venue"
-                style="@style/AppButtonStyle"
-                android:layout_marginTop="16dp"
-                android:text="Venue Setup" />
-            <Button
-                android:id="@+id/btn_registration"
-                style="@style/AppButtonStyle"
-                android:layout_marginTop="16dp"
-                android:text="Registration" />
-            <Button
-                android:id="@+id/btn_data_entry"
-                style="@style/AppButtonStyle"
-                android:layout_marginTop="16dp"
-                android:text="Training Session - SM" />
-
-            <!-- Sync Data Button -->
-            <Button
-                android:id="@+id/btn_final_session"
-                style="@style/AppButtonStyle"
-                android:layout_marginTop="16dp"
-                android:text="Final Session" />
-
-            <Button
-                android:id="@+id/btn_retail_outreach"
-                style="@style/AppButtonStyle"
-                android:layout_marginTop="16dp"
-                android:text="Retail Outreach" />
-
             <Button
                 android:id="@+id/btn_school_entry"
                 style="@style/AppButtonStyle"
                 android:layout_marginTop="16dp"
-                android:text="School Data Entry" />
+                android:text="Associated School By SM" />
 
             <Button
-                android:id="@+id/btn_sm_session"
+                android:id="@+id/btn_student_session_by_sm"
                 style="@style/AppButtonStyle"
                 android:layout_marginTop="16dp"
-                android:text="Session Conducted by SM" />
+                android:text="Student Training By SM" />
             <Button
                 android:id="@+id/btn_sync_data"
                 style="@style/AppButtonStyle"

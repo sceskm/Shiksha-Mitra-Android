@@ -54,7 +54,7 @@ public class TrainingToSM extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Training To Shiksha Mitra");
+            getSupportActionBar().setTitle("SM Training By Agency");
         }
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 

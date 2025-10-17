@@ -78,7 +78,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void populateData() {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = DatabaseHelper.getInstance(this);
 
         mainHandler = new Handler(Looper.getMainLooper());
         progressDialog = new ProgressDialog(context);
@@ -131,7 +131,12 @@ public class Login extends AppCompatActivity {
                         @Override
                         public void run() {
                             Log.d(TAG, "run: save attendance");
-                            saveUser();
+                            //saveUser();
+
+                            Intent intent = new Intent(context, AgencyHome.class);
+                            intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
+                            startActivity(intent);
+                            finish();
                         }
                     }, 200);
 
@@ -149,47 +154,57 @@ public class Login extends AppCompatActivity {
     private void saveUser() {
         Intent intent;
         User user = new User();
-        Cursor cursor = dbHelper.getUser(userGuid);
-        cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            //Check if schoolGuid exists in database
-            user.populateFromCursor(cursor);
-            user.setLastLoggedIn(Common.yyyymmddFormat.format(new Date()));
-            user.setLoggedIn(ConstantField.ACTIVE);
-            if (user.getRoleId() == ConstantField.ROLE_ID_AGENCY) {
-                dbHelper.deleteUser();
-                dbHelper.saveUser(user);
-                intent = new Intent(context, AgencyHome.class);
-                intent.putExtra("userRoleId", user.getRoleId());
-                startActivity(intent);
-                finish();
-                progressDialog.dismiss();
-                return;
-            } else if (user.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA) {
-                dbHelper.updateUser(user);
-                if (user.getSchoolGUID().isEmpty()) {
-                    intent = new Intent(context, SchoolDetailsEntry.class);
-                    startActivity(intent);
-                    finish();
-                    progressDialog.dismiss();
-                    return;
-                } else {
-                    intent = new Intent(context, Home.class);
+        try {
+            Cursor cursor = dbHelper.getUser(userGuid);
+            int count = cursor.getCount();
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                //Check if schoolGuid exists in database
+                user.populateFromCursor(cursor);
+                user.setLastLoggedIn(Common.yyyymmddFormat.format(new Date()));
+                user.setLoggedIn(ConstantField.ACTIVE);
+                if (user.getRoleId() == ConstantField.ROLE_ID_AGENCY) {
+                    dbHelper.deleteUser();
+                    dbHelper.saveUser(user);
+                    intent = new Intent(context, AgencyHome.class);
                     intent.putExtra("userRoleId", user.getRoleId());
                     startActivity(intent);
                     finish();
                     progressDialog.dismiss();
                     return;
+                } else if (user.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA) {
+                    dbHelper.updateUser(user);
+                    if (user.getSchoolGUID().isEmpty()) {
+                        intent = new Intent(context, SchoolDetailsEntry.class);
+                        startActivity(intent);
+                        finish();
+                        progressDialog.dismiss();
+                        return;
+                    } else {
+                        intent = new Intent(context, Home.class);
+                        intent.putExtra("userRoleId", user.getRoleId());
+                        startActivity(intent);
+                        finish();
+                        progressDialog.dismiss();
+                        return;
+                    }
                 }
-            }
 
-        } else {
-            Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                return;
+
+            }
+            cursor.close();
+        } catch (Exception e) {
+            Log.e(TAG, "saveUser: ", e);
+            Toast.makeText(context, "An error occurred while logging in", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
             return;
-
         }
-        cursor.close();
+
+
     }
 
     private boolean checkValidInputs() {

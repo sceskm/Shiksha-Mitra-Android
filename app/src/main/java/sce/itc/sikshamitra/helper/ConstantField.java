@@ -13,7 +13,7 @@ public class ConstantField {
     public static final String CAPTURE = "Capture";
     public static final String DELETE = "Delete";
     public static final String DATABASE_PATH= "/data/data/sce.itc.sikshamitra/databases/";
-    public static final String DATABASE_NAME= "SMDatabase.sqlite";
+    public static final String DATABASE_NAME= "smdatabase.sqlite";
     public static final double TEST_LONGITUDE = 88.3639;
     public static final double TEST_LATITUDE = 22.5726;
     //south

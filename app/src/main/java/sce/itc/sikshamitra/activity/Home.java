@@ -71,80 +71,15 @@ public class Home extends AppCompatActivity {
     }
 
     private void clickEvent() {
-        binding.btnDataEntry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkPermission()) {
-                    Intent intent = new Intent(Home.this, TrainingToSM.class);
-                    startActivity(intent);
-                } else
-                    requestPermission();
-
-            }
-        });
-
-        binding.btnFinalSession.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkPermission()) {
-                    Intent intent = new Intent(Home.this, FinalSession.class);
-                    startActivity(intent);
-                } else {
-                    requestPermission();
-                }
-            }
-        });
-        binding.btnRetailOutreach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkPermission()) {
-                    Intent intent = new Intent(Home.this, RetailOutReach.class);
-                    startActivity(intent);
-                } else {
-                    requestPermission();
-                }
-
-            }
-        });
-
-        /*
-         * Venue Data Entry By Agency
-         * */
-        binding.btnVenue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkPermission()) {
-                    Intent intent = new Intent(Home.this, VenueData.class);
-                    startActivity(intent);
-                } else {
-                    requestPermission();
-                }
-
-            }
-        });
-        /*
-         * SM registration
-         * */
-        binding.btnRegistration.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkPermission()) {
-                    Intent intent = new Intent(Home.this, SMRegistration.class);
-                    startActivity(intent);
-                } else {
-                    requestPermission();
-                }
-
-            }
-        });
         /*
         * Session Conducted by SM
         * */
-        binding.btnSmSession.setOnClickListener(new View.OnClickListener() {
+        binding.btnStudentSessionBySm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkPermission()) {
-                    navigateToActivityReporting();
+                    Intent intent = new Intent(Home.this, ConductedSessionBySM.class);
+                    startActivity(intent);
                 } else {
                     requestPermission();
                 }
@@ -169,8 +104,7 @@ public class Home extends AppCompatActivity {
 
 
     private void navigateToActivityReporting() {
-        Intent intent = new Intent(Home.this, ConductedSessionBySM.class);
-        startActivity(intent);
+
     }
 
     public boolean checkPermission() {

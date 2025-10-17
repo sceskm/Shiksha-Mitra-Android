@@ -24,12 +24,14 @@ public class RetailOutReach extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_retail_out_reach);
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Change title programmatically
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.White));
-        toolbar.setTitle("Retail Outreach");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Retailers Details By Agency");
+        }
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

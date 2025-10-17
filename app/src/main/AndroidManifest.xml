@@ -45,19 +45,18 @@
         <activity
             android:name=".activity.RetailOutReach"
             android:exported="false"
-            android:label="Retail Outreach" />
+            />
         <activity
             android:name=".activity.FinalSession"
             android:exported="false"
-            android:label="Final Session" />
+            />
         <activity
             android:name=".activity.ConductedSessionBySM"
-            android:exported="false"
-            android:label="Activity Reporting" />
+            android:exported="false" />
         <activity
             android:name=".activity.Home"
             android:exported="false"
-            android:label="Home" />
+            />
         <activity
             android:name=".activity.SplashScreen"
             android:exported="true">

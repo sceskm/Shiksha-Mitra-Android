@@ -80,8 +80,8 @@ public class ConductedSessionBySM extends AppCompatActivity {
 
         if (!checkGps()) {
             permission();
-            binding.btnSubmit.setEnabled(false);
-            Common.enableButton(binding.btnSubmit, false);
+            binding.btnRegister.setEnabled(false);
+            Common.enableButton(binding.btnRegister, false);
         } else {
             gps = new GPSTracker(ConductedSessionBySM.this);
             // check if GPS enabled

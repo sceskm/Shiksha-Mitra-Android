@@ -53,7 +53,7 @@ public class SMRegistration extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Registration Of Shiksha Mitra");
+            getSupportActionBar().setTitle("SM Registration By Agency");
         }
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 

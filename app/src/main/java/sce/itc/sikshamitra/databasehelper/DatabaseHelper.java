@@ -551,10 +551,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-     * Get user details
+     * Get user details - original o
      * */
     public Cursor getUser(String userGuid) {
         String sql = "SELECT * FROM sp_user WHERE UserGUID = '" + userGuid + "'";
+        return QueryDatabase(sql);
+    }
+    /*
+    * Just for testing
+    * */
+    public Cursor getUserOld(String userGuid) {
+        String sql = "SELECT * FROM sp_user";
         return QueryDatabase(sql);
     }
 

@@ -63,7 +63,7 @@ public class VenueData extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Venue Setup");
+            getSupportActionBar().setTitle("SM Training Venue Details");
         }
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 
@@ -97,7 +97,7 @@ public class VenueData extends AppCompatActivity {
     }
 
     private void clickEvent() {
-        binding.btnSubmit.setOnClickListener(v -> {
+        binding.btnRegister.setOnClickListener(v -> {
             if (!checkGps()) {
                 permission();
             } else {
@@ -114,7 +114,7 @@ public class VenueData extends AppCompatActivity {
                 if (checkValidation()) {
                     try {
                         progressDialog.show();
-                        binding.btnSubmit.setEnabled(false);
+                        binding.btnRegister.setEnabled(false);
                         timerHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -126,7 +126,7 @@ public class VenueData extends AppCompatActivity {
                     } catch (Exception e) {
                         Log.e(TAG, "onClick: ", e);
                     } finally {
-                        binding.btnSubmit.setEnabled(true);
+                        binding.btnRegister.setEnabled(true);
                     }
                 }
             } else {

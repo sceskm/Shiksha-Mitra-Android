@@ -1,10 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.AgencyHome">
+    xmlns:tools="http://schemas.android.com/tools">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+
+    </data>
+
+    <ScrollView
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activity.AgencyHome">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/White"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="220dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="64dp"
+                    android:contentDescription="Logo"
+                    android:src="@drawable/icon_login_screen" />
+
+                <!-- Welcome Text -->
+                <TextView
+                    style="@style/HeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Welcome Agency One" />
+
+                <!-- Project Info -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Project - Training" />
+
+                <!-- Start Date -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Start Date - 15-Mar-2025"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="italic" />
+
+                <!-- Data Entry Button -->
+                <Button
+                    android:id="@+id/btn_venue_details"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="16dp"
+                    android:text="SM Training Venue Details" />
+
+                <Button
+                    android:id="@+id/btn_registration_sm"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="16dp"
+                    android:text="SM Registration By Agency " />
+
+                <Button
+                    android:id="@+id/btn_sm_training_session"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="16dp"
+                    android:text="SM Training By Agency" />
+
+                <Button
+                    android:id="@+id/btn_module_7_agency"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="16dp"
+                    android:text="Module 7 By Agency" />
+
+                <Button
+                    android:id="@+id/btn_retail_outreach"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="16dp"
+                    android:text="Retailers Details By Agency" />
+
+                <Button
+                    android:id="@+id/btn_sync_data"
+                    style="@style/AppButtonStyle"
+                    android:layout_marginTop="16dp"
+                    android:text="Synchronisation" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+</layout>
