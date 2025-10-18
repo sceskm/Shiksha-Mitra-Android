@@ -97,7 +97,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void populateStaticUser() {
-        username = ConstantField.USER_NAME;
+        username = ConstantField.USER_NAME_SM;
         password = ConstantField.PASSWORD;
         roleId = ConstantField.ROLE_ID_SHIKSHA_MITRA;
         fName = "Test";
@@ -113,17 +113,6 @@ public class Login extends AppCompatActivity {
     private void clickEvent() {
         binding.btnLogin.setOnClickListener(v -> {
             if (checkValidInputs()) {
-                username = binding.editUsername.getText().toString().trim();
-                password = binding.editPwd.getText().toString().trim();
-
-                User user = new User();
-
-
-            }
-        });
-
-        binding.btnLogin.setOnClickListener(v -> {
-            if (checkValidInputs()) {
                 try {
                     progressDialog.show();
                     binding.btnLogin.setEnabled(false);
@@ -132,9 +121,21 @@ public class Login extends AppCompatActivity {
                         public void run() {
                             Log.d(TAG, "run: save attendance");
                             //saveUser();
+                            username = binding.editUsername.getText().toString().trim();
+                            password = binding.editPwd.getText().toString().trim();
 
-                            Intent intent = new Intent(context, AgencyHome.class);
-                            intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
+                            Intent intent = null;
+
+                            if (username.equals(ConstantField.USER_NAME_SM)) {
+                                intent = new Intent(context, Home.class);
+                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
+                            } else if (username.equals(ConstantField.USER_NAME_AGENCY)) {
+                                intent = new Intent(context, AgencyHome.class);
+                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_SHIKSHA_MITRA);
+                            } else {
+                                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                            }
+
                             startActivity(intent);
                             finish();
                         }

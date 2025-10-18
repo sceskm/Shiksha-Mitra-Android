@@ -30,6 +30,8 @@ public class ConstantField {
     * User table data
     * */
     public static final String USER_NAME = "7278555141";
+    public static final String USER_NAME_SM = "shiksha.mitra";
+    public static final String USER_NAME_AGENCY = "agency";
     public static final String PASSWORD = "S@12345678";
 
     public static final int ROLE_ID_AGENCY = 5; //5 for agency

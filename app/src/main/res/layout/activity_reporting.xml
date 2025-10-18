@@ -41,18 +41,22 @@
 
                 <EditText
                     android:id="@+id/edit_session_count"
-                    style="@style/AppEditTextStyle" />
+                    style="@style/AppEditTextStyle"
+                    android:maxLength="2"
+                    android:inputType="numberSigned"/>
 
                 <!-- Student Count -->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Student Count" />
+                    android:text="Student Count * " />
 
                 <EditText
                     android:id="@+id/edit_std_count"
-                    style="@style/AppEditTextStyle" />
+                    style="@style/AppEditTextStyle"
+                    android:inputType="numberSigned"
+                    android:maxLength="2"/>
 
                 <!-- Photo 1 -->
 
@@ -247,16 +251,18 @@
 
                 <EditText
                     android:id="@+id/edit_remarks"
-                    style="@style/AppEditTextStyle" />
+                    android:layout_height="80dp"
+                    style="@style/AppEditTextStyle"
+                    android:maxLength="75"
+                    android:maxLines="2"/>
 
                 <Button
                     android:id="@+id/btn_register"
-                    style="@style/AppButtonStyle"
-                    android:layout_height="wrap_content"
+                    style="@style/AppButtonStyle2"
                     android:layout_gravity="center"
                     android:layout_margin="16dp"
                     android:gravity="center"
-                    android:text="Submit" />
+                    android:text="Save Session"/>
 
             </LinearLayout>
 

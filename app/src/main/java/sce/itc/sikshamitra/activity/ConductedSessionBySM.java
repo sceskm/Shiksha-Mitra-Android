@@ -61,15 +61,15 @@ public class ConductedSessionBySM extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_reporting);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Change title programmatically
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.White));
-        toolbar.setTitle("Activity Reporting");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Student Training Session");
+        }
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

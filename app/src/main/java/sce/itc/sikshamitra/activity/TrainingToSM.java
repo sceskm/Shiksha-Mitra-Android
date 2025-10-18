@@ -54,7 +54,7 @@ public class TrainingToSM extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("SM Training By Agency");
+            getSupportActionBar().setTitle("SM Training");
         }
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 

@@ -256,17 +256,17 @@
                 <EditText
                     android:id="@+id/edit_remarks"
                     style="@style/AppEditTextStyle"
+                    android:layout_height="80dp"
                     android:maxLength="75"
                     android:maxLines="2" />
 
                 <Button
                     android:id="@+id/btn_submit"
-                    style="@style/AppButtonStyle"
-                    android:layout_height="wrap_content"
+                    style="@style/AppButtonStyle2"
                     android:layout_gravity="center"
                     android:layout_margin="16dp"
                     android:gravity="center"
-                    android:text="Submit" />
+                    android:text="Save Data" />
 
 
             </LinearLayout>

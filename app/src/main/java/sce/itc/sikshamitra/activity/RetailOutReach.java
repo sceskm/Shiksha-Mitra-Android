@@ -15,7 +15,6 @@ import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databinding.ActivityRetailOutReachBinding;
 
 public class RetailOutReach extends AppCompatActivity {
-
     private ActivityRetailOutReachBinding binding;
     private Toolbar toolbar;
 
@@ -29,7 +28,7 @@ public class RetailOutReach extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Retailers Details By Agency");
+            getSupportActionBar().setTitle("Retailers Details");
         }
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 

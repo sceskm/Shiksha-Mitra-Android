@@ -27,7 +27,7 @@ public class FinalSession extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Module 7 By Agency");
+            getSupportActionBar().setTitle("Module 7");
         }
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 

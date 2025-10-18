@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activity.SMRegistration">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,11 +24,12 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_margin="8dp">
+                android:layout_margin="8dp"
+                android:orientation="vertical">
                 <!-- First name-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
@@ -62,7 +64,7 @@
                     style="@style/AppEditTextStyle"
                     android:inputType="numberSigned"
                     android:maxLength="10"
-                    android:maxLines="1"/>
+                    android:maxLines="1" />
 
                 <!-- Password-->
                 <TextView
@@ -75,18 +77,71 @@
                     android:id="@+id/edit_password"
                     style="@style/AppEditTextStyle"
                     android:inputType="text"
-                    android:maxLength="15"/>
+                    android:maxLength="15" />
                 <!-- Confirm Password-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Confirm Password *" />
+
                 <EditText
                     android:id="@+id/edit_confirm_password"
                     style="@style/AppEditTextStyle"
                     android:inputType="text"
-                    android:maxLength="15"/>
+                    android:maxLength="15" />
+                <!--
+                Handed over training kit to SM
+                -->
+                <CheckBox
+                    android:id="@+id/checkbox_training_kit"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Handed over the Training Kit to SM" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_item_1"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Item 1" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_item_2"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Item 2" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_item_3"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Item 3" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_item_4"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Item 4" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_item_5"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Item 5" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_item_6"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Item 6" />
+
 
                 <Button
                     android:id="@+id/btn_register"

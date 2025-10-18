@@ -61,9 +61,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter"
-                        android:inputType="textCapCharacters"
+                        android:inputType="text"
                         android:maxLength="20"
-                        android:textAllCaps="true" />
+                        />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout

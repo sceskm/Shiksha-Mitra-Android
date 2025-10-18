@@ -38,7 +38,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/name_of_the_school_being_visited" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_school_name"
+                    android:inputType="text"
+                    style="@style/AppEditTextStyle"
+                    android:maxLines="1"
+                    android:maxLength="50"/>
 
                 <!-- Facade photo -->
                 <TextView
@@ -69,11 +74,11 @@
 
                         <ImageView
                             android:id="@+id/img_school_facade"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -91,7 +96,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/name_of_the_students" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_no_of_students"
+                    android:inputType="numberSigned"
+                    style="@style/AppEditTextStyle"
+                    android:maxLength="2"
+                    android:maxLines="1"/>
 
                 <!-- Photo of quiz progress 1 -->
                 <TextView
@@ -99,7 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Photo of teaching in progress 1 *" />
+                    android:text="Photo of quiz in progress 1*" />
 
 
                 <LinearLayout
@@ -121,12 +131,12 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_camera1"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:id="@+id/img_quiz_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -134,7 +144,7 @@
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left"
+                        android:layout_gravity="left|center_vertical"
                         android:text="Capture" />
                 </LinearLayout>
 
@@ -166,12 +176,12 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_camera2"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:id="@+id/img_quiz_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -211,12 +221,12 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_camera_3"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:id="@+id/img_rewarded_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -256,12 +266,12 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_camera_4"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:id="@+id/img_rewarded_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -301,12 +311,12 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_camera_5"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:id="@+id/img_rewarded_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -346,12 +356,12 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_camera_6"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:id="@+id/img_rewarded_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -391,12 +401,12 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_camera_7"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:id="@+id/img_sm_holding_hw"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button
@@ -407,6 +417,47 @@
                         android:layout_gravity="left|center_vertical"
                         android:text="Capture" />
                 </LinearLayout>
+                <!--
+                Handed over
+                -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Handed over item to SM" />
+
+                <CheckBox
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Clocked" />
+
+                <!--
+                Handed over to Students
+                -->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Handed over item to students" />
+
+                <CheckBox
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Certificate" />
+
+                <CheckBox
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Water Bottle" />
+
+                <CheckBox
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Snake &amp; Ladder" />
 
                 <!-- Remarks -->
                 <TextView
@@ -415,13 +466,18 @@
                     android:layout_height="wrap_content"
                     android:text="@string/remarks_if_any" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_remarks"
+                    style="@style/AppEditTextStyle"
+                    android:layout_height="80dp"
+                    android:maxLength="75"
+                    android:maxLines="2" />
 
                 <Button
                     android:id="@+id/btn_submit_final_session"
                     style="@style/AppButtonStyle2"
-                    android:text="Submit"
-                    android:layout_margin="8dp"/>
+                    android:layout_margin="8dp"
+                    android:text="Submit" />
 
             </LinearLayout>
 

@@ -38,7 +38,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/retail_shop_or_outlet_name" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_shop_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text"
+                    android:maxLength="50"
+                    android:textAllCaps="true" />
 
                 <!-- Contact person -->
                 <TextView
@@ -47,7 +52,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/contact_person" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_contact_person_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text"
+                    android:maxLength="25" />
 
                 <!-- Contact person phone number -->
                 <TextView
@@ -56,7 +65,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/shop_contact_person_phone_number" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_contact_person_phone_number"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="phone"
+                    android:maxLength="10" />
 
                 <!-- Address line 1 -->
                 <TextView
@@ -65,16 +78,23 @@
                     android:layout_height="wrap_content"
                     android:text="Address line 1 * " />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_address_line_1"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text"
+                    android:maxLength="50" />
 
                 <!-- Address line 2 -->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Address line 2 *" />
+                    android:text="Address line 2 (Optional)" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_address_line_2"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text" />
 
                 <!-- Village -->
                 <TextView
@@ -83,7 +103,10 @@
                     android:layout_height="wrap_content"
                     android:text="@string/village" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_village"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text" />
 
                 <!-- Locality -->
                 <TextView
@@ -92,7 +115,10 @@
                     android:layout_height="wrap_content"
                     android:text="Locality" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_locality"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text" />
 
                 <!-- Block -->
                 <TextView
@@ -101,7 +127,10 @@
                     android:layout_height="wrap_content"
                     android:text="@string/block" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_block"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text" />
 
                 <!-- District -->
                 <TextView
@@ -110,7 +139,10 @@
                     android:layout_height="wrap_content"
                     android:text="@string/district" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_district"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text" />
                 <!-- State -->
                 <TextView
                     style="@style/SubHeadingTextStyle"
@@ -118,8 +150,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/state" />
 
-                <EditText style="@style/AppEditTextStyle" />
-                <!-- Pincode -->
+                <EditText
+                    android:id="@+id/edit_state"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text" />
+                <!-- Pin - Code -->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
@@ -136,15 +171,11 @@
                     style="@style/HeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:layout_marginStart="4dp"
-                    android:text="Product Availability , Interested" />
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/LightGrey" />
+                    android:layout_marginTop="16dp"
+                    android:text="Product Availability &amp; Interest" />
+
+
                 <!--
                 Product information
                 -->
@@ -152,9 +183,39 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Does the outlet keep ITC products?" />
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rdo_itc_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Yes" />
+
+                    <RadioButton
+                        android:id="@+id/rdo_itc_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No" />
+                </RadioGroup>
+
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="ITC product that shop keeps*" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_itc_products_available"
+                    style="@style/AppEditTextStyle"
+                    android:layout_height="80dp"
+                    android:inputType="text"
+                    android:maxLength="75"
+                    android:maxLines="2" />
 
                 <!--Competitors product available-->
                 <TextView
@@ -163,7 +224,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/competitors_products_available" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_competitors_products_available"
+                    style="@style/AppEditTextStyle"
+                    android:layout_height="80dp"
+                    android:inputType="text"
+                    android:maxLength="75"
+                    android:maxLines="2" />
 
                 <!-- Interested in selling 'savlon' hand wash or not -->
                 <TextView
@@ -175,7 +242,7 @@
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/rdo_yes"
@@ -190,7 +257,7 @@
                         android:text="No" />
                 </RadioGroup>
 
-                <!-- Handwash pouches sold -->
+                <!-- Hand-wash pouches sold -->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
@@ -198,6 +265,7 @@
                     android:text="@string/handwash_pouches_sold" />
 
                 <EditText
+                    android:id="@+id/edit_handwash_pouches_sold"
                     style="@style/AppEditTextStyle"
                     android:inputType="number"
                     android:maxLength="3" />
@@ -210,16 +278,85 @@
                     android:text="@string/savlon_soap_sold" />
 
                 <EditText
+                    android:id="@+id/edit_savlon_soap_sold"
                     style="@style/AppEditTextStyle"
                     android:inputType="number"
                     android:maxLength="3" />
 
                 <!-- Select branding -->
                 <TextView
+                    style="@style/HeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Shop Branding &amp; Promotion Interest" />
+
+                <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select branding" />
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Is retailer interested in branding / decor?" />
+
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rdo_branding_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Yes" />
+
+                    <RadioButton
+                        android:id="@+id/rdo_branding_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No" />
+                </RadioGroup>
+
+                <CheckBox
+                    android:id="@+id/chk_shop_painting"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shop Painting" />
+
+                <CheckBox
+                    android:id="@+id/chk_dealer_board"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dealer board" />
+
+                <CheckBox
+                    android:id="@+id/chk_poster"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Poster" />
+
+                <CheckBox
+                    android:id="@+id/chk_bunting"
+                    style="@style/CheckboxTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bunting" />
+
+                <TextView
+                    style="@style/HeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Supply chain information" />
 
                 <!-- FMCG branding information -->
 
@@ -227,9 +364,14 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="FMCG sourcing information" />
+                    android:text="Where do you buy FMCG product from?" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_fmcg_product_source"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text"
+                    android:maxLength="50"
+                    android:maxLines="1" />
 
                 <TextView
                     style="@style/SubHeadingTextStyle"
@@ -237,7 +379,13 @@
                     android:layout_height="wrap_content"
                     android:text="Distributer / Stockist details * " />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_distributer_details"
+                    style="@style/AppEditTextStyle"
+                    android:layout_height="80dp"
+                    android:inputType="text"
+                    android:maxLength="75"
+                    android:maxLines="2" />
 
                 <!-- Nearby wholesale market -->
                 <TextView
@@ -246,7 +394,13 @@
                     android:layout_height="wrap_content"
                     android:text="Nearby whole sale market details" />
 
-                <EditText style="@style/AppEditTextStyle" />
+                <EditText
+                    android:id="@+id/edit_nearby_whole_sale_market"
+                    style="@style/AppEditTextStyle"
+                    android:layout_height="80dp"
+                    android:inputType="text"
+                    android:maxLength="75"
+                    android:maxLines="2" />
 
                 <TextView
                     style="@style/SubHeadingTextStyle"
@@ -291,6 +445,13 @@
                         android:layout_gravity="left|center_vertical"
                         android:text="Capture" />
                 </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_submit_retailer_data"
+                    style="@style/AppButtonStyle2"
+                    android:layout_gravity="center"
+                    android:layout_margin="16dp"
+                    android:text="Save data" />
             </LinearLayout>
 
 
