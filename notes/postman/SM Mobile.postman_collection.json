@@ -1,0 +1,286 @@
+{
+	"info": {
+		"_postman_id": "f30ff5dd-009e-4ba3-8d46-dc5ae4c55a24",
+		"name": "SM Mobile",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9419309"
+	},
+	"item": [
+		{
+			"name": "App",
+			"item": [
+				{
+					"name": "Combo List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobiletoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"command\": \"COMBOLIST\",\r\n    \"version\": \"3.1\",\r\n    \"data\": \"{}\",\r\n    \"CommandGUID\": \"47ebb4ba-ead7-4d7a-ae7e-6138542c867d\",\r\n    \"processCount\": 1,\r\n    \"background\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiurl}}/mobile/v1/appcommand/action",
+							"host": [
+								"{{apiurl}}"
+							],
+							"path": [
+								"mobile",
+								"v1",
+								"appcommand",
+								"action"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add Venue",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobiletoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Command\":\"ADDVENUE\",\r\n    \"CommandGUID\":\"0f84aace-52d1-42b6-a16a-2a4ed27b0dca\",\r\n    \"ProcessCount\":0,\r\n    \"Version\":\"1.0\",\r\n\t\"Data\":\"{\\\"venueGuid\\\": \\\"3f8a2b1e-45d6-4f29-9a37-8a4f1c9b6e2c\\\", \\\"venueName\\\": \\\"Lotus Convention Center\\\", \\\"address1\\\": \\\"45 MG Road\\\",\\\"address2\\\": \\\"Near Trinity Metro Station\\\",\\\"city\\\": \\\"Bengaluru\\\",\\\"district\\\": \\\"Bangalore Urban\\\",\\\"stateId\\\": 29,\\\"pinCode\\\": \\\"560001\\\",\\\"userId\\\": 12,\\\"organizationId\\\": 3,\\\"latitude\\\": 12.9716,\\\"longitude\\\": 77.5946}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiurl}}/mobile/v1/AppAuth/action",
+							"host": [
+								"{{apiurl}}"
+							],
+							"path": [
+								"mobile",
+								"v1",
+								"AppAuth",
+								"action"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add Teacher",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobiletoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Command\":\"ADDTEACHER\",\r\n    \"CommandGUID\":\"0f84aace-52d1-42b6-a16a-2a4ed27b0dca\",\r\n    \"ProcessCount\":0,\r\n    \"Version\":\"1.0\",\r\n\t\"Data\":\"{\\\"userGuid\\\": \\\"75620f61-85a6-4daa-8714-1092eccaa5ec\\\", \\\"firstName\\\": \\\"Ananya\\\", \\\"lastName\\\": \\\"Sharma\\\",\\\"phone\\\": \\\"9878640290\\\",\\\"password\\\": \\\"Pwd@@@123\\\",\\\"venueGuid\\\": \\\"3f8a2b1e-45d6-4f29-9a37-8a4f1c9b6e2c\\\",\\\"organizationId\\\": 3}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiurl}}/mobile/v1/AppAuth/action",
+							"host": [
+								"{{apiurl}}"
+							],
+							"path": [
+								"mobile",
+								"v1",
+								"AppAuth",
+								"action"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "registration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobiletoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Command\":\"REGISTRATION\",\r\n    \"CommandGUID\":\"0f84aace-52d1-42b6-a16a-2a4ed27b0dca\",\r\n    \"ProcessCount\":0,\r\n    \"Version\":\"1.0\",\r\n\t\"Data\":\"{\\\"userId\\\": 16,\\\"userGuid\\\": \\\"75620f61-85a6-4daa-8714-1092eccaa5ec\\\", \\\"firstName\\\": \\\"Ananya\\\",\\\"lastName\\\": \\\"Sharma\\\", \\\"phone\\\": \\\"9876543210\\\",\\\"email\\\": \\\"abcd@test.com\\\",\\\"schoolGuid\\\": \\\"2ca5c4c9-2be4-4a79-aa2e-5c116934f0cf\\\",\\\"schoolName\\\": \\\"St. Xavier's High School\\\", \\\"address1\\\": \\\"Road No. 13\\\",\\\"address2\\\": \\\"Ganhdi Chowk\\\",\\\"city\\\": \\\"Pune\\\",\\\"district\\\": \\\"Pune\\\",\\\"stateID\\\":17,\\\"pincode\\\": \\\"600019\\\",\\\"contactPhone\\\": \\\"9801200889\\\",\\\"contactEmail\\\": \\\"test@test.com\\\"}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiurl}}/mobile/v1/AppAuth/action",
+							"host": [
+								"{{apiurl}}"
+							],
+							"path": [
+								"mobile",
+								"v1",
+								"AppAuth",
+								"action"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "App Login Local URL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"mobiletoken\", jsonData.data.token.accessToken);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"arun\",\r\n  \"password\": \"TLead!!100\",\r\n  \"Version\" : \"2.8\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiurl}}/mobile/v1/appauth/login",
+					"host": [
+						"{{apiurl}}"
+					],
+					"path": [
+						"mobile",
+						"v1",
+						"appauth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "App Login Server URL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"mobiletoken\", jsonData.data.token.accessToken);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"kol001\",\r\n  \"password\": \"Arun#001\",\r\n  \"Version\" : \"2.8\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiurl}}/mobile/v1/appauth/login",
+					"host": [
+						"{{apiurl}}"
+					],
+					"path": [
+						"mobile",
+						"v1",
+						"appauth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
