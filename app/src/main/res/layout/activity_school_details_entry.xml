@@ -32,14 +32,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="SM Details"
+                    android:text="School Details"
                     android:textAllCaps="true"/>
                 <!--Sm name-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name of SM *" />
+                    android:text="UDISE Code" />
 
                 <EditText
                     android:id="@+id/edit_sm_name"
@@ -47,19 +47,90 @@
                     android:inputType="none"
                     android:enabled="false"
                     android:focusableInTouchMode="false"/>
-                <!--Mobile number-->
+
+                <!--Name of school-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mobile number of SM *" />
+                    android:text="School Name" />
 
                 <EditText
-                    android:id="@+id/edit_sm_mobile"
+                    android:id="@+id/edit_school_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="none"
+                    android:focusableInTouchMode="false"
+                    android:enabled="false"/>
+                <!--District code-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="District Code " />
+
+                <EditText
+                    android:id="@+id/edit_district_code"
                     style="@style/AppEditTextStyle"
                     android:inputType="none"
                     android:enabled="false"
-                    android:focusableInTouchMode="false"/>
+                    android:focusableInTouchMode="false"
+                    />
+                <!--District name-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="District Name " />
+
+                <EditText
+                    android:id="@+id/edit_district_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="none"
+                    android:enabled="false"
+                    android:focusableInTouchMode="false"
+                    />
+                <!--Block code-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Block Code " />
+
+                <EditText
+                    android:id="@+id/edit_block_code"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="none"
+                    android:enabled="false"
+                    android:focusableInTouchMode="false"
+                    />
+                <!--Block name-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Block Name " />
+
+                <EditText
+                    android:id="@+id/edit_block_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="none"
+                    android:enabled="false"
+                    android:focusableInTouchMode="false"
+                    />
+                <!--Village name-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Village Name " />
+
+                <EditText
+                    android:id="@+id/edit_village_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text"
+                    />
+                <!--Mobile number-->
+
 
                 <!--Email-->
                 <TextView
@@ -84,138 +155,47 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="Assosiate School Details"
+                    android:text="SM Details"
                     android:textAllCaps="true"/>
+                <!--SM Name-->
 
-
-
-                <!--Name of school-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name of school" />
+                    android:text="Name of SM" />
 
                 <EditText
-                    android:id="@+id/edit_school_name"
-                    style="@style/AppEditTextStyle" />
-                <!--Address of school-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Address line 1 *" />
-
-                <EditText
-                    android:id="@+id/edit_address1"
-                    style="@style/AppEditTextStyle"
-                    android:maxLength="50"/>
-                <!--Address 2-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Address line 2 (Optional)" />
-
-                <EditText
-                    android:id="@+id/edit_address2"
-                    style="@style/AppEditTextStyle"
-                    android:maxLength="50"/>
-                <!--City-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="City *"
-                    />
-
-                <EditText
-                    android:id="@+id/edit_city"
+                    android:id="@+id/edit_name_sm"
                     style="@style/AppEditTextStyle"
                     android:maxLength="25"
-                    android:inputType="text"/>
-                <!--Locality-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Locality * "
+                    android:inputType="text"
                     />
 
-                <EditText
-                    android:id="@+id/edit_locality"
-                    style="@style/AppEditTextStyle"
-                    android:inputType="text"
-                    android:maxLength="25"/>
-                <!--District -->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="District * " />
+                    android:text="Mobile Number of SM *" />
 
                 <EditText
-                    android:id="@+id/edit_district"
-                    style="@style/AppEditTextStyle"
-                    android:inputType="text"
-                    android:maxLength="25"/>
-                <!--Pin code-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pin code *" />
-
-                <EditText
-                    android:id="@+id/edit_pincode"
-                    style="@style/AppEditTextStyle"
-                    android:inputType="number"
-                    android:maxLength="6"/>
-                <!--State-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="State *" />
-
-                <EditText
-                    android:id="@+id/edit_state"
-                    style="@style/AppEditTextStyle" />
-                <!--Contact-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Contact Name *" />
-                <EditText
-                    android:id="@+id/edit_contact"
-                    style="@style/AppEditTextStyle"
-                    android:inputType="text"
-                    android:maxLength="25"
-                    />
-                <!--Phone number-->
-                <TextView
-                    style="@style/SubHeadingTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Phone number *" />
-                <EditText
-                    android:id="@+id/edit_phone"
+                    android:id="@+id/edit_sm_mobile"
                     style="@style/AppEditTextStyle"
                     android:inputType="phone"
-                    android:maxLength="10"
-                    />
+                    android:maxLength="10"/>
+
                 <!--Email-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Email *" />
+                    android:text="Email ID" />
                 <EditText
                     android:id="@+id/edit_email"
                     style="@style/AppEditTextStyle"
                     android:inputType="textEmailAddress"
                     android:maxLength="1"/>
+
                 <!--Submit button-->
                 <Button
                     android:id="@+id/button_submit"

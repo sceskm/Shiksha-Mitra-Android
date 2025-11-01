@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.helper.ConstantField;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -29,10 +30,38 @@ public class SplashScreen extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashScreen.this, Login.class);
-                startActivity(intent);
-                finish();
+                if (isLoggedIn()) {
+                    navigateToHome();
+                } else {
+                    navigateToLogin();
+                }
             }
         }, ConstantField.SPLASH_TIME_OUT);
+    }
+
+    private boolean isLoggedIn() {
+        // Implement your logic to check if the user is logged in
+        if (PreferenceCommon.getInstance().getUserId() > 0) {
+            return true;
+        }
+        return false; // Placeholder return value
+    }
+
+    private void navigateToHome() {
+        Intent intent = null;
+        if (PreferenceCommon.getInstance().getUserRoleId() == ConstantField.ROLE_ID_FIELD_TEAM)
+            intent = new Intent(SplashScreen.this, AgencyHome.class);
+        else if (PreferenceCommon.getInstance().getUserRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA)
+            intent = new Intent(this, Home.class);
+        else
+            intent = new Intent(this, Login.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(SplashScreen.this, Login.class);
+        startActivity(intent);
+        finish();
     }
 }

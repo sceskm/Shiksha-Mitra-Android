@@ -12,11 +12,11 @@ public class User {
     private String email;
     private int loggedIn;
     private String userGUID;
-    private String schoolGUID;
+
     private int roleId;
     private String lastLoggedIn;
     private String userRoleName;
-    private int agencyId;
+
     private int inActive;
 
     private String accessToken;
@@ -38,11 +38,9 @@ public class User {
         this.email = email;
         this.loggedIn = loggedIn;
         this.userGUID = userGUID;
-        this.schoolGUID = schoolGUID;
         this.roleId = roleId;
         this.lastLoggedIn = lastLoggedIn;
         this.userRoleName = userRoleName;
-        this.agencyId = agencyId;
     }
 
     // --- Getter and Setter methods ---
@@ -120,14 +118,6 @@ public class User {
         this.userGUID = userGUID;
     }
 
-    public String getSchoolGUID() {
-        return schoolGUID;
-    }
-
-    public void setSchoolGUID(String schoolGUID) {
-        this.schoolGUID = schoolGUID;
-    }
-
     public int getRoleId() {
         return roleId;
     }
@@ -150,14 +140,6 @@ public class User {
 
     public void setUserRoleName(String userRoleName) {
         this.userRoleName = userRoleName;
-    }
-
-    public int getAgencyId() {
-        return agencyId;
-    }
-
-    public void setAgencyId(int agencyId) {
-        this.agencyId = agencyId;
     }
 
     public int getInActive() {
@@ -218,11 +200,10 @@ public class User {
         int emailCol = cursor.getColumnIndex("Email");
         int loggedInCol = cursor.getColumnIndex("LoggedIn");
         int userGUIDCol = cursor.getColumnIndex("UserGUID");
-        int schoolGUIDCol = cursor.getColumnIndex("SchoolGUID");
         int roleIdCol = cursor.getColumnIndex("RoleId");
         int lastLoggedInCol = cursor.getColumnIndex("LastLoggedIn");
         int userRoleCol = cursor.getColumnIndex("UserRole");
-        int agencyIdCol = cursor.getColumnIndex("AgencyId");
+        int inActiveCol = cursor.getColumnIndex("InActive");
 
         this.setUserId(cursor.getInt(userIdCol));
         this.setUserName(cursor.getString(userNameCol));
@@ -233,11 +214,10 @@ public class User {
         this.setEmail(cursor.getString(emailCol));
         this.setLoggedIn(cursor.getInt(loggedInCol));
         this.setUserGUID(cursor.getString(userGUIDCol));
-        this.setSchoolGUID(cursor.getString(schoolGUIDCol));
         this.setRoleId(cursor.getInt(roleIdCol));
         this.setLastLoggedIn(cursor.getString(lastLoggedInCol));
         this.setUserRoleName(cursor.getString(userRoleCol));
-        this.setAgencyId(cursor.getInt(agencyIdCol));
+        this.setInActive(cursor.getInt(inActiveCol));
     }
 
 }

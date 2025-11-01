@@ -2,7 +2,6 @@ package sce.itc.sikshamitra.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,7 +20,6 @@ import androidx.databinding.DataBindingUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -37,12 +35,12 @@ import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.NetworkUtils;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.ComboProduct;
 import sce.itc.sikshamitra.model.LoginData;
 import sce.itc.sikshamitra.model.Product;
 import sce.itc.sikshamitra.model.Settings;
 import sce.itc.sikshamitra.model.State;
-import sce.itc.sikshamitra.model.User;
 
 public class Login extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -140,23 +138,23 @@ public class Login extends AppCompatActivity {
                             Log.d(TAG, "run: save attendance");
                             callNetworkApi();
                             //saveUser();
-//                            username = binding.editUsername.getText().toString().trim();
-//                            password = binding.editPwd.getText().toString().trim();
-//
-//                            Intent intent = null;
-//
-//                            if (username.equals(ConstantField.USER_NAME_SM)) {
-//                                intent = new Intent(context, Home.class);
-//                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
-//                            } else if (username.equals(ConstantField.USER_NAME_AGENCY)) {
-//                                intent = new Intent(context, AgencyHome.class);
-//                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_SHIKSHA_MITRA);
-//                            } else {
-//                                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
-//                            }
-//
-//                            startActivity(intent);
-//                            finish();
+                            /*username = binding.editUsername.getText().toString().trim();
+                            password = binding.editPwd.getText().toString().trim();
+
+                            Intent intent = null;
+
+                            if (username.equals(ConstantField.USER_NAME_SM)) {
+                                intent = new Intent(context, Home.class);
+                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
+                            } else if (username.equals(ConstantField.USER_NAME_AGENCY)) {
+                                intent = new Intent(context, AgencyHome.class);
+                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_SHIKSHA_MITRA);
+                            } else {
+                                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                            }
+
+                            startActivity(intent);
+                            finish();*/
                         }
                     }, 200);
 
@@ -186,7 +184,7 @@ public class Login extends AppCompatActivity {
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
-            final OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS).build();
+            final OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(30, TimeUnit.SECONDS).build();
             client.newCall(NetworkUtils.enqueNetworkRequest(ConstantField.NETWORK_URL + ConstantField.LOGIN_URL, body, false)).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -215,7 +213,7 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    private void getResponse(String response){
+    private void getResponse(String response) {
         LoginData loginData = LoginData.downloadLoginUser(Common.getJsonObject(response));
 
         if (loginData != null && loginData.getUser() != null) {
@@ -236,12 +234,8 @@ public class Login extends AppCompatActivity {
             for (State state : loginData.getStates()) {
                 dbHelper.saveState(state);
             }
-
-            runOnUiThread(() -> {
-                progressDialog.dismiss();
-                // Navigate to next screen or show success message
-                Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-            });
+            savePreferences(loginData);
+            navigateNextPage(loginData);
         } else {
             runOnUiThread(() -> {
                 progressDialog.dismiss();
@@ -250,53 +244,38 @@ public class Login extends AppCompatActivity {
         }
 
     }
-
-    private void saveUser() {
-        Intent intent;
-        User user = new User();
+    private void savePreferences(LoginData loginData) {
         try {
-            Cursor cursor = dbHelper.getUser(userGuid);
-            int count = cursor.getCount();
-            if (cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                //Check if schoolGuid exists in database
-                user.populateFromCursor(cursor);
-                user.setLastLoggedIn(Common.yyyymmddFormat.format(new Date()));
-                user.setLoggedIn(ConstantField.ACTIVE);
-                if (user.getRoleId() == ConstantField.ROLE_ID_AGENCY) {
-                    dbHelper.deleteUser();
-                    dbHelper.saveUser(user);
-                    intent = new Intent(context, AgencyHome.class);
-                    intent.putExtra("userRoleId", user.getRoleId());
-                    startActivity(intent);
-                    finish();
-                    progressDialog.dismiss();
-                    return;
-                } else if (user.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA) {
-                    dbHelper.updateUser(user);
-                    if (user.getSchoolGUID().isEmpty()) {
-                        intent = new Intent(context, SchoolDetailsEntry.class);
-                        startActivity(intent);
-                        finish();
-                        progressDialog.dismiss();
-                        return;
-                    } else {
-                        intent = new Intent(context, Home.class);
-                        intent.putExtra("userRoleId", user.getRoleId());
-                        startActivity(intent);
-                        finish();
-                        progressDialog.dismiss();
-                        return;
-                    }
-                }
+            PreferenceCommon.getInstance().setUserId(loginData.getUser().getUserId());
+            PreferenceCommon.getInstance().setUserGUID(loginData.getUser().getUserGUID());
+            PreferenceCommon.getInstance().setUserRoleId(loginData.getUser().getRoleId());
+            PreferenceCommon.getInstance().setUsername(loginData.getUser().getUserName());
+            PreferenceCommon.getInstance().setPassword(binding.editPwd.getText().toString().trim());
 
-            } else {
-                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
-                return;
+        } catch (Exception e) {
+            Log.e(TAG, "savePreferences: ", e);
+        }
+    }
 
+    private void navigateNextPage(LoginData loginData) {
+        Intent intent;
+        try {
+            if (loginData.getUser().getRoleId() == ConstantField.ROLE_ID_FIELD_TEAM) {
+                intent = new Intent(context, AgencyHome.class);
+                intent.putExtra("userRoleId", loginData.getUser().getRoleId());
+
+            } else{
+                intent = new Intent(context, Home.class);
+                intent.putExtra("userRoleId", loginData.getUser().getRoleId());
             }
-            cursor.close();
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                // Navigate to next screen or show success message
+                Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+                finish();
+
+            });
         } catch (Exception e) {
             Log.e(TAG, "saveUser: ", e);
             Toast.makeText(context, "An error occurred while logging in", Toast.LENGTH_SHORT).show();

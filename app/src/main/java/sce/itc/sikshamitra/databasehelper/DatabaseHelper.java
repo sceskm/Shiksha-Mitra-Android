@@ -18,7 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import sce.itc.sikshamitra.helper.ConstantField;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.ComboProduct;
+import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.PreRegistration;
 import sce.itc.sikshamitra.model.Product;
 import sce.itc.sikshamitra.model.SchoolData;
@@ -237,10 +239,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return QueryDatabase(sql);
     }
 
+    /*
+     * Delete  table 'sp_user' data
+     * */
     public void deleteUser() {
         try {
             // delete existing rows
-            myDataBase.execSQL("DELETE FROM user");
+            myDataBase.execSQL("DELETE FROM sp_user");
+
+        } catch (SQLException ex) {
+
+            throw ex;
+        }
+    }
+
+    /*
+     * Delete  table 'sp_settings' data
+     * */
+    public void deleteSettings() {
+        try {
+            // delete existing rows
+            myDataBase.execSQL("DELETE FROM sp_settings");
+
+        } catch (SQLException ex) {
+
+            throw ex;
+        }
+    }
+
+    public void deleteProduct() {
+        try {
+            // delete existing rows
+            myDataBase.execSQL("DELETE FROM sp_product");
+
+        } catch (SQLException ex) {
+
+            throw ex;
+        }
+    }
+
+    public void deleteComboProduct() {
+        try {
+            // delete existing rows
+            myDataBase.execSQL("DELETE FROM sp_comboproduct");
+
+        } catch (SQLException ex) {
+
+            throw ex;
+        }
+    }
+
+    public void deleteState() {
+        try {
+            // delete existing rows
+            myDataBase.execSQL("DELETE FROM sp_state");
 
         } catch (SQLException ex) {
 
@@ -262,11 +314,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("City", venueDetails.getCity());
             newEntry.put("District", venueDetails.getDistrict());
             newEntry.put("State", venueDetails.getState());
-            newEntry.put("Pin", venueDetails.getPin());
-            newEntry.put("VenueImage", venueDetails.getVenueImage());
-            newEntry.put("VenueGUID", venueDetails.getVenueGUID());
+            newEntry.put("StateId", venueDetails.getStateId());
+            newEntry.put("Pin", venueDetails.getPinCode());
+            newEntry.put("OrganisationId", venueDetails.getOrganizationId());
+            newEntry.put("VenueGUID", venueDetails.getVenueGuid());
             newEntry.put("Latitude", venueDetails.getLatitude());
             newEntry.put("Longitude", venueDetails.getLongitude());
+            newEntry.put("CommunicationGUID", venueDetails.getCommunicationGuid());
+            newEntry.put("ImageFile", venueDetails.getImageFile());
+            newEntry.put("ImageDefinitionId", venueDetails.getImageDefinitionId());
+            newEntry.put("ImageExt", venueDetails.getImageExt());
 
             // Insert into VenueData table
             long retVal = myDataBase.insertOrThrow("sp_venue", null, newEntry);
@@ -274,12 +331,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (retVal > 0)
                 dataSaved = true;
 
+            if (dataSaved) {
+                // create and save a communication message
+                dataSaved = false;
+
+                CommunicationSend commSend = venueDetails.createCommSend();
+
+                if (saveCommunicationSend(commSend) > 0)
+                    dataSaved = true;
+            }
+
         } catch (SQLException ex) {
             Log.e(TAG, "saveVenueData: EXCEPTION", ex);
             throw ex;
         }
 
         return dataSaved;
+    }
+
+    public long saveCommunicationSend(CommunicationSend commSend) {
+        long rowID = -1;
+        try {
+            ContentValues newEntry = new ContentValues();
+            newEntry.put("ProcessedOn", commSend.getProcessedOn());
+            newEntry.put("ProcessDetails", commSend.getProcessDetails());
+            newEntry.put("ProcessCount", commSend.getProcessCount());
+            newEntry.put("CommandDate", commSend.getCommandDate());
+            newEntry.put("Command", commSend.getCommand());
+            newEntry.put("CommandDetails", commSend.getCommandDetails());
+            newEntry.put("CommunicationStatusID", commSend.getCommunicationStatusID());
+            newEntry.put("CommunicationGUID", commSend.getCommunicationGUID());
+            newEntry.put("CreatedByID", commSend.getCreatedByID());
+            newEntry.put("UserGUID", PreferenceCommon.getInstance().getUserGUID());
+            //TODO Inactive
+            //inActiveComminicationSendSeries(commSend.getCommunicationGUID());
+            // save the new entry
+            rowID = myDataBase.insertOrThrow("sp_communicationsend", null, newEntry);
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveCommunicationSend: ", ex);
+            throw ex;
+        } finally {
+            Log.d(TAG, "saveCommunicationSend: ");
+        }
+
+        return rowID;
     }
 
     /*
@@ -491,8 +587,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean saveUser(User userDetails) {
         boolean dataSaved = false;
         try {
+            deleteUser();
             ContentValues newEntry = new ContentValues();
-
             newEntry.put("UserId", userDetails.getUserId());
             newEntry.put("UserName", userDetails.getUserName());
             newEntry.put("Password", userDetails.getPassword());
@@ -502,11 +598,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("Email", userDetails.getEmail());
             newEntry.put("LoggedIn", userDetails.getLoggedIn());
             newEntry.put("UserGUID", userDetails.getUserGUID());
-            newEntry.put("SchoolGUID", userDetails.getSchoolGUID());
             newEntry.put("RoleId", userDetails.getRoleId());
             newEntry.put("LastLoggedIn", userDetails.getLastLoggedIn());
             newEntry.put("UserRole", userDetails.getUserRoleName());
-            newEntry.put("AgencyId", userDetails.getAgencyId());
+            newEntry.put("InActive", userDetails.getInActive());
 
             long retVal = myDataBase.insertOrThrow("sp_user", null, newEntry);
 
@@ -524,7 +619,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean dataUpdated = false;
         try {
             ContentValues updateValues = new ContentValues();
-
             updateValues.put("UserName", userDetails.getUserName());
             updateValues.put("Password", userDetails.getPassword());
             updateValues.put("FirstName", userDetails.getFirstName());
@@ -532,11 +626,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             updateValues.put("MobileNumber", userDetails.getMobileNumber());
             updateValues.put("Email", userDetails.getEmail());
             updateValues.put("LoggedIn", userDetails.getLoggedIn());
-            updateValues.put("SchoolGUID", userDetails.getSchoolGUID());
             updateValues.put("RoleId", userDetails.getRoleId());
             updateValues.put("LastLoggedIn", userDetails.getLastLoggedIn());
             updateValues.put("UserRole", userDetails.getUserRoleName());
-            updateValues.put("AgencyId", userDetails.getAgencyId());
 
             int rows = myDataBase.update(
                     "sp_user",
@@ -557,17 +649,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    * Save settings data
-    * */
+     * Save settings data
+     * */
     public boolean saveSettings(Settings settings) {
         boolean dataSaved = false;
         try {
+
             ContentValues newEntry = new ContentValues();
 
             newEntry.put("Parameter", settings.getParameter());
             newEntry.put("Value", settings.getValue());
 
-            long retVal = myDataBase.insertOrThrow("sp_setting", null, newEntry);
+            long retVal = myDataBase.insertOrThrow("sp_settings", null, newEntry);
 
             if (retVal > 0)
                 dataSaved = true;
@@ -580,11 +673,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    * Save product data
-    * */
-    public boolean saveProduct(Product product){
+     * Save product data
+     * */
+    public boolean saveProduct(Product product) {
         boolean dataSaved = false;
         try {
+
             ContentValues newEntry = new ContentValues();
 
             newEntry.put("ProductId", product.getProductId());
@@ -604,11 +698,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    * Save combo - product data
-    * */
-    public boolean saveComboProduct(ComboProduct product){
+     * Save combo - product data
+     * */
+    public boolean saveComboProduct(ComboProduct product) {
         boolean dataSaved = false;
         try {
+
             ContentValues newEntry = new ContentValues();
 
             newEntry.put("ComboProductId", product.getProductId());
@@ -628,11 +723,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    * Save state data
-    * */
-    public boolean saveState(State state){
+     * Save state data
+     * */
+    public boolean saveState(State state) {
         boolean dataSaved = false;
         try {
+
             ContentValues newEntry = new ContentValues();
 
             newEntry.put("StateId", state.getStateId());
@@ -657,9 +753,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql = "SELECT * FROM sp_user WHERE UserGUID = '" + userGuid + "'";
         return QueryDatabase(sql);
     }
+
     /*
-    * Just for testing
-    * */
+     * Just for testing
+     * */
     public Cursor getUserOld(String userGuid) {
         String sql = "SELECT * FROM sp_user";
         return QueryDatabase(sql);
@@ -684,6 +781,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ExecuteScalar(sql);
     }
+
     public Cursor getUnprocessedCommSendMessageCount() {
         String sql = "SELECT COUNT(*) AS UnSent FROM isp_communicationsend "
                 + "WHERE  (CommunicationStatusID = 1 OR (CommunicationStatusID = 3 AND ProcessCount <= 50)) "
@@ -694,7 +792,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //get only single communicationSend row for not uploaded message
     public Cursor currentUnprocessedCommSendMessage(String command, String userGUID, String CommSendGuid) {
-        String sql = "SELECT * FROM isp_communicationsend "
+        String sql = "SELECT * FROM sp_communicationsend "
                 + " WHERE  Command = '" + command + "' "
                 + " AND  UserGUID = '" + userGUID + "' "
                 + " AND  CommunicationGUID = '" + CommSendGuid + "' "
@@ -705,8 +803,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    * Delete 'sp_user' table data
-    * */
+     * Delete 'sp_user' table data
+     * */
     public boolean deleteUserData() {
         try {
             String sql = "DELETE FROM sp_user";
@@ -716,9 +814,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return true;
     }
+
     /*
-    * Reset database
-    * */
+     * Reset database
+     * */
     public boolean resetDatabase(String userGUID) {
 
         try {

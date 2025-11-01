@@ -101,6 +101,7 @@ public class PreferenceCommon {
     public String getLastLoggedInDateTime() {
         return prefs.getString("LastLoggedDate", "2001-01-01");
     }
+
     public String getAccessToken() {
         return prefs.getString(ConstantField.ACCESS_TOKEN, "");
     }
@@ -116,6 +117,7 @@ public class PreferenceCommon {
     public void setRefreshToken(String key) {
         prefs.edit().putString(ConstantField.REFRESH_TOKEN, key).apply();
     }
+
     public String getRefreshTokenCreated() {
         return prefs.getString(ConstantField.REFRESH_TOKEN_CREATED, ConstantField.DEFAULT_DATE);
     }
@@ -248,4 +250,45 @@ public class PreferenceCommon {
     public void setAutoSyncing(int key) {
         prefs.edit().putInt(ConstantField.AUTO_SYNCING, key).apply();
     }
+
+    /*
+     * Role ID
+     * */
+    public int getUserRoleId() {
+        return prefs.getInt("role_id", 0);
+    }
+
+    public void setUserRoleId(int key) {
+        prefs.edit().putInt("role_id", key).apply();
+    }
+    /*
+    * User Id
+    * */
+    public int getUserId() {
+        return prefs.getInt("user_id", 0);
+    }
+
+    public void setUserId(int key) {
+        prefs.edit().putInt("user_id", key).apply();
+    }
+
+    /*
+    * Username
+    * */
+    public String getUsername() {
+        return prefs.getString("user_name", "");
+    }
+
+    public void setUsername(String key) {
+        prefs.edit().putString("user_name", key).apply();
+    }
+
+    public String getPassword() {
+        return prefs.getString("password", "");
+    }
+
+    public void setPassword(String key) {
+        prefs.edit().putString("password", key).apply();
+    }
+
 }

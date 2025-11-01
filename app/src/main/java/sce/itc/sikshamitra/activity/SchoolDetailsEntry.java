@@ -48,7 +48,7 @@ public class SchoolDetailsEntry extends AppCompatActivity {
 
         // Change title programmatically
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Associate School Details");
+            getSupportActionBar().setTitle("My School Details");
         }
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 

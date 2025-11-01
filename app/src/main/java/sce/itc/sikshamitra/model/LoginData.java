@@ -6,6 +6,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import sce.itc.sikshamitra.helper.Common;
+
 public class LoginData {
     private User user;
     private List<Settings> settings;
@@ -66,16 +68,16 @@ public class LoginData {
                 if (dataObject.has("user")) {
                     JSONObject userObject = dataObject.getJSONObject("user");
                     user = new User();
-                    user.setUserId(userObject.getInt("userId"));
-                    user.setUserGUID(userObject.getString("userGUID"));
-                    user.setUserName(userObject.getString("userName"));
-                    user.setFirstName(userObject.getString("firstName"));
-                    user.setLastName(userObject.getString("lastName"));
-                    user.setEmail(userObject.optString("email", ""));
-                    user.setMobileNumber(userObject.optString("mobilePhone", ""));
-                    user.setRoleId(userObject.getInt("roleId"));
-                    user.setUserRoleName(userObject.optString("roleName", ""));
-                    user.setInActive(userObject.optInt("inActive", 0));
+                    user.setUserId(Common.getInt(userObject.getString("userId")));
+                    user.setUserGUID(Common.getString(userObject.getString("userGUID")));
+                    user.setUserName(Common.getString(userObject.getString("userName")));
+                    user.setFirstName(Common.getString(userObject.getString("firstName")));
+                    user.setLastName(Common.getString(userObject.getString("lastName")));
+                    user.setEmail(Common.getString(userObject.optString("email")));
+                    user.setMobileNumber(Common.getString(userObject.optString("mobilePhone")));
+                    user.setRoleId(Common.getInt(userObject.getString("roleId")));
+                    user.setUserRoleName(Common.getString(userObject.optString("roleName")));
+                    user.setInActive(Common.getBooleanToInt(userObject.optString("inActive")));
                 }
 
                 // -------------------- TOKEN --------------------
@@ -97,8 +99,8 @@ public class LoginData {
                     for (int i = 0; i < settingsArray.length(); i++) {
                         JSONObject settingObj = settingsArray.getJSONObject(i);
                         Settings setting = new Settings();
-                        setting.setParameter(settingObj.getString("parameter"));
-                        setting.setValue(settingObj.getString("value"));
+                        setting.setParameter(Common.getString(settingObj.getString("parameter")));
+                        setting.setValue(Common.getString(settingObj.getString("value")));
                         settingsList.add(setting);
                     }
                 }
@@ -106,8 +108,8 @@ public class LoginData {
 
                 // -------------------- PRODUCTS --------------------
                 List<Product> productList = new ArrayList<>();
-                if (dataObject.has("products")) {
-                    JSONArray productArray = dataObject.getJSONArray("products");
+                if (dataObject.has("productList")) {
+                    JSONArray productArray = dataObject.getJSONArray("productList");
                     for (int i = 0; i < productArray.length(); i++) {
                         JSONObject productObj = productArray.getJSONObject(i);
                         Product product = new Product();
@@ -124,7 +126,7 @@ public class LoginData {
                 if (dataObject.has("comboProducts")) {
                     JSONObject comboObject = dataObject.getJSONObject("comboProducts");
                     int comboId = comboObject.getInt("comboId");
-                    String comboName = comboObject.getString("comboName");
+                    String comboName = Common.getString(comboObject.getString("comboName"));
                     JSONArray comboArray = comboObject.getJSONArray("comboProducts");
 
                     for (int i = 0; i < comboArray.length(); i++) {
@@ -133,7 +135,7 @@ public class LoginData {
                         comboProduct.setComboId(comboId);
                         comboProduct.setComboName(comboName);
                         comboProduct.setProductId(comboProdObj.getInt("productId"));
-                        comboProduct.setProduct(comboProdObj.getString("product"));
+                        comboProduct.setProduct(Common.getString(comboProdObj.getString("product")));
                         comboProduct.setProductTypeId(comboProdObj.getInt("productTypeId"));
                         comboList.add(comboProduct);
                     }
@@ -148,7 +150,7 @@ public class LoginData {
                         JSONObject stateObj = stateArray.getJSONObject(i);
                         State state = new State();
                         state.setStateId(stateObj.getInt("stateId"));
-                        state.setStateName(stateObj.getString("state"));
+                        state.setStateName(Common.getString(stateObj.getString("state")));
                         stateList.add(state);
                     }
                 }

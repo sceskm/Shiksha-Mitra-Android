@@ -149,21 +149,21 @@ public class SMRegistration extends AppCompatActivity {
             showSuccessAlert("Something went wrong, please try again.", false);
     }
 
-    private void callNetworkApi(Venue attendanceDetail) {
+    /*private void callNetworkApi(Venue attendanceDetail) {
         //just now saved unprocessed message
         Cursor cursorCount = dbHelper.currentUnprocessedCommSendMessage(Command.ADD_REGISTRATION,
-                PreferenceCommon.getInstance().getUserGUID(), attendanceDetail.getCommunicationGUID());
+                PreferenceCommon.getInstance().getUserGUID(), attendanceDetail.getCommunicationGuid());
         if (cursorCount.getCount() > 0) {
             cursorCount.moveToFirst();
             CommunicationSend communicationSend = new CommunicationSend();
             communicationSend.populateFromCursor(cursorCount);
             if (!communicationSend.getCommandDetails().isEmpty()) {
                 Venue attendance = Venue.fromJson(communicationSend.getCommandDetails());
-                /*String imagePath = attendance.getImageFile();
+                *//*String imagePath = attendance.getImageFile();
                 if (imagePath.isEmpty() == false) {
                     String image = Common.convertBase64(imagePath, this);
                     attendance.setImageFile(image);
-                }*/
+                }*//*
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put(Command.COMMAND, Command.ADD_REGISTRATION);
@@ -206,7 +206,7 @@ public class SMRegistration extends AppCompatActivity {
             cursorCount.close();
         }
 
-    }
+    }*/
 
     private boolean checkValidations() {
         if (binding.editFirstName.getText().toString().trim().isEmpty()) {

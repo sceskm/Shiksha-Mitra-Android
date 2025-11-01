@@ -69,9 +69,13 @@ public class ConstantField {
     public static final String USER_NAME_AGENCY = "agency";
     public static final String PASSWORD = "TLead!!100";
 
-    public static final int ROLE_ID_AGENCY = 5; //5 for agency
-    public static final int ROLE_ID_SHIKSHA_MITRA = 6; //6 for shiksha mitra
-    public static final String APP_VERSION = "2.8";
+    public static final int ROLE_ID_FIELD_TEAM = 4; // for agency - field team
+    public static final int ROLE_ID_SHIKSHA_MITRA = 5; //for shiksha mitra - teacher
+    public static final String APP_VERSION = "1.0";
+
+    public static final int VENUE_CAMERA_REQUEST = 101;
+
+    public static final int VENUE_IMAGE_DEFINITION_ID = 10001;
 
 
 }

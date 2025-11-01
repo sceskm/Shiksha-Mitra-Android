@@ -4,8 +4,13 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -14,7 +19,13 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import sce.itc.sikshamitra.AlertCallBack;
@@ -189,6 +200,109 @@ public class Common {
         }
         return jsonObject;
     }
+
+
+
+    //boolean value to int
+    public static int getBooleanToInt(String value) {
+        int retVal = 0;
+
+        if (value != null && !value.isEmpty() && !value.equals("null")) {
+            if (value.equals("false"))
+                retVal = 0;
+            else
+                retVal = 1;
+        }
+
+        return retVal;
+    }
+
+    //convert string value to int value
+    public static int StringToInt(String value) {
+        int retValue = 0;
+
+        try {
+            if (!value.equals(null) && !value.trim().isEmpty()) {
+                retValue = Integer.parseInt(value);
+            }
+        } catch (Exception ex) {
+            //don't do anything
+            retValue = 0;
+        }
+
+        return retValue;
+    }
+
+    //convert string value to date time format
+    public static Date stringToDate(String value) {
+        String fDate[] = {"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd hh:mm:ss a", "yyyy-MM-dd", "yyyy/MM/dd hh:mm:ss",
+                "yyyy/MM/dd hh:mm:ss a"};
+        Date date = null;
+
+        for (String format : fDate) {
+            DateFormat iso8601Format = new SimpleDateFormat(format);
+            try {
+                date = iso8601Format.parse(value);
+                break;
+            } catch (ParseException e) {
+                Log.e("Common", "StringToDate: ", e);
+            }
+        }
+
+        return date;
+    }
+
+    //split date-time  & get only date part like yyyy-MM-dd
+    public static String getImageName(String fullString) {
+        String imagename = "";
+        String[] separated = fullString.split("/");
+        imagename = separated[10];
+        return imagename;
+    }
+    //get file path of captured image
+    public static File getFile(String fileName) {
+        File file = null;
+
+        try {
+            file = new File("", fileName);
+            if (file.exists()) {
+                return file;
+            } else {
+                return null;
+            }
+
+        } catch (Exception ex) {
+            file = null;
+        }
+
+        return file;
+    }
+    public static String convertBase64(String imageUri, Context context) {
+        String covertedImage = "";
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(imageUri));
+            // initialize byte stream
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            // compress Bitmap
+            //int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, ConstantField.IMAGE_QUALITY, stream);
+            //get image information
+            //getImageInfo(stream);
+            // Initialize byte array
+            byte[] bytes = stream.toByteArray();
+            // get base64 encoded string
+            int size = bytes.length;
+            covertedImage = Base64.encodeToString(bytes, Base64.DEFAULT);
+            // set encoded text on textview
+            //textView.setText(sImage);
+            Log.d("TAG", "uploadCompetitionAdd: " + covertedImage);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return covertedImage;
+    }
+
 
 
 

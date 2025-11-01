@@ -1,23 +1,36 @@
 package sce.itc.sikshamitra.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -27,8 +40,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -41,11 +58,13 @@ import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.databinding.ActivityVenueDataBinding;
 import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.CompressedImage;
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.GPSTracker;
 import sce.itc.sikshamitra.helper.NetworkUtils;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.CommunicationSend;
+import sce.itc.sikshamitra.model.Image;
 import sce.itc.sikshamitra.model.Venue;
 
 public class VenueData extends AppCompatActivity {
@@ -65,6 +84,14 @@ public class VenueData extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Handler mainHandler;
     private Handler timerHandler = new Handler();
+
+    public static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
+
+    private File photoFile;
+    private Uri imgURI;
+    private String capturedImgStoragePath;
+
+    private String attendanceImage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +137,21 @@ public class VenueData extends AppCompatActivity {
     }
 
     private void clickEvent() {
+        //button capture image
+        binding.btnCaptureVenue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkPermission(CAMERA_PERMISSION, ConstantField.VENUE_CAMERA_REQUEST)) {
+                        launchCamera(ConstantField.VENUE_CAMERA_REQUEST);
+                    } else {
+                        requestPermissions();
+                    }
+                }
+
+            }
+        });
+
         binding.btnRegister.setOnClickListener(v -> {
             if (!checkGps()) {
                 permission();
@@ -150,73 +192,102 @@ public class VenueData extends AppCompatActivity {
         });
     }
 
-    private void saveVenueDetails(){
-        String scheduledDate = Common.iso8601Format.format(new Date());
-        Venue data =
-                new Venue(
-                        binding.editVenueName.getText().toString().trim(),
-                        scheduledDate,
-                        Common.getString(binding.editAddressLine1.getText().toString().trim()),
-                        Common.getString(binding.editAddressLine2.getText().toString().trim()),
-                        Common.getString(binding.editCity.getText().toString().trim()),
-                        Common.getString(binding.editDistrict.getText().toString().trim()),
-                        Common.getString(binding.editState.getText().toString().trim()),
-                        Common.getString(binding.editPinCode.getText().toString().trim()),
-                        "",
-                        Common.createGuid(),
-                        lastLatitude,
-                        lastLongitude,
-                        Common.createGuid()
+    //launch camera
+    private void launchCamera(int attendanceCameraRequest) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            photoFile = createImageFile(ConstantField.ORIGINAL_IMAGE_NAME);
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(
+                        this,
+                        "sce.itc.sikshamitra.fileprovider",
+                        photoFile
                 );
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
-        if ((Common.checkInternetConnectivity(context)
-                || Common.checkInternetConnectivitySIMOnly(context))
-                && PreferenceCommon.getInstance().getAutoSyncing() != ConstantField.AUTO_DOWNLOAD
-        ) {
-            if (dbHelper.saveVenueData(data)){
-                callNetworkApi(data);
-                String message = "";
-                if (Common.DEBUGGING) {
-                    message = getResources().getString(R.string.latitude)
-                            + getResources().getString(R.string.colon) + String.valueOf(lastLatitude)
-                            + getResources().getString(R.string.longitude)
-                            + getResources().getString(R.string.colon) + String.valueOf(lastLongitude);
-                    showSuccessAlert(getResources().getString(R.string.data_saved_uploaded) + message, false);
+                if (attendanceCameraRequest == ConstantField.VENUE_CAMERA_REQUEST) {
+                    imgURI = photoURI;
+                    capturedImgStoragePath = photoFile.getAbsolutePath();
+                    startActivityForResult(takePictureIntent, 101);
+
                 }
 
-            } else {
-                progressDialog.dismiss();
-                Common.showAlert(context, getResources().getString(R.string.data_not_saved_message));
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void saveVenueDetails() {
+        String scheduledDate = Common.iso8601Format.format(new Date());
+        int userId = PreferenceCommon.getInstance().getUserId();
+
+        String imagePath = imgURI.toString();
+        String base64 = Common.convertBase64(imagePath, this);
+
+
+        List<Image> imageList = new ArrayList<>();
+        Image imgVenue = new Image();
+        imgVenue.setImageDefinitionId(ConstantField.VENUE_IMAGE_DEFINITION_ID);
+        imgVenue.setImageName(base64);
+        imgVenue.setImageFileExt(ConstantField.IMAGE_FORMAT);
+
+        imageList.add(imgVenue);
+
+
+        // Venue data sent
+        Venue data = new Venue(
+                Common.getString(binding.editVenueName.getText().toString().trim()),
+                scheduledDate,
+                Common.getString(binding.editAddressLine1.getText().toString().trim()),
+                Common.getString(binding.editAddressLine2.getText().toString().trim()),
+                Common.getString(binding.editCity.getText().toString().trim()),
+                Common.getString(binding.editDistrict.getText().toString().trim()),
+                Common.getString(binding.editState.getText().toString().trim()),
+                29,
+                Common.getString(binding.editPinCode.getText().toString().trim()),
+                userId,
+                3,
+                Common.createGuid(),
+                lastLatitude,
+                lastLongitude,
+                Common.createGuid(),
+                imageList
+        );
+        data.setImageDefinitionId(ConstantField.VENUE_IMAGE_DEFINITION_ID);
+        data.setImageFile(imagePath);
+        data.setImageExt(ConstantField.IMAGE_FORMAT);
+
+        if (dbHelper.saveVenueData(data)) {
+            callNetworkApi(data);
+        } else {
+            progressDialog.dismiss();
+            Common.showAlert(context, getResources().getString(R.string.data_not_saved_message));
         }
     }
 
     /*
-    * Call network api to upload data
-    * */
+     * Call network api to upload data
+     * */
     private void callNetworkApi(Venue attendanceDetail) {
         //just now saved unprocessed message
         Cursor cursorCount = dbHelper.currentUnprocessedCommSendMessage(Command.ADD_VENUE,
-                PreferenceCommon.getInstance().getUserGUID(), attendanceDetail.getCommunicationGUID());
+                PreferenceCommon.getInstance().getUserGUID(), attendanceDetail.getCommunicationGuid());
         if (cursorCount.getCount() > 0) {
             cursorCount.moveToFirst();
             CommunicationSend communicationSend = new CommunicationSend();
             communicationSend.populateFromCursor(cursorCount);
             if (!communicationSend.getCommandDetails().isEmpty()) {
                 Venue attendance = Venue.fromJson(communicationSend.getCommandDetails());
-                /*String imagePath = attendance.getImageFile();
-                if (imagePath.isEmpty() == false) {
-                    String image = Common.convertBase64(imagePath, this);
-                    attendance.setImageFile(image);
-                }*/
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put(Command.COMMAND, Command.ADD_VENUE);
-                    jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
                     jsonObject.put(Command.DATA, attendance.getJson());
                     jsonObject.put(Command.COMMAND_GUID, communicationSend.getCommunicationGUID());
-                    jsonObject.put(Command.PROCESS_COUNT, communicationSend.getProcessCount());
-                    //jsonObject.put(Command.BACKGROUND, Common.INSTANT_DOWNLOAD);
+                    jsonObject.put(Command.PROCESS_COUNT, 0);
+                    jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
                     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                     RequestBody body = RequestBody.create(JSON, jsonObject.toString());
                     final OkHttpClient client = new OkHttpClient();
@@ -266,7 +337,7 @@ public class VenueData extends AppCompatActivity {
             return isValid;
         }
         if (binding.editCity.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this,"Please enter city",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter city", Toast.LENGTH_SHORT).show();
             isValid = false;
             return isValid;
         }
@@ -276,7 +347,7 @@ public class VenueData extends AppCompatActivity {
             return isValid;
         }
         if (binding.editState.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this,"Please enter state",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter state", Toast.LENGTH_SHORT).show();
             isValid = false;
             return isValid;
         }
@@ -303,6 +374,7 @@ public class VenueData extends AppCompatActivity {
             dialog.show();
         }
     }
+
     //for checking GPS
     public boolean checkGps() {
         LocationManager lm = (LocationManager) VenueData.this.getSystemService(Context.LOCATION_SERVICE);
@@ -349,7 +421,7 @@ public class VenueData extends AppCompatActivity {
                     .setTitle("Great").setMessage(s).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
+                            //finish();
                             dialogInterface.dismiss();
 
                         }
@@ -357,5 +429,110 @@ public class VenueData extends AppCompatActivity {
                     .show();
         });
 
+    }
+
+    /*
+     * Permission check for camera
+     * */
+    public boolean checkPermission(String permission, int requestCode) {
+        boolean isGranted = false;
+        if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+            isGranted = true;
+        }
+        return isGranted;
+    }
+
+    // This function is called when the user accepts or decline the permission.
+    // Request Code is used to check which permission called this function.
+    // This request code is provided when the user is prompt for permission.
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == ConstantField.VENUE_CAMERA_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permissions granted, proceed with image capture
+                Toast.makeText(context, "Permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                // Permission denied. You can handle this case, show an explanation, or disable functionality that requires the permission.
+                Toast.makeText(this, "Permissions required to capture images", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    //create original image file
+    private File createImageFile(String filename) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imgfilename = filename + timeStamp;
+
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imgfilename /* prefix */, ConstantField.IMAGE_FORMAT,/* suffix */storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        Log.d(TAG, "createImageFile: Image File" + image.getPath());
+        Log.d(TAG, "createImageFile: Image Absolute path" + image.getAbsolutePath());
+
+        return image;
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            try {
+                if (requestCode == ConstantField.VENUE_CAMERA_REQUEST) {
+                    binding.imgVenue.setBackgroundResource(0);
+                    onCaptureImageResult(data, 1);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(VenueData.this, "Captured image exceeds the free space in memory. " +
+                        "Kindly free your phone memory and try again.", Toast.LENGTH_LONG).show();
+                //log exception in firebase
+                //new FirebaseLog().setFirebaseException(TAG, "onActivityResult()", e);
+            }
+
+        }
+    }
+
+    //captured image,compress captured image,set button
+    private void onCaptureImageResult(Intent data, int i) {
+        //populate captured image to imageview section
+
+        //try to read the file
+        try {
+            File f2 = Common.getFile(capturedImgStoragePath); //return original path
+
+            //compress the original image
+            CompressedImage getCompress = new CompressedImage(this);
+            String compressedImageStoragePath = getCompress.compressImage(capturedImgStoragePath);
+
+            Log.d(TAG, "onCaptureImageResult: " + compressedImageStoragePath);
+
+            //just testing-if we dont get compressed file then set original path
+            //if image is not compressed we can use the original image
+            if (!compressedImageStoragePath.isEmpty()) {
+                attendanceImage = compressedImageStoragePath;
+            } else {
+                attendanceImage = capturedImgStoragePath;
+            }
+            if (!attendanceImage.isEmpty())
+                imgURI = Uri.parse(ConstantField.COMPRESS_PHOTO_URI + Common.getImageName(attendanceImage));
+
+            Log.d(TAG, "onCaptureFImageResult: " + imgURI);
+            binding.imgVenue.setImageURI(imgURI);
+            binding.btnCaptureVenue.setText("DELETE");
+
+        } catch (Exception ex) {
+            Log.e(TAG, "onCaptureImageResult: ", ex);
+        }
+
+    }
+
+    private void requestPermissions() {
+        // Request camera permission
+        ActivityCompat.requestPermissions(this, new String[]{CAMERA_PERMISSION}, ConstantField.VENUE_CAMERA_REQUEST);
     }
 }

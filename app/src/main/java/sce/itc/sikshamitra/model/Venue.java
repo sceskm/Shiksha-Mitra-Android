@@ -4,44 +4,79 @@ import android.database.Cursor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
 
 public class Venue {
-    private String VenueName;
-    private String ScheduledDateTime;
-    private String Address1;
-    private String Address2;
-    private String City;
-    private String District;
-    private String State;
-    private String Pin;
-    private String VenueImage;
-    private String VenueGUID;
-    private Double Latitude;
-    private Double Longitude;
-    private String CommunicationGUID;
+    @Expose
+    private String venueGuid;
+    @Expose
+    private String venueName;
+    @Expose(serialize = false)
+    private String scheduledDateTime;
+    @Expose
+    private String address1;
+    @Expose
+    private String address2;
+    @Expose
+    private String city;
+    @Expose
+    private String district;
+    @Expose(serialize = false)
+    private String state;
+    @Expose
+    private int stateId;
+    @Expose
+    private String pinCode;
+    @Expose
+    private int userId;
+    @Expose
+    private int organizationId;
+    @Expose
+    private Double latitude;
+    @Expose
+    private Double longitude;
+    private String communicationGuid;
+    @Expose
+    private List<Image> images;
+
+    @Expose(serialize = false)
+    private int imageDefinitionId;
+    @Expose(serialize = false)
+    private String imageFile;
+    @Expose(serialize = false)
+    private String imageExt;
 
     public Venue() {
     }
 
-    public Venue(String venueName, String scheduledDateTime, String address1, String address2, String city, String district, String state, String pin, String venueImage, String venueGUID, Double latitude, Double longitude,String communicationGUID) {
-        VenueName = venueName;
-        ScheduledDateTime = scheduledDateTime;
-        Address1 = address1;
-        Address2 = address2;
-        City = city;
-        District = district;
-        State = state;
-        Pin = pin;
-        VenueImage = venueImage;
-        VenueGUID = venueGUID;
-        Latitude = latitude;
-        Longitude = longitude;
-        CommunicationGUID = communicationGUID;
+    public Venue(String venueName, String scheduledDateTime, String address1, String address2,
+                 String city, String district, String state, int stateId, String pinCode, int userId,
+                 int organizationId, String venueGuid, Double latitude,
+                 Double longitude, String communicationGuid, List<Image> images) {
+        this.venueName = venueName;
+        this.scheduledDateTime = scheduledDateTime;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.city = city;
+        this.district = district;
+        this.state = state;
+        this.stateId = stateId;
+        this.pinCode = pinCode;
+        this.userId = userId;
+        this.organizationId = organizationId;
+        this.venueGuid = venueGuid;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.communicationGuid = communicationGuid;
+        this.images = images;
+
     }
 
     public void populateFromCursor(Cursor cursorVenue) {
@@ -52,12 +87,14 @@ public class Venue {
         int cityCol = cursorVenue.getColumnIndex("City");
         int districtCol = cursorVenue.getColumnIndex("District");
         int stateCol = cursorVenue.getColumnIndex("State");
+        int stateIdCol = cursorVenue.getColumnIndex("StateId");
         int pinCol = cursorVenue.getColumnIndex("Pin");
         int venueImageCol = cursorVenue.getColumnIndex("VenueImage");
         int venueGUIDCol = cursorVenue.getColumnIndex("VenueGUID");
         int latitudeCol = cursorVenue.getColumnIndex("Latitude");
         int longitudeCol = cursorVenue.getColumnIndex("Longitude");
         int communicationGUIDCol = cursorVenue.getColumnIndex("CommunicationGUID");
+        int organizationIdCol = cursorVenue.getColumnIndex("organizationId");
 
         this.setVenueName(cursorVenue.getString(venueNameCol));
         this.setScheduledDateTime(cursorVenue.getString(scheduledDateTimeCol));
@@ -66,116 +103,168 @@ public class Venue {
         this.setCity(cursorVenue.getString(cityCol));
         this.setDistrict(cursorVenue.getString(districtCol));
         this.setState(cursorVenue.getString(stateCol));
-        this.setPin(cursorVenue.getString(pinCol));
-        this.setVenueImage(cursorVenue.getString(venueImageCol));
-        this.setVenueGUID(cursorVenue.getString(venueGUIDCol));
+        this.setStateId(cursorVenue.getInt(stateIdCol));
+        this.setPinCode(cursorVenue.getString(pinCol));
+        this.setOrganizationId(cursorVenue.getInt(organizationIdCol));
+        //this.setImageName(cursorVenue.getString(venueImageCol));
+        this.setVenueGuid(cursorVenue.getString(venueGUIDCol));
         this.setLatitude(cursorVenue.getDouble(latitudeCol));
         this.setLongitude(cursorVenue.getDouble(longitudeCol));
-        this.setCommunicationGUID(cursorVenue.getString(communicationGUIDCol));
+        this.setCommunicationGuid(cursorVenue.getString(communicationGUIDCol));
+    }
+
+    public String getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(String imageFile) {
+        this.imageFile = imageFile;
+    }
+
+    public String getImageExt() {
+        return imageExt;
+    }
+
+    public void setImageExt(String imageExt) {
+        this.imageExt = imageExt;
     }
 
     public String getVenueName() {
-        return VenueName;
+        return venueName;
     }
 
     public void setVenueName(String venueName) {
-        VenueName = venueName;
+        this.venueName = venueName;
     }
 
     public String getScheduledDateTime() {
-        return ScheduledDateTime;
+        return scheduledDateTime;
     }
 
     public void setScheduledDateTime(String scheduledDateTime) {
-        ScheduledDateTime = scheduledDateTime;
+        this.scheduledDateTime = scheduledDateTime;
     }
 
     public String getAddress1() {
-        return Address1;
+        return address1;
     }
 
     public void setAddress1(String address1) {
-        Address1 = address1;
+        this.address1 = address1;
     }
 
     public String getAddress2() {
-        return Address2;
+        return address2;
     }
 
     public void setAddress2(String address2) {
-        Address2 = address2;
+        this.address2 = address2;
     }
 
     public String getCity() {
-        return City;
+        return city;
     }
 
     public void setCity(String city) {
-        City = city;
+        this.city = city;
     }
 
     public String getDistrict() {
-        return District;
+        return district;
     }
 
     public void setDistrict(String district) {
-        District = district;
+        this.district = district;
     }
 
     public String getState() {
-        return State;
+        return state;
     }
 
     public void setState(String state) {
-        State = state;
+        this.state = state;
     }
 
-    public String getPin() {
-        return Pin;
+    public int getStateId() {
+        return stateId;
     }
 
-    public void setPin(String pin) {
-        Pin = pin;
+    public void setStateId(int stateId) {
+        this.stateId = stateId;
     }
 
-    public String getVenueImage() {
-        return VenueImage;
+    public String getPinCode() {
+        return pinCode;
     }
 
-    public void setVenueImage(String venueImage) {
-        VenueImage = venueImage;
+    public void setPinCode(String pinCode) {
+        this.pinCode = pinCode;
     }
 
-    public String getVenueGUID() {
-        return VenueGUID;
+    public int getOrganizationId() {
+        return organizationId;
     }
 
-    public void setVenueGUID(String venueGUID) {
-        VenueGUID = venueGUID;
+    public void setOrganizationId(int organizationId) {
+        this.organizationId = organizationId;
+    }
+
+
+
+    public String getVenueGuid() {
+        return venueGuid;
+    }
+
+    public void setVenueGuid(String venueGuid) {
+        this.venueGuid = venueGuid;
     }
 
     public Double getLatitude() {
-        return Latitude;
+        return latitude;
     }
 
     public void setLatitude(Double latitude) {
-        Latitude = latitude;
+        this.latitude = latitude;
     }
 
     public Double getLongitude() {
-        return Longitude;
+        return longitude;
     }
 
     public void setLongitude(Double longitude) {
-        Longitude = longitude;
+        this.longitude = longitude;
     }
 
-    public String getCommunicationGUID() {
-        return CommunicationGUID;
+    public String getCommunicationGuid() {
+        return communicationGuid;
     }
 
-    public void setCommunicationGUID(String communicationGUID) {
-        CommunicationGUID = communicationGUID;
+    public void setCommunicationGuid(String communicationGuid) {
+        this.communicationGuid = communicationGuid;
+    }
+
+    public int getImageDefinitionId() {
+        return imageDefinitionId;
+    }
+
+    public void setImageDefinitionId(int imageDefinitionId) {
+        this.imageDefinitionId = imageDefinitionId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
     public CommunicationSend createCommSend() {
@@ -185,7 +274,7 @@ public class Venue {
         commSend.setProcessCount(0);
         commSend.setCommand(Command.ADD_VENUE);
         commSend.setCommandDate(Common.iso8601Format.format(new Date()));
-        commSend.setCommunicationGUID(this.CommunicationGUID);
+        commSend.setCommunicationGUID(this.communicationGuid);
         commSend.setCommunicationStatusID(1);
         commSend.setCreatedByID(4);
 
