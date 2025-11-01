@@ -14,11 +14,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import sce.itc.sikshamitra.helper.ConstantField;
+import sce.itc.sikshamitra.model.ComboProduct;
 import sce.itc.sikshamitra.model.PreRegistration;
+import sce.itc.sikshamitra.model.Product;
 import sce.itc.sikshamitra.model.SchoolData;
 import sce.itc.sikshamitra.model.Session;
+import sce.itc.sikshamitra.model.Settings;
+import sce.itc.sikshamitra.model.State;
 import sce.itc.sikshamitra.model.TrainingSM;
 import sce.itc.sikshamitra.model.User;
 import sce.itc.sikshamitra.model.Venue;
@@ -499,7 +505,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("SchoolGUID", userDetails.getSchoolGUID());
             newEntry.put("RoleId", userDetails.getRoleId());
             newEntry.put("LastLoggedIn", userDetails.getLastLoggedIn());
-            newEntry.put("UserRole", userDetails.getUserRole());
+            newEntry.put("UserRole", userDetails.getUserRoleName());
             newEntry.put("AgencyId", userDetails.getAgencyId());
 
             long retVal = myDataBase.insertOrThrow("sp_user", null, newEntry);
@@ -529,7 +535,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             updateValues.put("SchoolGUID", userDetails.getSchoolGUID());
             updateValues.put("RoleId", userDetails.getRoleId());
             updateValues.put("LastLoggedIn", userDetails.getLastLoggedIn());
-            updateValues.put("UserRole", userDetails.getUserRole());
+            updateValues.put("UserRole", userDetails.getUserRoleName());
             updateValues.put("AgencyId", userDetails.getAgencyId());
 
             int rows = myDataBase.update(
@@ -551,6 +557,100 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
+    * Save settings data
+    * */
+    public boolean saveSettings(Settings settings) {
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("Parameter", settings.getParameter());
+            newEntry.put("Value", settings.getValue());
+
+            long retVal = myDataBase.insertOrThrow("sp_setting", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveUser: EXCEPTION", ex);
+            throw ex;
+        }
+        return dataSaved;
+    }
+
+    /*
+    * Save product data
+    * */
+    public boolean saveProduct(Product product){
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("ProductId", product.getProductId());
+            newEntry.put("Product", product.getProduct());
+            newEntry.put("ProductTypeId", product.getProductTypeId());
+
+            long retVal = myDataBase.insertOrThrow("sp_product", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveProduct: EXCEPTION", ex);
+            throw ex;
+        }
+        return dataSaved;
+    }
+
+    /*
+    * Save combo - product data
+    * */
+    public boolean saveComboProduct(ComboProduct product){
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("ComboProductId", product.getProductId());
+            newEntry.put("ComboProduct", product.getProduct());
+            newEntry.put("ComboProductTypeId", product.getProductTypeId());
+
+            long retVal = myDataBase.insertOrThrow("sp_comboproduct", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveComboProduct: EXCEPTION", ex);
+            throw ex;
+        }
+        return dataSaved;
+    }
+
+    /*
+    * Save state data
+    * */
+    public boolean saveState(State state){
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("StateId", state.getStateId());
+            newEntry.put("StateName", state.getStateName());
+
+            long retVal = myDataBase.insertOrThrow("sp_state", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveState: EXCEPTION", ex);
+            throw ex;
+        }
+        return dataSaved;
+    }
+
+    /*
      * Get user details - original o
      * */
     public Cursor getUser(String userGuid) {
@@ -563,6 +663,89 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getUserOld(String userGuid) {
         String sql = "SELECT * FROM sp_user";
         return QueryDatabase(sql);
+    }
+
+    public void updateCommunicationSendStatus(int messageID, int status, String details, boolean updateCount) {
+        Date dateNow = new Date();
+
+        SimpleDateFormat dateformatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        String sql = "UPDATE isp_communicationsend ";
+        sql += "SET ProcessedOn = '" + dateformatYYYYMMDD.format(dateNow) + "', ";
+        sql += "CommunicationStatusID = " + Integer.toString(status) + ", ";
+        sql += "ProcessDetails = '" + details.replace("'", "''") + "', ";
+
+        if (updateCount == true)
+            sql += "ProcessCount = ProcessCount + 1 ";
+        else
+            sql = sql.substring(0, sql.length() - 2);
+
+        sql += " WHERE _id = " + Integer.toString(messageID);
+
+        ExecuteScalar(sql);
+    }
+    public Cursor getUnprocessedCommSendMessageCount() {
+        String sql = "SELECT COUNT(*) AS UnSent FROM isp_communicationsend "
+                + "WHERE  (CommunicationStatusID = 1 OR (CommunicationStatusID = 3 AND ProcessCount <= 50)) "
+                + "AND InActive = 0";
+
+        return QueryDatabase(sql);
+    }
+
+    //get only single communicationSend row for not uploaded message
+    public Cursor currentUnprocessedCommSendMessage(String command, String userGUID, String CommSendGuid) {
+        String sql = "SELECT * FROM isp_communicationsend "
+                + " WHERE  Command = '" + command + "' "
+                + " AND  UserGUID = '" + userGUID + "' "
+                + " AND  CommunicationGUID = '" + CommSendGuid + "' "
+                + " AND (CommunicationStatusID = 1 OR (CommunicationStatusID = 3 "
+                + " AND ProcessCount <= 75)) "
+                + " AND InActive = 0 ";
+        return QueryDatabase(sql);
+    }
+
+    /*
+    * Delete 'sp_user' table data
+    * */
+    public boolean deleteUserData() {
+        try {
+            String sql = "DELETE FROM sp_user";
+            myDataBase.execSQL(sql);
+        } catch (Exception ex) {
+            Log.e(TAG, "Deleted:" + ex);
+        }
+        return true;
+    }
+    /*
+    * Reset database
+    * */
+    public boolean resetDatabase(String userGUID) {
+
+        try {
+            //user
+            String sql = "DELETE FROM sp_user WHERE UserGUID!=" + "'" + userGUID + "'";
+            myDataBase.execSQL(sql);
+
+            //store
+            sql = "DELETE FROM sp_state";
+            myDataBase.execSQL(sql);
+
+            //attendance
+            sql = "DELETE FROM sp_comboproduct ";
+            myDataBase.execSQL(sql);
+
+            //product
+            sql = "DELETE FROM sp_product ";
+            myDataBase.execSQL(sql);
+
+            //communicationOn
+            sql = "DELETE FROM sp_settings ";
+            myDataBase.execSQL(sql);
+
+        } catch (Exception ex) {
+            Log.e("TAG", "Delete: " + ex);
+        }
+        return true;
     }
 
 

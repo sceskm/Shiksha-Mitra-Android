@@ -27,13 +27,51 @@ public class ConstantField {
     public static final int IN_ACTIVE = 0;
 
     /*
+    *
+    * */
+    public static final String AUTO_SYNCING = "autosyncing";
+    public static final int MANUAL_DOWNLOAD = 2;
+    public static final int AUTO_DOWNLOAD = 1;
+    public static final int INSTANT_DOWNLOAD = 3;
+
+    public static final int DEFAULT = 0;
+    public static final int SUCCESS = 1;
+    public static final int FAILURE = 2;
+
+
+    /*
+    * Url details
+    * */
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String BEARER = "Bearer";
+    public static final String REFRESH_TOKEN = "refreshtoken";
+    public static final String ACCESS_TOKEN = "accesstoken";
+    public static final String LOGIN_URL = "/mobile/v1/appauth/login";
+    //added https at dev server
+    public static final String NETWORK_URL = "https://sm2025api.dhanushteam.com";
+    public static final String DEFAULT_DATE = "2010-01-01 00:00:00";
+    public static final String REFRESH_TOKEN_CREATED = "refreshtokencreated";
+    public static final String ACTION_URL = "/mobile/v1/appcommand/action";
+
+    /*
+    * Communication status
+    * */
+    //Communication Statuses
+    public static final int COMM_STATUS_NOT_PROCESSED = 1;
+    public static final int COMM_STATUS_PROCESSED = 2;
+    public static final int COMM_STATUS_ERROR = 3;
+
+    /*
     * User table data
     * */
-    public static final String USER_NAME = "7278555141";
+    public static final String USER_NAME = "arun";
     public static final String USER_NAME_SM = "shiksha.mitra";
     public static final String USER_NAME_AGENCY = "agency";
-    public static final String PASSWORD = "S@12345678";
+    public static final String PASSWORD = "TLead!!100";
 
     public static final int ROLE_ID_AGENCY = 5; //5 for agency
     public static final int ROLE_ID_SHIKSHA_MITRA = 6; //6 for shiksha mitra
+    public static final String APP_VERSION = "2.8";
+
+
 }

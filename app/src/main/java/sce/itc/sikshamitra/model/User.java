@@ -15,13 +15,20 @@ public class User {
     private String schoolGUID;
     private int roleId;
     private String lastLoggedIn;
-    private int userRole;
+    private String userRoleName;
     private int agencyId;
+    private int inActive;
+
+    private String accessToken;
+    private String refreshToken;
+    private long expiresIn;
+    private long refreshExpiresIn;
+    private long issuedOn;
 
     public User() {
     }
     // --- Parameterized Constructor ---
-    public User(int userId, String userName, String password, String firstName, String lastName, String mobileNumber, String email, int loggedIn, String userGUID, String schoolGUID, int roleId, String lastLoggedIn, int userRole, int agencyId) {
+    public User(int userId, String userName, String password, String firstName, String lastName, String mobileNumber, String email, int loggedIn, String userGUID, String schoolGUID, int roleId, String lastLoggedIn, String userRoleName, int agencyId) {
         this.userId = userId;
         this.userName = userName;
         this.password = password;
@@ -34,7 +41,7 @@ public class User {
         this.schoolGUID = schoolGUID;
         this.roleId = roleId;
         this.lastLoggedIn = lastLoggedIn;
-        this.userRole = userRole;
+        this.userRoleName = userRoleName;
         this.agencyId = agencyId;
     }
 
@@ -137,12 +144,12 @@ public class User {
         this.lastLoggedIn = lastLoggedIn;
     }
 
-    public int getUserRole() {
-        return userRole;
+    public String getUserRoleName() {
+        return userRoleName;
     }
 
-    public void setUserRole(int userRole) {
-        this.userRole = userRole;
+    public void setUserRoleName(String userRoleName) {
+        this.userRoleName = userRoleName;
     }
 
     public int getAgencyId() {
@@ -151,6 +158,54 @@ public class User {
 
     public void setAgencyId(int agencyId) {
         this.agencyId = agencyId;
+    }
+
+    public int getInActive() {
+        return inActive;
+    }
+
+    public void setInActive(int inActive) {
+        this.inActive = inActive;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public long getExpiresIn() {
+        return expiresIn;
+    }
+
+    public void setExpiresIn(long expiresIn) {
+        this.expiresIn = expiresIn;
+    }
+
+    public long getRefreshExpiresIn() {
+        return refreshExpiresIn;
+    }
+
+    public void setRefreshExpiresIn(long refreshExpiresIn) {
+        this.refreshExpiresIn = refreshExpiresIn;
+    }
+
+    public long getIssuedOn() {
+        return issuedOn;
+    }
+
+    public void setIssuedOn(long issuedOn) {
+        this.issuedOn = issuedOn;
     }
 
     public void populateFromCursor(Cursor cursor) {
@@ -181,7 +236,8 @@ public class User {
         this.setSchoolGUID(cursor.getString(schoolGUIDCol));
         this.setRoleId(cursor.getInt(roleIdCol));
         this.setLastLoggedIn(cursor.getString(lastLoggedInCol));
-        this.setUserRole(cursor.getInt(userRoleCol));
+        this.setUserRoleName(cursor.getString(userRoleCol));
         this.setAgencyId(cursor.getInt(agencyIdCol));
     }
+
 }

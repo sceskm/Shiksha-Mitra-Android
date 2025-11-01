@@ -18,14 +18,30 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
-import java.util.Date;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.databinding.ActivityLoginBinding;
+import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.ConstantField;
-import sce.itc.sikshamitra.helper.GPSTracker;
+import sce.itc.sikshamitra.helper.NetworkUtils;
+import sce.itc.sikshamitra.model.ComboProduct;
+import sce.itc.sikshamitra.model.LoginData;
+import sce.itc.sikshamitra.model.Product;
+import sce.itc.sikshamitra.model.Settings;
+import sce.itc.sikshamitra.model.State;
 import sce.itc.sikshamitra.model.User;
 
 public class Login extends AppCompatActivity {
@@ -52,6 +68,8 @@ public class Login extends AppCompatActivity {
     int loggedIn = 0;
     String email = "";
     String lastLoggedIn = "";
+    private Response response;
+    private Handler handler;
 
 
     @Override
@@ -97,11 +115,11 @@ public class Login extends AppCompatActivity {
     }
 
     private void populateStaticUser() {
-        username = ConstantField.USER_NAME_SM;
+        username = ConstantField.USER_NAME;
         password = ConstantField.PASSWORD;
         roleId = ConstantField.ROLE_ID_SHIKSHA_MITRA;
-        fName = "Test";
-        lName = "Sauvik";
+        fName = "Arun";
+        lName = "Agarwal";
         mobileNo = ConstantField.USER_NAME;
         userGuid = "123e4567-e89b-12d3-a456-426614174000";
         schoolGuid = "123e4567-e89b-12d3-a456-426614174001";
@@ -120,24 +138,25 @@ public class Login extends AppCompatActivity {
                         @Override
                         public void run() {
                             Log.d(TAG, "run: save attendance");
+                            callNetworkApi();
                             //saveUser();
-                            username = binding.editUsername.getText().toString().trim();
-                            password = binding.editPwd.getText().toString().trim();
-
-                            Intent intent = null;
-
-                            if (username.equals(ConstantField.USER_NAME_SM)) {
-                                intent = new Intent(context, Home.class);
-                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
-                            } else if (username.equals(ConstantField.USER_NAME_AGENCY)) {
-                                intent = new Intent(context, AgencyHome.class);
-                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_SHIKSHA_MITRA);
-                            } else {
-                                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
-                            }
-
-                            startActivity(intent);
-                            finish();
+//                            username = binding.editUsername.getText().toString().trim();
+//                            password = binding.editPwd.getText().toString().trim();
+//
+//                            Intent intent = null;
+//
+//                            if (username.equals(ConstantField.USER_NAME_SM)) {
+//                                intent = new Intent(context, Home.class);
+//                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
+//                            } else if (username.equals(ConstantField.USER_NAME_AGENCY)) {
+//                                intent = new Intent(context, AgencyHome.class);
+//                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_SHIKSHA_MITRA);
+//                            } else {
+//                                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
+//                            }
+//
+//                            startActivity(intent);
+//                            finish();
                         }
                     }, 200);
 
@@ -150,6 +169,86 @@ public class Login extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void callNetworkApi() {
+        // create your json here
+        JSONObject jsonObject = new JSONObject();
+        try {
+            handler = new Handler(Looper.getMainLooper());
+
+            //jsonObject.put(Command.USER_NAME, binding.editUsername.getText().toString().trim());
+            jsonObject.put(Command.USER_NAME, ConstantField.USER_NAME);
+            //jsonObject.put(Command.PASSWORD, binding.editPwd.getText().toString().trim());
+            jsonObject.put(Command.PASSWORD, ConstantField.PASSWORD);
+            jsonObject.put(Command.VERSION, ConstantField.APP_VERSION); //newly added to restrict others version
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+            final OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS).build();
+            client.newCall(NetworkUtils.enqueNetworkRequest(ConstantField.NETWORK_URL + ConstantField.LOGIN_URL, body, false)).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    handler.post(() -> {
+                        progressDialog.dismiss();
+                        Common.showAlert(Login.this, "Internet connection failure.");
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String uResponse = response.body().string();
+                    if (response.isSuccessful()) {
+                        getResponse(uResponse);
+                    } else {
+                        handler.post(() -> {
+                            progressDialog.dismiss();
+                            Common.showAlert(Login.this, uResponse);
+                        });
+                    }
+                }
+            });
+        } catch (Exception e) {
+            progressDialog.dismiss();
+            e.printStackTrace();
+        }
+    }
+
+    private void getResponse(String response){
+        LoginData loginData = LoginData.downloadLoginUser(Common.getJsonObject(response));
+
+        if (loginData != null && loginData.getUser() != null) {
+            dbHelper.saveUser(loginData.getUser());
+
+            for (Settings setting : loginData.getSettings()) {
+                dbHelper.saveSettings(setting);
+            }
+
+            for (Product product : loginData.getProducts()) {
+                dbHelper.saveProduct(product);
+            }
+
+            for (ComboProduct comboProduct : loginData.getComboProducts()) {
+                dbHelper.saveComboProduct(comboProduct);
+            }
+
+            for (State state : loginData.getStates()) {
+                dbHelper.saveState(state);
+            }
+
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                // Navigate to next screen or show success message
+                Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                Common.showAlert(Login.this, "Invalid server response");
+            });
+        }
+
     }
 
     private void saveUser() {

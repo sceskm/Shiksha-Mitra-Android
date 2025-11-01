@@ -101,6 +101,28 @@ public class PreferenceCommon {
     public String getLastLoggedInDateTime() {
         return prefs.getString("LastLoggedDate", "2001-01-01");
     }
+    public String getAccessToken() {
+        return prefs.getString(ConstantField.ACCESS_TOKEN, "");
+    }
+
+    public void setAccessToken(String key) {
+        prefs.edit().putString(ConstantField.ACCESS_TOKEN, key).apply();
+    }
+
+    public String getRefreshToken() {
+        return prefs.getString(ConstantField.REFRESH_TOKEN, "");
+    }
+
+    public void setRefreshToken(String key) {
+        prefs.edit().putString(ConstantField.REFRESH_TOKEN, key).apply();
+    }
+    public String getRefreshTokenCreated() {
+        return prefs.getString(ConstantField.REFRESH_TOKEN_CREATED, ConstantField.DEFAULT_DATE);
+    }
+
+    public void setRefreshTokenCreated(String key) {
+        prefs.edit().putString(ConstantField.REFRESH_TOKEN_CREATED, key).apply();
+    }
 
     public void setLastLoggedInDateTime(String key) {
         prefs.edit().putString("LastLoggedDate", key).apply();
@@ -217,5 +239,13 @@ public class PreferenceCommon {
 
     public void setProductType(String key) {
         prefs.edit().putString("p_type", key).apply();
+    }
+
+    public int getAutoSyncing() {
+        return prefs.getInt(ConstantField.AUTO_SYNCING, ConstantField.DEFAULT);
+    }
+
+    public void setAutoSyncing(int key) {
+        prefs.edit().putInt(ConstantField.AUTO_SYNCING, key).apply();
     }
 }

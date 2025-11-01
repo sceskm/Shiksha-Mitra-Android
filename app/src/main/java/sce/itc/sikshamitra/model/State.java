@@ -1,7 +1,7 @@
 package sce.itc.sikshamitra.model;
 
 public class State {
-    private int _id;
+    private int stateId;
     private String stateName;
 
     public String getStateName() {
@@ -12,11 +12,11 @@ public class State {
         this.stateName = stateName;
     }
 
-    public int get_id() {
-        return _id;
+    public int getStateId() {
+        return stateId;
     }
 
-    public void set_id(int _id) {
-        this._id = _id;
+    public void setStateId(int stateId) {
+        this.stateId = stateId;
     }
 }

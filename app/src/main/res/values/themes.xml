@@ -31,19 +31,19 @@
         <item name="android:backgroundTint">@color/colorPrimary</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:padding">16dp</item>
+        <item name="android:padding">12dp</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:background">@drawable/rounded_button</item>
         <item name="fontFamily">@font/inter_medium</item>
     </style>
     <style name="AppButtonStyle2">
-        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_width">128dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:backgroundTint">@color/colorPrimary</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:padding">16dp</item>
+        <item name="android:padding">12dp</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:background">@drawable/rounded_button</item>

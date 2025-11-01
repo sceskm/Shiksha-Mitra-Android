@@ -34,4 +34,8 @@
     <string name="colon">:</string>
     <string name="incorrect_location_message">Your location is not correct.Please try again.</string>
 
+    <string name="data_saved_uploaded">Data saved and uploaded successfully.</string>
+    <string name="data_not_saved_message">Data not saved and uploaded.</string>
+    <string name="data_saved_not_uploaded">Data saved but not uploaded.Try again later from synchronisation screen.</string>
+
 </resources>

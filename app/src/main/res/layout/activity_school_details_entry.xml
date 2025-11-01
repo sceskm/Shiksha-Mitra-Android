@@ -221,8 +221,7 @@
                     android:id="@+id/button_submit"
                     style="@style/AppButtonStyle2"
                     android:layout_marginTop="16dp"
-                    android:text="Save Data"
-                    android:textAllCaps="true"/>
+                    android:text="Save Data"/>
 
             </LinearLayout>
         </LinearLayout>

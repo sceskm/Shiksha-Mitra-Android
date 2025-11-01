@@ -2,6 +2,14 @@ package sce.itc.sikshamitra.model;
 
 import android.database.Cursor;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.Date;
+
+import sce.itc.sikshamitra.helper.Command;
+import sce.itc.sikshamitra.helper.Common;
+
 public class PreRegistration {
     private int _id;
 
@@ -10,12 +18,13 @@ public class PreRegistration {
     private String Mobile;
     private String Username;
     private String Password;
-    private String ShikshaMitraGUID;
+    private String SMGUID;
     private String VenueGUID;
     private String UserGUID;
     private String CreatedOn;
     private double Latitude;
     private double Longitude;
+    private String CommunicationGUID;
 
     // --- Empty Constructor ---
     public PreRegistration() {
@@ -23,20 +32,21 @@ public class PreRegistration {
 
     // --- Parameterized Constructor ---
     public PreRegistration(String firstName, String lastName, String mobile,
-                           String username, String password, String shikshaMitraGUID,
+                           String username, String password, String SMGUID,
                            String venueGUID, String userGUID,
-                           String createdOn, double latitude, double longitude) {
+                           String createdOn, double latitude, double longitude,String communicationGUID) {
         this.FirstName = firstName;
         this.LastName = lastName;
         this.Mobile = mobile;
         this.Username = username;
         this.Password = password;
-        this.ShikshaMitraGUID = shikshaMitraGUID;
+        this.SMGUID = SMGUID;
         this.VenueGUID = venueGUID;
         this.UserGUID = userGUID;
         this.CreatedOn = createdOn;
         this.Latitude = latitude;
         this.Longitude = longitude;
+        this.CommunicationGUID = communicationGUID;
     }
 
     // --- Getters and Setters ---
@@ -104,12 +114,12 @@ public class PreRegistration {
         UserGUID = userGUID;
     }
 
-    public String getShikshaMitraGUID() {
-        return ShikshaMitraGUID;
+    public String getSMGUID() {
+        return SMGUID;
     }
 
-    public void setShikshaMitraGUID(String shikshaMitraGUID) {
-        ShikshaMitraGUID = shikshaMitraGUID;
+    public void setSMGUID(String SMGUID) {
+        this.SMGUID = SMGUID;
     }
     public String getCreatedOn() {
         return CreatedOn;
@@ -130,6 +140,13 @@ public class PreRegistration {
         Longitude = longitude;
     }
 
+    public String getCommunicationGUID() {
+        return CommunicationGUID;
+    }
+    public void setCommunicationGUID(String communicationGUID) {
+        CommunicationGUID = communicationGUID;
+    }
+
     // --- populateFromCursor method ---
     public void populateFromCursor(Cursor cursorPreReg) {
         int idCol = cursorPreReg.getColumnIndex("_id");
@@ -144,6 +161,7 @@ public class PreRegistration {
         int createdOnCol = cursorPreReg.getColumnIndex("CreatedOn");
         int latitudeCol = cursorPreReg.getColumnIndex("Latitude");
         int longitudeCol = cursorPreReg.getColumnIndex("Longitude");
+        int communicationGUIDCol = cursorPreReg.getColumnIndex("CommunicationGUID");
 
         this.set_id(cursorPreReg.getInt(idCol));
         this.setFirstName(cursorPreReg.getString(firstNameCol));
@@ -151,11 +169,57 @@ public class PreRegistration {
         this.setMobile(cursorPreReg.getString(mobileCol));
         this.setUsername(cursorPreReg.getString(usernameCol));
         this.setPassword(cursorPreReg.getString(passwordCol));
-        this.setShikshaMitraGUID(cursorPreReg.getString(shikshaMitraGUIDCol));
+        this.setSMGUID(cursorPreReg.getString(shikshaMitraGUIDCol));
         this.setVenueGUID(cursorPreReg.getString(venueGUIDCol));
         this.setUserGUID(cursorPreReg.getString(userGUIDCol));
         this.setCreatedOn(cursorPreReg.getString(createdOnCol));
         this.setLatitude(cursorPreReg.getDouble(latitudeCol));
         this.setLongitude(cursorPreReg.getDouble(longitudeCol));
+        this.setCommunicationGUID(cursorPreReg.getString(communicationGUIDCol));
+    }
+
+    public CommunicationSend createCommSend() {
+        CommunicationSend commSend = new CommunicationSend();
+        commSend.setProcessedOn(Common.iso8601Format.format(new Date()));
+        commSend.setprocessDetails("");
+        commSend.setProcessCount(0);
+        commSend.setCommand(Command.ADD_VENUE);
+        commSend.setCommandDate(Common.iso8601Format.format(new Date()));
+        commSend.setCommunicationGUID(this.CommunicationGUID);
+        commSend.setCommunicationStatusID(1);
+        commSend.setCreatedByID(4);
+
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .setPrettyPrinting()
+                .create();
+
+        //Convert models to json object
+        String attendanceJson = gson.toJson(this);
+
+        commSend.setCommandDetails(attendanceJson);
+        return commSend;
+    }
+
+    //create attendance from json
+    public static Venue fromJson(String json) {
+
+        Gson gson = new Gson();
+        Venue attendance = gson.fromJson(json, Venue.class);
+
+        return attendance;
+    }
+
+    public String getJson() {
+
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .setPrettyPrinting()
+                .create();
+
+        //Convert models to json object
+        String venueJson = gson.toJson(this);
+
+        return venueJson;
     }
 }

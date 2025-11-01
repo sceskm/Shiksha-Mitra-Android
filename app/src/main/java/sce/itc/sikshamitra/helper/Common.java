@@ -4,21 +4,21 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import sce.itc.sikshamitra.AlertCallBack;
 import sce.itc.sikshamitra.R;
-import sce.itc.sikshamitra.activity.VenueData;
 
 public class Common {
     public static final boolean DEBUGGING = true;
@@ -132,9 +132,64 @@ public class Common {
         return retVal;
     }
 
-    public static String getGuid() {
+    public static String createGuid() {
         return UUID.randomUUID().toString();
     }
+
+    public static void showAlert(Context context, String message) {
+        new MaterialAlertDialogBuilder(context, R.style.RoundShapeTheme)
+                .setTitle("Oops!")
+                .setMessage(message)
+                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        dialogInterface.dismiss();
+
+                    }
+                }).show();
+    }
+
+    public static boolean checkInternetConnectivitySIMOnly(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            // try to specifically access syscon - commented out we can use
+            // later if required
+            // cm.requestRouteToHost(ConnectivityManager.TYPE_MOBILE, int
+            // hostAddress)
+            return true;
+        }
+        return false;
+    }
+
+    //check internet connection for network call
+    public static boolean checkInternetConnectivity(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo netInfo_mobile = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if ((netInfo != null && netInfo.isConnectedOrConnecting()) || (netInfo_mobile != null && netInfo_mobile.isConnectedOrConnecting())) {
+            // try to specifically access syscon - commented out we can use
+            // later if required
+            // cm.requestRouteToHost(ConnectivityManager.TYPE_MOBILE, int
+            // hostAddress)
+            return true;
+        }
+        return false;
+    }
+
+    public static JSONObject getJsonObject(String response) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
 
 
 
