@@ -5,13 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import sce.itc.sikshamitra.AppController;
-import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
-import sce.itc.sikshamitra.model.MySchoolData;
 
 
 public class PreferenceCommon {
@@ -293,11 +287,11 @@ public class PreferenceCommon {
         prefs.edit().putString("password", key).apply();
     }
 
-    public int getSessionCount() {
+    public int getLastSessionCount() {
         return prefs.getInt("session_count", 0);
     }
 
-    public void setSessionCount(int key) {
+    public void setLastSessionCount(int key) {
         prefs.edit().putInt("session_count", key).apply();
     }
 

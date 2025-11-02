@@ -248,6 +248,7 @@ public class Login extends AppCompatActivity {
         }
 
     }
+
     private void savePreferences(LoginData loginData) {
         try {
             PreferenceCommon.getInstance().setUserId(loginData.getUser().getUserId());
@@ -256,6 +257,8 @@ public class Login extends AppCompatActivity {
             PreferenceCommon.getInstance().setUsername(loginData.getUser().getUserName());
             PreferenceCommon.getInstance().setPassword(binding.editPwd.getText().toString().trim());
             PreferenceCommon.getInstance().setAccessToken(loginData.getUser().getAccessToken());
+            if (loginData.getLastSession().getSessionNo() > 0)
+                PreferenceCommon.getInstance().setLastSessionCount(loginData.getLastSession().getSessionNo());
 
         } catch (Exception e) {
             Log.e(TAG, "savePreferences: ", e);
@@ -269,7 +272,7 @@ public class Login extends AppCompatActivity {
                 intent = new Intent(context, AgencyHome.class);
                 intent.putExtra("userRoleId", loginData.getUser().getRoleId());
 
-            } else{
+            } else {
                 intent = new Intent(context, Home.class);
                 intent.putExtra("userRoleId", loginData.getUser().getRoleId());
             }

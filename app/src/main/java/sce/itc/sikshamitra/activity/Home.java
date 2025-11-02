@@ -3,6 +3,7 @@ package sce.itc.sikshamitra.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,9 +21,16 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
 
+import java.util.Date;
+
 import sce.itc.sikshamitra.R;
+import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.databinding.ActivityHomeBinding;
 import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.ConstantField;
+import sce.itc.sikshamitra.helper.GPSTracker;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
+import sce.itc.sikshamitra.model.User;
 
 public class Home extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
@@ -34,6 +42,7 @@ public class Home extends AppCompatActivity {
 //    private boolean storageWritePermissionGranted = false;
 
     private static final int LOCATION_CAMERA_PERMISSION_CODE = 300;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +77,38 @@ public class Home extends AppCompatActivity {
         }
 
         clickEvent();
+
+        populateHome();
+    }
+
+    private void populateHome() {
+        dbHelper = DatabaseHelper.getInstance(this);
+
+        try {
+            Cursor cursor = dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                User user = new User();
+                user.populateFromCursor(cursor);
+                String fullName = "Welcome " + Common.getString(user.getFirstName()) + " " + Common.getString(user.getLastName());
+                binding.txtUserName.setText(fullName);
+
+                if (user.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA)
+                    binding.txtRoleName.setText("Teacher");
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "populateHome: ", ex);
+        }
+        String displayDate = Common.displayDate(Common.yyyymmddFormat.format(new Date()), "yyyy-MM-dd");
+        binding.txtCurrentDate.setText(displayDate);
+
+
     }
 
     private void clickEvent() {
         /*
-        * Session Conducted by SM
-        * */
+         * Session Conducted by SM
+         * */
         binding.btnStudentSessionBySm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,8 +133,8 @@ public class Home extends AppCompatActivity {
             }
         });
         /*
-        * School data entry
-        * */
+         * School data entry
+         * */
         binding.btnSchoolEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

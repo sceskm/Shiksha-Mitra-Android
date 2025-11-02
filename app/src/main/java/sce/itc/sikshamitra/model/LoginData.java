@@ -15,6 +15,7 @@ public class LoginData {
     private List<ComboProduct> comboProducts;
     private List<State> states;
     private List<MySchoolData> schoolData;
+    private LastSession lastSession;
 
     public User getUser() {
         return user;
@@ -64,6 +65,13 @@ public class LoginData {
         this.schoolData = schoolData;
     }
 
+    public LastSession getLastSession() {
+        return lastSession;
+    }
+
+    public void setLastSession(LastSession lastSession) {
+        this.lastSession = lastSession;
+    }
 
     public static LoginData downloadLoginUser(JSONObject jsonObject) {
         LoginData loginData = new LoginData();
@@ -192,7 +200,19 @@ public class LoginData {
                         schoolList.add(school);
                     }
                 }
-                loginData.setSchoolData(schoolList);
+                // -------------------- Last Session --------------------
+                if (dataObject.has("lastSession") && !dataObject.isNull("lastSession")) {
+                    JSONObject lastSessionObj = dataObject.getJSONObject("lastSession");
+
+                    LastSession lastSession = new LastSession();
+                    lastSession.setSessionId(Common.getInt(lastSessionObj.optString("sessionId")));
+                    lastSession.setSessionGuid(Common.getString(lastSessionObj.optString("sessionGuid")));
+                    lastSession.setSessionStart(Common.getString(lastSessionObj.optString("sessionStart")));
+                    lastSession.setSessionEnd(Common.getString(lastSessionObj.optString("sessionEnd")));
+                    lastSession.setSessionNo(Common.getInt(lastSessionObj.optString("sessionNo")));
+
+                    loginData.setLastSession(lastSession);
+                }
             }
 
         } catch (Exception ex) {

@@ -38,22 +38,25 @@
 
             <!-- Welcome Text -->
             <TextView
+                android:id="@+id/txt_user_name"
                 style="@style/HeadingTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Welcome Trainer One" />
+                />
 
             <!-- Project Info -->
             <TextView
+                android:id="@+id/txt_role_name"
                 style="@style/SubHeadingTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Project - Training" />
+                />
 
             <!-- Start Date -->
             <TextView
+                android:id="@+id/txt_current_date"
                 style="@style/SubHeadingTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

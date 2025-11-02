@@ -76,7 +76,6 @@ public class Synchronise extends AppCompatActivity {
     }
 
     private void initialWidgets() {
-        ///Common.GetRootDirectory();
         dbHelper = DatabaseHelper.getInstance(Synchronise.this);
         dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
         btnDownload = findViewById(R.id.btn_download);

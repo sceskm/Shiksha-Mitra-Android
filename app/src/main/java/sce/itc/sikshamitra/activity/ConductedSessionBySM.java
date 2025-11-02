@@ -50,7 +50,6 @@ import sce.itc.sikshamitra.AlertCallBack;
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.databinding.ActivityReportingBinding;
-import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.CompressedImage;
 import sce.itc.sikshamitra.helper.ConstantField;
@@ -148,7 +147,7 @@ public class ConductedSessionBySM extends AppCompatActivity {
             Log.e(TAG, "populateData: ", e);
         }
 
-        int sessionCont = PreferenceCommon.getInstance().getSessionCount() + 1;
+        int sessionCont = PreferenceCommon.getInstance().getLastSessionCount() + 1;
         binding.editSessionCount.setText(Common.getString(String.valueOf(sessionCont)));
     }
 
@@ -403,7 +402,7 @@ public class ConductedSessionBySM extends AppCompatActivity {
         session.setCommunicationStatus(1);
 
         if (dbHelper.saveSession(session)){
-            PreferenceCommon.getInstance().setSessionCount(sessionNo + 1);
+            PreferenceCommon.getInstance().setLastSessionCount(sessionNo + 1);
             showSuccessAlert("Data saved successfully. Please upload the data from the 'Synchronise' page.");
             Toast.makeText(this,"Data saved successfully.",Toast.LENGTH_SHORT).show();
         }else {

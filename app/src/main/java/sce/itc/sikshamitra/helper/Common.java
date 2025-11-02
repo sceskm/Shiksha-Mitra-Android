@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import sce.itc.sikshamitra.AlertCallBack;
@@ -301,6 +303,27 @@ public class Common {
             e.printStackTrace();
         }
         return covertedImage;
+    }
+
+    //convert string value to date time format
+    public static String displayDate(String date, String currentFormat) {
+        String result = "";
+        Date currectFormat = null;
+        SimpleDateFormat sdfOld = new SimpleDateFormat(currentFormat, Locale.getDefault());
+        SimpleDateFormat sdfNew = new SimpleDateFormat("EEE dd MMMM yyyy", Locale.getDefault());
+        if (!TextUtils.isEmpty(date)) {
+            try {
+                currectFormat = sdfOld.parse(date);
+
+                if (currectFormat != null)
+                    result = sdfNew.format(currectFormat);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return result;
     }
 
 
