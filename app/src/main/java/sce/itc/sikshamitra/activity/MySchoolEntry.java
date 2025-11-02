@@ -1,6 +1,7 @@
 package sce.itc.sikshamitra.activity;
 
 import android.app.ProgressDialog;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,18 +16,24 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.databinding.ActivitySchoolDetailsEntryBinding;
 import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.GPSTracker;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
+import sce.itc.sikshamitra.model.MySchoolData;
 import sce.itc.sikshamitra.model.SchoolData;
+import sce.itc.sikshamitra.model.User;
 
-public class SchoolDetailsEntry extends AppCompatActivity {
-    private static final String TAG = "SchoolDetailsEntryActivity";
+public class MySchoolEntry extends AppCompatActivity {
+    private static final String TAG = "MySchoolEntry";
     private ActivitySchoolDetailsEntryBinding binding;
     private DatabaseHelper dbHelper;
-    private final SchoolDetailsEntry context = SchoolDetailsEntry.this;
+    private final MySchoolEntry context = MySchoolEntry.this;
     private Toolbar toolbar;
 
     private GPSTracker gps;
@@ -37,6 +44,8 @@ public class SchoolDetailsEntry extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Handler mainHandler;
     private Handler timerHandler = new Handler();
+
+    private List<MySchoolData> schoolList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +70,12 @@ public class SchoolDetailsEntry extends AppCompatActivity {
         populateData();
         clickEvent();
     }
+
     /*
-    * Click events
-    * */
+     * Click events
+     * */
     private void clickEvent() {
-        binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
+        /*binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkValidation()) {
@@ -87,6 +97,12 @@ public class SchoolDetailsEntry extends AppCompatActivity {
                     }
                 }
             }
+        });*/
+        binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
         });
     }
 
@@ -106,21 +122,71 @@ public class SchoolDetailsEntry extends AppCompatActivity {
         progressDialog.setMessage("saving your data..");
         progressDialog.setTitle("Please Wait..");
         mainHandler = new Handler(Looper.getMainLooper());
+
+        schoolList = new ArrayList<>();
+
+        try {
+            Cursor cursor = dbHelper.getMySchoolData();
+            if (cursor.moveToFirst()) {
+                do {
+                    MySchoolData school = new MySchoolData();
+                    school.populateFromCursor(cursor);
+                    schoolList.add(school);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        } catch (Exception e) {
+            Log.e(TAG, "populateData: ", e);
+        }
+
+        populateSchoolData();
+        populateUserData();
+
     }
+
+    private void populateSchoolData() {
+        if (schoolList != null && !schoolList.isEmpty()) {
+            for (MySchoolData school : schoolList) {
+                binding.editSchoolName.setText(school.getSchoolName());
+                binding.editUdiceCode.setText(school.getUdiseCode());
+                binding.editDistrictName.setText(school.getDistrict());
+                binding.editDistrictCode.setText(school.getDistrictCode());
+                binding.editBlockName.setText(school.getBlockName());
+                binding.editBlockCode.setText(school.getBlockCode());
+                binding.editNameSm.setText(PreferenceCommon.getInstance().getUsername());
+                binding.editSmMobile.setText(school.getPhone());
+            }
+        }
+    }
+
+    private void populateUserData() {
+        Cursor cursor = dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            User user = new User();
+            user.populateFromCursor(cursor);
+            String fullName = Common.getString(user.getFirstName()) + " " + Common.getString(user.getLastName());
+            binding.editNameSm.setText(fullName);
+            binding.editSmMobile.setText(Common.getString(user.getMobileNumber()));
+            binding.editSmEmail.setText(Common.getString(user.getEmail()));
+        }
+        cursor.close();
+    }
+
+
     /*
-    * Save data
-    * */
+     * Save data
+     * */
     private void saveData() {
         if (checkValidation()) {
             SchoolData schoolData = new SchoolData();
             schoolData.setSchoolName(Common.getString(binding.editSchoolName.getText().toString().trim()));
-
-
         }
     }
+
     /*
-    * Check Validation
-    * */
+     * Check Validation
+     * */
     private boolean checkValidation() {
         boolean ret = true;
 

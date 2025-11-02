@@ -183,7 +183,7 @@ public class PreRegistration {
         commSend.setProcessedOn(Common.iso8601Format.format(new Date()));
         commSend.setprocessDetails("");
         commSend.setProcessCount(0);
-        commSend.setCommand(Command.ADD_VENUE);
+        commSend.setCommand(Command.ADD_TEACHER);
         commSend.setCommandDate(Common.iso8601Format.format(new Date()));
         commSend.setCommunicationGUID(this.CommunicationGUID);
         commSend.setCommunicationStatusID(1);

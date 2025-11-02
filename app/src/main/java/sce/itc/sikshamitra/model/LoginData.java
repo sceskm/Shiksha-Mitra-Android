@@ -14,6 +14,7 @@ public class LoginData {
     private List<Product> products;
     private List<ComboProduct> comboProducts;
     private List<State> states;
+    private List<MySchoolData> schoolData;
 
     public User getUser() {
         return user;
@@ -53,6 +54,14 @@ public class LoginData {
 
     public void setStates(List<State> states) {
         this.states = states;
+    }
+
+    public List<MySchoolData> getSchoolData() {
+        return schoolData;
+    }
+
+    public void setSchoolData(List<MySchoolData> schoolData) {
+        this.schoolData = schoolData;
     }
 
 
@@ -155,6 +164,35 @@ public class LoginData {
                     }
                 }
                 loginData.setStates(stateList);
+
+                // -------------------- SCHOOL DATA --------------------
+                List<MySchoolData> schoolList = new ArrayList<>();
+                if (dataObject.has("schoolData")) {
+                    JSONArray schoolArray = dataObject.getJSONArray("schoolData");
+                    for (int i = 0; i < schoolArray.length(); i++) {
+                        JSONObject schoolObj = schoolArray.getJSONObject(i);
+                        MySchoolData school = new MySchoolData();
+                        school.setSchoolId(Common.getInt(schoolObj.optString("schoolId")));
+                        school.setSchoolGuid(Common.getString(schoolObj.optString("schoolGuid")));
+                        school.setSchoolName(Common.getString(schoolObj.optString("schoolName")));
+                        school.setUdiseCode(Common.getString(schoolObj.optString("udiseCode")));
+                        school.setPhone(Common.getString(schoolObj.optString("phone")));
+                        school.setEmail(Common.getString(schoolObj.optString("email")));
+                        school.setDistrict(Common.getString(schoolObj.optString("district")));
+                        school.setDistrictCode(Common.getString(schoolObj.optString("districtCode")));
+                        school.setBlockCode(Common.getString(schoolObj.optString("blockCode")));
+                        school.setBlockName(Common.getString(schoolObj.optString("blockName")));
+                        school.setPinCode(Common.getString(schoolObj.optString("pinCode")));
+                        school.setStateId(Common.getInt(schoolObj.optString("stateId")));
+                        school.setAddress1(Common.getString(schoolObj.optString("address1")));
+                        school.setCity(Common.getString(schoolObj.optString("city")));
+                        school.setLatitude(schoolObj.optDouble("latitude", 0.0));
+                        school.setLongitude(schoolObj.optDouble("longitude", 0.0));
+
+                        schoolList.add(school);
+                    }
+                }
+                loginData.setSchoolData(schoolList);
             }
 
         } catch (Exception ex) {

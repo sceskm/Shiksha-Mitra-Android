@@ -28,7 +28,7 @@
             android:name=".activity.AgencyHome"
             android:exported="false" />
         <activity
-            android:name=".activity.SchoolDetailsEntry"
+            android:name=".activity.MySchoolEntry"
             android:exported="false" />
         <activity
             android:name=".activity.TrainingToSM"

@@ -6,6 +6,9 @@ public class Command {
     public static final String VERSION = "version";
     public static final String ADD_VENUE = "ADDVENUE";
     public static final String ADD_REGISTRATION = "REGISTRATION";
+    public static final String ADD_TEACHER = "ADDTEACHER";
+    public static final String UDISE_DETAILS = "UDISEDETAILS";
+
 
     public static final String COMMAND = "command";
     public static final String COMMAND_GUID = "CommandGUID";

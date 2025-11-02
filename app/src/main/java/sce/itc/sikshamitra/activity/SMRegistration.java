@@ -130,14 +130,15 @@ public class SMRegistration extends AppCompatActivity {
         String lastName = binding.editLastName.getText().toString().trim();
         String mobileNumber = binding.editMobileNumber.getText().toString().trim();
         String password = binding.editPassword.getText().toString().trim();
+        String venueGuid = "70020418-a9ab-11f0-9bbe-8cec4b04410f";
 
         PreRegistration preRegistration = new PreRegistration();
         preRegistration.setFirstName(firstName);
         preRegistration.setLastName(lastName);
         preRegistration.setMobile(mobileNumber);
         preRegistration.setPassword(password);
-        preRegistration.setVenueGUID("");
-        preRegistration.setUserGUID("");
+        preRegistration.setVenueGUID(venueGuid);
+        preRegistration.setUserGUID(PreferenceCommon.getInstance().getUserGUID());
         preRegistration.setSMGUID(Common.createGuid());
         preRegistration.setCreatedOn(Common.iso8601Format.format(new Date()));
         preRegistration.setLatitude(lastLatitude);

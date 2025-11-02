@@ -38,6 +38,7 @@ import sce.itc.sikshamitra.helper.NetworkUtils;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.ComboProduct;
 import sce.itc.sikshamitra.model.LoginData;
+import sce.itc.sikshamitra.model.MySchoolData;
 import sce.itc.sikshamitra.model.Product;
 import sce.itc.sikshamitra.model.Settings;
 import sce.itc.sikshamitra.model.State;
@@ -234,6 +235,9 @@ public class Login extends AppCompatActivity {
             for (State state : loginData.getStates()) {
                 dbHelper.saveState(state);
             }
+            for (MySchoolData school : loginData.getSchoolData()) {
+                dbHelper.saveSchool(school);
+            }
             savePreferences(loginData);
             navigateNextPage(loginData);
         } else {
@@ -251,6 +255,7 @@ public class Login extends AppCompatActivity {
             PreferenceCommon.getInstance().setUserRoleId(loginData.getUser().getRoleId());
             PreferenceCommon.getInstance().setUsername(loginData.getUser().getUserName());
             PreferenceCommon.getInstance().setPassword(binding.editPwd.getText().toString().trim());
+            PreferenceCommon.getInstance().setAccessToken(loginData.getUser().getAccessToken());
 
         } catch (Exception e) {
             Log.e(TAG, "savePreferences: ", e);

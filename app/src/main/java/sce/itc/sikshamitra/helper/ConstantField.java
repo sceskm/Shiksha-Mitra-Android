@@ -64,10 +64,10 @@ public class ConstantField {
     /*
     * User table data
     * */
-    public static final String USER_NAME = "arun";
+    public static final String USER_NAME = "9878642233";
     public static final String USER_NAME_SM = "shiksha.mitra";
     public static final String USER_NAME_AGENCY = "agency";
-    public static final String PASSWORD = "TLead!!100";
+    public static final String PASSWORD = "2233";
 
     public static final int ROLE_ID_FIELD_TEAM = 4; // for agency - field team
     public static final int ROLE_ID_SHIKSHA_MITRA = 5; //for shiksha mitra - teacher

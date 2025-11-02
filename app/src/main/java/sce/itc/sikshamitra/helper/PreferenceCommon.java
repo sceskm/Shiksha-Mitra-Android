@@ -7,9 +7,11 @@ import android.preference.PreferenceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import sce.itc.sikshamitra.AppController;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
+import sce.itc.sikshamitra.model.MySchoolData;
 
 
 public class PreferenceCommon {
@@ -290,5 +292,7 @@ public class PreferenceCommon {
     public void setPassword(String key) {
         prefs.edit().putString("password", key).apply();
     }
+
+
 
 }

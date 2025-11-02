@@ -93,7 +93,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checkPermission()) {
-                    Intent intent = new Intent(Home.this, SchoolDetailsEntry.class);
+                    Intent intent = new Intent(Home.this, MySchoolEntry.class);
                     startActivity(intent);
                 } else {
                     requestPermission();

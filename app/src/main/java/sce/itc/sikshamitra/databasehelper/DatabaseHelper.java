@@ -21,6 +21,7 @@ import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.ComboProduct;
 import sce.itc.sikshamitra.model.CommunicationSend;
+import sce.itc.sikshamitra.model.MySchoolData;
 import sce.itc.sikshamitra.model.PreRegistration;
 import sce.itc.sikshamitra.model.Product;
 import sce.itc.sikshamitra.model.SchoolData;
@@ -300,6 +301,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteDownloadedSchool() {
+        try {
+            // delete existing rows
+            myDataBase.execSQL("DELETE FROM sp_school");
+
+        } catch (SQLException ex) {
+
+            throw ex;
+        }
+    }
+
     /*
      * Save venue data
      * */
@@ -494,42 +506,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-     * School data entry
+     * Save downloaded school
      * */
-    public boolean saveSchool(SchoolData schoolDetails) {
+    public boolean saveSchool(MySchoolData schoolDetails) {
         boolean dataSaved = false;
+
         try {
+            deleteDownloadedSchool();
             ContentValues newEntry = new ContentValues();
 
-            newEntry.put("FirstName", schoolDetails.getFirstName());
-            newEntry.put("LastName", schoolDetails.getLastName());
-            newEntry.put("Mobile", schoolDetails.getMobile());
-            newEntry.put("Username", schoolDetails.getUsername());
-            newEntry.put("UserGUID", schoolDetails.getUserGUID());
-            newEntry.put("VenueGUID", schoolDetails.getVenueGUID());
-            newEntry.put("AssosiateSchoolName", schoolDetails.getSchoolName());
-            newEntry.put("SchoolGUID", schoolDetails.getSchoolGUID());
-            newEntry.put("SchoolAddress1", schoolDetails.getSchoolAddress1());
-            newEntry.put("SchoolAddress2", schoolDetails.getSchoolAddress2());
+            newEntry.put("SchoolId", schoolDetails.getSchoolId());
+            newEntry.put("AssociateSchool", schoolDetails.getSchoolName());
+            newEntry.put("SchoolGUID", schoolDetails.getSchoolGuid());
+            newEntry.put("SchoolAddress1", schoolDetails.getAddress1());
+            newEntry.put("SchoolAddress2", schoolDetails.getAddress2()); // Not provided in JSON
             newEntry.put("City", schoolDetails.getCity());
-            newEntry.put("Locality", schoolDetails.getLocality());
+            newEntry.put("Locality", ""); // using block name as locality
             newEntry.put("District", schoolDetails.getDistrict());
+            newEntry.put("DistrictCode", schoolDetails.getDistrictCode());
+            newEntry.put("Block", schoolDetails.getBlockName());
+            newEntry.put("BlockCode", schoolDetails.getBlockCode());
             newEntry.put("State", schoolDetails.getState());
-            newEntry.put("Pin", schoolDetails.getPin());
+            newEntry.put("StateId", schoolDetails.getStateId());
+            newEntry.put("PinCode", schoolDetails.getPinCode());
             newEntry.put("Email", schoolDetails.getEmail());
-            newEntry.put("ContactName", schoolDetails.getContactName());
-            newEntry.put("ContactNumber", schoolDetails.getContactNumber());
-            newEntry.put("CreatedOn", schoolDetails.getCreatedOn());
+            newEntry.put("ContactName", ""); // not in JSON
+            newEntry.put("ContactNumber", schoolDetails.getPhone());
+            newEntry.put("Mobile", schoolDetails.getPhone());
+            newEntry.put("Username", ""); // optional if user not mapped
+            newEntry.put("UserGUID", ""); // optional if not available
+            newEntry.put("VenueGUID", ""); // optional
+            newEntry.put("FirstName", ""); // optional
+            newEntry.put("LastName", "");  // optional
+            newEntry.put("UDISECode", schoolDetails.getUdiseCode());  // optional
+
 
             long retVal = myDataBase.insertOrThrow("sp_school", null, newEntry);
 
-            if (retVal > 0)
-                dataSaved = true;
-
-            if (dataSaved) {
-                // Optional post-insert action
-                dataSaved = false;
-            }
+            dataSaved = retVal > 0;
 
         } catch (SQLException ex) {
             Log.e(TAG, "saveSchool: EXCEPTION", ex);
@@ -709,6 +723,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("ComboProductId", product.getProductId());
             newEntry.put("ComboProduct", product.getProduct());
             newEntry.put("ComboProductTypeId", product.getProductTypeId());
+            newEntry.put("ComboId", product.getComboId());
+            newEntry.put("ComboName", product.getComboName());
 
             long retVal = myDataBase.insertOrThrow("sp_comboproduct", null, newEntry);
 
@@ -845,6 +861,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e("TAG", "Delete: " + ex);
         }
         return true;
+    }
+
+    /*
+     * Fetch downloaded school data
+     * */
+    public Cursor getMySchoolData() {
+        String sql = "SELECT * FROM sp_school";
+        return QueryDatabase(sql);
     }
 
 

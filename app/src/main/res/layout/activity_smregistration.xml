@@ -62,7 +62,7 @@
                 <EditText
                     android:id="@+id/edit_mobile_number"
                     style="@style/AppEditTextStyle"
-                    android:inputType="numberSigned"
+                    android:inputType="phone"
                     android:maxLength="10"
                     android:maxLines="1" />
 
@@ -76,8 +76,8 @@
                 <EditText
                     android:id="@+id/edit_password"
                     style="@style/AppEditTextStyle"
-                    android:inputType="text"
-                    android:maxLength="15" />
+                    android:inputType="numberSigned"
+                    android:maxLength="4" />
                 <!-- Confirm Password-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
@@ -88,8 +88,8 @@
                 <EditText
                     android:id="@+id/edit_confirm_password"
                     style="@style/AppEditTextStyle"
-                    android:inputType="text"
-                    android:maxLength="15" />
+                    android:inputType="numberSigned"
+                    android:maxLength="4" />
                 <!--
                 Handed over training kit to SM
                 -->
