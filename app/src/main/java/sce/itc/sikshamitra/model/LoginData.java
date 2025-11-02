@@ -199,6 +199,7 @@ public class LoginData {
 
                         schoolList.add(school);
                     }
+                    loginData.setSchoolData(schoolList);
                 }
                 // -------------------- Last Session --------------------
                 if (dataObject.has("lastSession") && !dataObject.isNull("lastSession")) {

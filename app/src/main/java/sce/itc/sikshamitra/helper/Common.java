@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -34,7 +36,7 @@ import sce.itc.sikshamitra.AlertCallBack;
 import sce.itc.sikshamitra.R;
 
 public class Common {
-    public static final boolean DEBUGGING = true;
+    public static final boolean DEBUGGING = false;
 
     public static final String[] PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -177,21 +179,22 @@ public class Common {
         return false;
     }
 
-    //check internet connection for network call
     public static boolean checkInternetConnectivity(Context context) {
-
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo netInfo_mobile = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if ((netInfo != null && netInfo.isConnectedOrConnecting()) || (netInfo_mobile != null && netInfo_mobile.isConnectedOrConnecting())) {
-            // try to specifically access syscon - commented out we can use
-            // later if required
-            // cm.requestRouteToHost(ConnectivityManager.TYPE_MOBILE, int
-            // hostAddress)
-            return true;
-        }
-        return false;
+
+        if (cm == null) return false;
+
+        Network network = cm.getActiveNetwork();
+        if (network == null) return false;
+
+        NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+        if (capabilities == null) return false;
+
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
     }
+
 
     public static JSONObject getJsonObject(String response) {
         JSONObject jsonObject = null;
@@ -324,6 +327,43 @@ public class Common {
 
         }
         return result;
+    }
+    //compare datetime
+    public static long compareDates(String date1, String date2) {
+        long differenceDates = 0;
+
+        Date d1 = new Date();
+        Date d2 = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            d1 = sdf.parse(datePart(date1));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            d2 = sdf.parse(datePart(date2));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long difference = d2.getTime() - d1.getTime();
+        differenceDates = difference / (24 * 60 * 60 * 1000);
+
+        return differenceDates;
+    }
+    //split date-time  & get only date part like yyyy-MM-dd
+    public static String datePart(String fullString) {
+        String firstPart = "";
+        String[] separated = fullString.split(" ");
+        firstPart = separated[0];
+        return firstPart;
+    }
+
+    //split time part
+    public static String timePart(String fullString) {
+        String endPart = "";
+        String[] separated = fullString.split(" ");
+        endPart = separated[1];
+        return endPart;
     }
 
 

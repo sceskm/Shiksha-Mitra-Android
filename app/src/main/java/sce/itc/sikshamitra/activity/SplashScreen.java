@@ -10,7 +10,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Date;
+
 import sce.itc.sikshamitra.R;
+import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
 
@@ -41,10 +44,17 @@ public class SplashScreen extends AppCompatActivity {
 
     private boolean isLoggedIn() {
         // Implement your logic to check if the user is logged in
+        boolean isValid = false;
         if (PreferenceCommon.getInstance().getUserId() > 0) {
-            return true;
+            if (Common.compareDates(PreferenceCommon.getInstance().getLastLoggedInDateTime(),
+                    Common.iso8601Format.format(new Date())) > 0) {
+                isValid = false;
+            } else {
+                isValid = true;
+            }
+
         }
-        return false; // Placeholder return value
+        return isValid; // Placeholder return value
     }
 
     private void navigateToHome() {

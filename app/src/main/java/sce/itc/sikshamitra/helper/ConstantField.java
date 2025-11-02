@@ -2,6 +2,7 @@ package sce.itc.sikshamitra.helper;
 
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
+    public static final String APP_VERSION = "1.0";
 
     public static final String IMAGE_FORMAT = "jpg";
     public static final String ORIGINAL_IMAGE_NAME = "siksha_";
@@ -38,6 +39,10 @@ public class ConstantField {
     public static final int SUCCESS = 1;
     public static final int FAILURE = 2;
 
+    public static final int COMM_STATUS_NOT_PROCESSED = 1;
+    public static final int COMM_STATUS_PROCESSED = 2;
+    public static final int COMM_STATUS_ERROR = 3;
+
 
     /*
     * Url details
@@ -54,14 +59,6 @@ public class ConstantField {
     public static final String ACTION_URL = "/mobile/v1/AppAuth/action";
 
     /*
-    * Communication status
-    * */
-    //Communication Statuses
-    public static final int COMM_STATUS_NOT_PROCESSED = 1;
-    public static final int COMM_STATUS_PROCESSED = 2;
-    public static final int COMM_STATUS_ERROR = 3;
-
-    /*
     * User table data
     * */
     public static final String USER_NAME = "9878642233";
@@ -71,7 +68,7 @@ public class ConstantField {
 
     public static final int ROLE_ID_FIELD_TEAM = 4; // for agency - field team
     public static final int ROLE_ID_SHIKSHA_MITRA = 5; //for shiksha mitra - teacher
-    public static final String APP_VERSION = "1.0";
+
 
     public static final int VENUE_CAMERA_REQUEST = 101;
 

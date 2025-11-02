@@ -20,6 +20,7 @@ import androidx.databinding.DataBindingUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -176,10 +177,10 @@ public class Login extends AppCompatActivity {
         try {
             handler = new Handler(Looper.getMainLooper());
 
-            //jsonObject.put(Command.USER_NAME, binding.editUsername.getText().toString().trim());
-            jsonObject.put(Command.USER_NAME, ConstantField.USER_NAME);
-            //jsonObject.put(Command.PASSWORD, binding.editPwd.getText().toString().trim());
-            jsonObject.put(Command.PASSWORD, ConstantField.PASSWORD);
+            jsonObject.put(Command.USER_NAME, binding.editUsername.getText().toString().trim());
+            //jsonObject.put(Command.USER_NAME, ConstantField.USER_NAME);
+            jsonObject.put(Command.PASSWORD, binding.editPwd.getText().toString().trim());
+            //jsonObject.put(Command.PASSWORD, ConstantField.PASSWORD);
             jsonObject.put(Command.VERSION, ConstantField.APP_VERSION); //newly added to restrict others version
 
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -259,6 +260,7 @@ public class Login extends AppCompatActivity {
             PreferenceCommon.getInstance().setAccessToken(loginData.getUser().getAccessToken());
             if (loginData.getLastSession().getSessionNo() > 0)
                 PreferenceCommon.getInstance().setLastSessionCount(loginData.getLastSession().getSessionNo());
+            PreferenceCommon.getInstance().setLastLoggedInDateTime(Common.iso8601Format.format(new Date()));
 
         } catch (Exception e) {
             Log.e(TAG, "savePreferences: ", e);

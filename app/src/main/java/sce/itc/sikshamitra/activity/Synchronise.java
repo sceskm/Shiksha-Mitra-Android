@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -61,6 +62,7 @@ public class Synchronise extends AppCompatActivity {
     private ProgressBar progressbar;
     boolean dbExportSuccess = false;
     private String pendingMessage = "";
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,86 +99,93 @@ public class Synchronise extends AppCompatActivity {
         btnDownload.setVisibility(View.VISIBLE);
         btnBack.setVisibility(View.VISIBLE);
         txtMessage.setText(R.string.datadownload_mesage);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Synchronise");
+        }
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+
+        String version = "Version  " + ConstantField.APP_VERSION;
+        txtVersion.setText(version);
+
     }
 
     private void clickEvent() {
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                errorCount = 0;
-                progressDialog.show();
+                if (Common.checkInternetConnectivity(Synchronise.this)) {
+                    errorCount = 0;
+                    progressDialog.show();
 
-                Common.enableButton(btnDownload, false);
+                    Common.enableButton(btnDownload, false);
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            //lastCommDate = Common.stringToDate(Common.getCurrentDateTime());
-                            //set the synchronisation with current date time
-                            //PreferenceCommon.getInstance().setSyncTime(Common.getCurrentDateTime());
-                            //set manual download 2
-                            //PreferenceCommon.getInstance().setAutoSyncing(Common.MANUAL_DOWNLOAD);
-                            if (errorCount < maxErrorsAllowed) {
-                                uploadSessionData();
-                                Log.d(TAG, "uploadAttendanceData() data upload completed");
-                            }
-
-
-                            Synchronise.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressDialog.dismiss();
-                                    fetchMessages();
-                                    btnBack.setVisibility(View.VISIBLE);
-                                    Common.enableButton(btnBack, true);
-                                    if (errorCount == 0) {
-                                        //progressDialog.dismiss();
-                                        pendingMessage += "\n\nGreat!\nAll data downloaded successfully.";
-                                        txtPendingMessage.setText(pendingMessage);
-                                        txtPendingMessage.setTextColor(getColor(R.color.Green));
-                                    } else {
-                                        //progressDialog.dismiss();
-                                        if (loginMode) {
-                                            pendingMessage = "";
-                                            pendingMessage = "\n\nError occurred!\nPlease try again. Ensure that you have an internet connection.";
-                                            txtPendingMessage.setVisibility(View.VISIBLE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (errorCount < maxErrorsAllowed) {
+                                    uploadSessionData();
+                                    Log.d(TAG, "uploadAttendanceData() data upload completed");
+                                }
+                                Synchronise.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        fetchMessages();
+                                        btnBack.setVisibility(View.VISIBLE);
+                                        Common.enableButton(btnBack, true);
+                                        if (errorCount == 0) {
+                                            pendingMessage += "\n\nGreat!\nAll data downloaded successfully.";
                                             txtPendingMessage.setText(pendingMessage);
-                                            txtPendingMessage.setTextColor(getColor(R.color.Red));
-                                            //showErrorAlert(alertMsg);
+                                            txtPendingMessage.setTextColor(getColor(R.color.Green));
                                         } else {
-                                            //alertMsg = "Error downloading data! Please try again.";
-                                            pendingMessage += "\n\nOpps!\nError occurred.Please try again later.";
-                                            txtPendingMessage.setVisibility(View.VISIBLE);
-                                            txtPendingMessage.setText(pendingMessage);
-                                            txtPendingMessage.setTextColor(getColor(R.color.Red));
-                                            //showErrorAlert(alertMsg);
+                                            if (loginMode) {
+                                                pendingMessage = "";
+                                                pendingMessage = "\n\nError occurred!\nPlease try again. Ensure that you have an internet connection.";
+                                                txtPendingMessage.setVisibility(View.VISIBLE);
+                                                txtPendingMessage.setText(pendingMessage);
+                                                txtPendingMessage.setTextColor(getColor(R.color.Red));
+                                                //showErrorAlert(alertMsg);
+                                            } else {
+                                                //alertMsg = "Error downloading data! Please try again.";
+                                                pendingMessage += "\n\nOpps!\nError occurred.Please try again later.";
+                                                txtPendingMessage.setVisibility(View.VISIBLE);
+                                                txtPendingMessage.setText(pendingMessage);
+                                                txtPendingMessage.setTextColor(getColor(R.color.Red));
+                                                //showErrorAlert(alertMsg);
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Synchronise.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressDialog.dismiss();
-                                    pendingMessage += "\n\nSomething went wrong.Try again later.";
-                                    txtPendingMessage.setVisibility(View.VISIBLE);
-                                    txtPendingMessage.setText(pendingMessage);
-                                    btnBack.setVisibility(View.VISIBLE);
-                                    Common.enableButton(btnBack, true);
-                                    txtPendingMessage.setTextColor(getColor(R.color.Red));
-                                }
-                            });
-                        } finally {
-                            //dbHelper.flashDataBase();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Synchronise.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog.dismiss();
+                                        pendingMessage += "\n\nSomething went wrong.Try again later.";
+                                        txtPendingMessage.setVisibility(View.VISIBLE);
+                                        txtPendingMessage.setText(pendingMessage);
+                                        btnBack.setVisibility(View.VISIBLE);
+                                        Common.enableButton(btnBack, true);
+                                        txtPendingMessage.setTextColor(getColor(R.color.Red));
+                                    }
+                                });
+                            } finally {
+                                //dbHelper.flashDataBase();
+                            }
                         }
-                    }
-                }).start();
+                    }).start();
+
+                }
 
             }
+
         });
 
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -207,10 +216,10 @@ public class Synchronise extends AppCompatActivity {
                     Session sessionData = Session.fromJson(communicationSend.getCommandDetails());
 
                     //Extra code
-                    String image1 ="";
-                    String image2 ="";
-                    String image3 ="";
-                    String image4 ="";
+                    String image1 = "";
+                    String image2 = "";
+                    String image3 = "";
+                    String image4 = "";
                     String sGuid = sessionData.getSessionGuid();
                     Cursor cursor1 = dbHelper.getSessionDetails(sGuid);
                     cursor1.moveToFirst();
@@ -280,11 +289,11 @@ public class Synchronise extends AppCompatActivity {
                         if (isSuccess) {
                             // update the message as processed
                             dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
-                                    1, "success", false);
+                                    ConstantField.COMM_STATUS_PROCESSED, "success", false);
                         } else {
                             // mark the message as failed
                             dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
-                                    3, "error", true);
+                                    ConstantField.COMM_STATUS_ERROR, "error", true);
                         }
                     }
                 }

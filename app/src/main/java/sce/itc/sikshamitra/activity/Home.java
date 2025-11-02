@@ -36,11 +36,6 @@ public class Home extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private ActivityHomeBinding binding;
     private Toolbar toolbar;
-
-//    private boolean cameraPermissionGranted = false;
-//    private boolean locationPermissionGranted = false;
-//    private boolean storageWritePermissionGranted = false;
-
     private static final int LOCATION_CAMERA_PERMISSION_CODE = 300;
     private DatabaseHelper dbHelper;
 
@@ -94,7 +89,7 @@ public class Home extends AppCompatActivity {
                 binding.txtUserName.setText(fullName);
 
                 if (user.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA)
-                    binding.txtRoleName.setText("Teacher");
+                    binding.txtRoleName.setText(" Shiksha Mitra (Teacher) ");
             }
         } catch (Exception ex) {
             Log.e(TAG, "populateHome: ", ex);

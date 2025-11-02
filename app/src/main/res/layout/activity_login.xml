@@ -86,8 +86,8 @@
                         android:id="@+id/edit_pwd"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:maxLength="20" />
+                        android:inputType="numberSigned"
+                        android:maxLength="4" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton

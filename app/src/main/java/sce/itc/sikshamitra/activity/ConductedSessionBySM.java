@@ -399,15 +399,15 @@ public class ConductedSessionBySM extends AppCompatActivity {
         //Communication
         session.setCommunicationAttempt(0);
         session.setCommunicationGuid(Common.createGuid());
-        session.setCommunicationStatus(1);
+        session.setCommunicationStatus(ConstantField.COMM_STATUS_NOT_PROCESSED);
 
-        if (dbHelper.saveSession(session)){
-            PreferenceCommon.getInstance().setLastSessionCount(sessionNo + 1);
+        if (dbHelper.saveSession(session)) {
+            PreferenceCommon.getInstance().setLastSessionCount(sessionNo);
             showSuccessAlert("Data saved successfully. Please upload the data from the 'Synchronise' page.");
-            Toast.makeText(this,"Data saved successfully.",Toast.LENGTH_SHORT).show();
-        }else {
+            Toast.makeText(this, "Data saved successfully.", Toast.LENGTH_SHORT).show();
+        } else {
             showSuccessAlert("Something went wrong.");
-            Toast.makeText(this,"Something went wrong.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Something went wrong.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -429,6 +429,33 @@ public class ConductedSessionBySM extends AppCompatActivity {
     }
 
     private boolean checkValidation() {
+        if (binding.editStdCount.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Please enter student count", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!binding.editStdCount.getText().toString().trim().isEmpty()) {
+            int count = Common.getInt(Common.getString(binding.editStdCount.getText().toString().trim()));
+            if (count == 0) {
+                Toast.makeText(this, "Please enter correct number", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+        if (uriCompressedImage1.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 1", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage2.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 2", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage3.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 3", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage4.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 4", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         //TODO need to implement
         return true;
     }
