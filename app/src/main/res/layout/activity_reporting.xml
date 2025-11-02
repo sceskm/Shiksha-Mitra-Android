@@ -42,8 +42,10 @@
                 <EditText
                     android:id="@+id/edit_session_count"
                     style="@style/AppEditTextStyle"
-                    android:maxLength="2"
-                    android:inputType="numberSigned"/>
+                    android:inputType="none"
+                    android:focusableInTouchMode="false"
+                    android:enabled="false"
+                    />
 
                 <!-- Student Count -->
                 <TextView
@@ -257,7 +259,7 @@
                     android:maxLines="2"/>
 
                 <Button
-                    android:id="@+id/btn_register"
+                    android:id="@+id/btn_save"
                     style="@style/AppButtonStyle2"
                     android:layout_gravity="center"
                     android:layout_margin="16dp"

@@ -293,6 +293,14 @@ public class PreferenceCommon {
         prefs.edit().putString("password", key).apply();
     }
 
+    public int getSessionCount() {
+        return prefs.getInt("session_count", 0);
+    }
+
+    public void setSessionCount(int key) {
+        prefs.edit().putInt("session_count", key).apply();
+    }
+
 
 
 }

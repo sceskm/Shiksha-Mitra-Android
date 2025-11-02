@@ -86,6 +86,17 @@ public class Home extends AppCompatActivity {
 
             }
         });
+        binding.btnSyncData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkPermission()) {
+                    Intent intent = new Intent(Home.this, Synchronise.class);
+                    startActivity(intent);
+                } else {
+                    requestPermission();
+                }
+            }
+        });
         /*
         * School data entry
         * */

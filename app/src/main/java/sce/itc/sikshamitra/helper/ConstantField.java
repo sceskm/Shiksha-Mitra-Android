@@ -2,8 +2,8 @@ package sce.itc.sikshamitra.helper;
 
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
-    public static final int REQUEST_IMAGE_1 = 110;
-    public static final String IMAGE_FORMAT = ".jpg";
+
+    public static final String IMAGE_FORMAT = "jpg";
     public static final String ORIGINAL_IMAGE_NAME = "siksha_";
     public static final String COMPRESS_IMAGE_DIRECTORY = "Compressed";
     public static final String COMPRESS_PHOTO_URI = "content://sce.itc.sikshamitra.fileprovider/my_images/Compressed/";
@@ -51,7 +51,7 @@ public class ConstantField {
     public static final String NETWORK_URL = "https://sm2025api.dhanushteam.com";
     public static final String DEFAULT_DATE = "2010-01-01 00:00:00";
     public static final String REFRESH_TOKEN_CREATED = "refreshtokencreated";
-    public static final String ACTION_URL = "/mobile/v1/appcommand/action";
+    public static final String ACTION_URL = "/mobile/v1/AppAuth/action";
 
     /*
     * Communication status
@@ -76,6 +76,18 @@ public class ConstantField {
     public static final int VENUE_CAMERA_REQUEST = 101;
 
     public static final int VENUE_IMAGE_DEFINITION_ID = 10001;
+
+    public static final int SM_SESSION_IMAGE_DEFINITION_ID_1 = 20001;
+    public static final int SM_SESSION_IMAGE_DEFINITION_ID_2 = 20002;
+    public static final int SM_SESSION_IMAGE_DEFINITION_ID_3 = 20003;
+    public static final int SM_SESSION_IMAGE_DEFINITION_ID_4 = 20004;
+
+    //Teacher - Session Images
+    public static final int REQUEST_IMAGE_1 = 110;
+    public static final int REQUEST_IMAGE_2 = 111;
+    public static final int REQUEST_IMAGE_3 = 112;
+    public static final int REQUEST_IMAGE_4 = 113;
+
 
 
 }

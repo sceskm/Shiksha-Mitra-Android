@@ -12,6 +12,7 @@ import java.util.List;
 
 import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
 
 public class Venue {
     @Expose
@@ -246,27 +247,6 @@ public class Venue {
     public int getImageDefinitionId() {
         return imageDefinitionId;
     }
-
-    public void setImageDefinitionId(int imageDefinitionId) {
-        this.imageDefinitionId = imageDefinitionId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
-
     public CommunicationSend createCommSend() {
         CommunicationSend commSend = new CommunicationSend();
         commSend.setProcessedOn(Common.iso8601Format.format(new Date()));
@@ -276,7 +256,7 @@ public class Venue {
         commSend.setCommandDate(Common.iso8601Format.format(new Date()));
         commSend.setCommunicationGUID(this.communicationGuid);
         commSend.setCommunicationStatusID(1);
-        commSend.setCreatedByID(4);
+        commSend.setCreatedByID(PreferenceCommon.getInstance().getUserId());
 
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
@@ -311,4 +291,25 @@ public class Venue {
 
         return venueJson;
     }
+    public void setImageDefinitionId(int imageDefinitionId) {
+        this.imageDefinitionId = imageDefinitionId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
+
+
 }

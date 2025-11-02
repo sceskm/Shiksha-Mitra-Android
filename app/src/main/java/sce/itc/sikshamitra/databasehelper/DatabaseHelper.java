@@ -463,38 +463,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             ContentValues newEntry = new ContentValues();
 
-            newEntry.put("SessionGUID", sessionDetails.getSessionGUID());
+            newEntry.put("SessionGUID", sessionDetails.getSessionGuid());
+            newEntry.put("UserGUID", sessionDetails.getUserGuid());
             newEntry.put("SessionNo", sessionDetails.getSessionNo());
+            newEntry.put("SchoolGUID", sessionDetails.getSchoolGuid());
+            newEntry.put("NoOfStudents", sessionDetails.getNoOfStudent());
             newEntry.put("Img1", sessionDetails.getImg1());
             newEntry.put("Img2", sessionDetails.getImg2());
             newEntry.put("Img3", sessionDetails.getImg3());
             newEntry.put("Img4", sessionDetails.getImg4());
-            newEntry.put("Img5", sessionDetails.getImg5());
-            newEntry.put("Img6", sessionDetails.getImg6());
-            newEntry.put("Img7", sessionDetails.getImg7());
-            newEntry.put("Img8", sessionDetails.getImg8());
-            newEntry.put("Img9", sessionDetails.getImg9());
-            newEntry.put("Img10", sessionDetails.getImg10());
-            newEntry.put("Img11", sessionDetails.getImg11());
-            newEntry.put("Img12", sessionDetails.getImg12());
-            newEntry.put("SessionStartedOn", sessionDetails.getSessionStartedOn());
-            newEntry.put("SessionEndedOn", sessionDetails.getSessionEndedOn());
+            newEntry.put("SessionStartedOn", sessionDetails.getSessionStart());
+            newEntry.put("SessionEndedOn", sessionDetails.getSessionEnd());
+            newEntry.put("Remarks", sessionDetails.getRemarks());
+            newEntry.put("SessionStatus", sessionDetails.getSessionStatus());
             newEntry.put("CommunicationStatus", sessionDetails.getCommunicationStatus());
             newEntry.put("CommunicationAttempt", sessionDetails.getCommunicationAttempt());
-            newEntry.put("SessionStatus", sessionDetails.getSessionStatus());
-            newEntry.put("SchoolGUID", sessionDetails.getSchoolGUID());
-            newEntry.put("CommunicationGUID", sessionDetails.getCommunicationGUID());
+            newEntry.put("CommunicationGUID", sessionDetails.getCommunicationGuid());
             newEntry.put("Latitude", sessionDetails.getLatitude());
             newEntry.put("Longitude", sessionDetails.getLongitude());
-            newEntry.put("CameraIssue", sessionDetails.getCameraIssue());
-            newEntry.put("VenueGUID", sessionDetails.getVenueGUID());
-            newEntry.put("UserGUID", sessionDetails.getUserGUID());
-            newEntry.put("ShikshaMitraGUID", sessionDetails.getShikshaMitraGUID());
+            newEntry.put("ImgDefinitionId1", sessionDetails.getImgDefinitionId1());
+            newEntry.put("ImgDefinitionId2", sessionDetails.getImgDefinitionId2());
+            newEntry.put("ImgDefinitionId3", sessionDetails.getImgDefinitionId3());
+            newEntry.put("ImgDefinitionId4", sessionDetails.getImgDefinitionId4());
+            newEntry.put("ImgExt1", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt2", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt3", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt4", ConstantField.IMAGE_FORMAT);
 
             long retVal = myDataBase.insertOrThrow("sp_session", null, newEntry);
 
             if (retVal > 0)
                 dataSaved = true;
+
+            if (dataSaved) {
+                // create and save a communication message
+                dataSaved = false;
+
+                CommunicationSend commSend = sessionDetails.createCommSend();
+
+                if (saveCommunicationSend(commSend) > 0)
+                    dataSaved = true;
+            }
 
 
         } catch (SQLException ex) {
@@ -504,6 +513,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return dataSaved;
     }
+
 
     /*
      * Save downloaded school
@@ -783,7 +793,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SimpleDateFormat dateformatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        String sql = "UPDATE isp_communicationsend ";
+        String sql = "UPDATE sp_communicationsend ";
         sql += "SET ProcessedOn = '" + dateformatYYYYMMDD.format(dateNow) + "', ";
         sql += "CommunicationStatusID = " + Integer.toString(status) + ", ";
         sql += "ProcessDetails = '" + details.replace("'", "''") + "', ";
@@ -799,9 +809,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getUnprocessedCommSendMessageCount() {
-        String sql = "SELECT COUNT(*) AS UnSent FROM isp_communicationsend "
+        String sql = "SELECT COUNT(*) AS UnSent FROM sp_communicationsend "
                 + "WHERE  (CommunicationStatusID = 1 OR (CommunicationStatusID = 3 AND ProcessCount <= 50)) "
                 + "AND InActive = 0";
+
+        return QueryDatabase(sql);
+    }
+
+    //get all communicationSend rows for not uploaded messages
+    public Cursor unProcessedCommSendMessage(String command, String userGUID) {
+
+        String sql = "SELECT * FROM sp_communicationsend " + "WHERE  Command = '" + command
+                + "' AND  UserGUID = '" + userGUID + "' AND (CommunicationStatusID = 1 OR (CommunicationStatusID = 3 AND ProcessCount <= 75)) AND InActive = 0 ";
 
         return QueryDatabase(sql);
     }
@@ -868,6 +887,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * */
     public Cursor getMySchoolData() {
         String sql = "SELECT * FROM sp_school";
+        return QueryDatabase(sql);
+    }
+
+    public Cursor getSessionDetails(String sessionGuid) {
+        String sql = "SELECT * FROM sp_session WHERE SessionGUID = '" + sessionGuid + "'";
         return QueryDatabase(sql);
     }
 

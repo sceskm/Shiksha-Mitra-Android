@@ -1,355 +1,354 @@
 package sce.itc.sikshamitra.model;
 
-import android.database.Cursor;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+
+import java.util.Date;
+import java.util.List;
+
+import sce.itc.sikshamitra.helper.Command;
+import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
 
 public class Session {
-    private int _id;
+    @Expose(serialize = false)
+    private int sessionId;
+    @Expose
+    private String sessionGuid;
+    @Expose
+    private String userGuid;
+    @Expose
+    private int sessionNo;
+    @Expose
+    private String schoolGuid;
+    @Expose
+    private int noOfStudent;
 
-    private String SessionGUID;
-    private int SessionNo;
-    private String Img1;
-    private String Img2;
-    private String Img3;
-    private String Img4;
-    private String Img5;
-    private String Img6;
-    private String Img7;
-    private String Img8;
-    private String Img9;
-    private String Img10;
-    private String Img11;
-    private String Img12;
-    private String SessionStartedOn;
-    private String SessionEndedOn;
-    private int CommunicationStatus;
-    private int CommunicationAttempt;
-    private int SessionStatus;
-    private String SchoolGUID;
-    private String CommunicationGUID;
-    private String Latitude;
-    private String Longitude;
-    private String CameraIssue;
-    private String VenueGUID;
-    private String UserGUID;
-    private String ShikshaMitraGUID;
+    @Expose(serialize = false)
+    private String img1;
+    @Expose(serialize = false)
+    private String img2;
+    @Expose(serialize = false)
+    private String img3;
+    @Expose(serialize = false)
+    private String img4;
+
+    @Expose
+    private String sessionStart;
+    @Expose
+    private String sessionEnd;
+    @Expose
+    private String remarks;
+
+    @Expose(serialize = false)
+    private int sessionStatus;
+    @Expose(serialize = false)
+    private int communicationStatus;
+    @Expose(serialize = false)
+    private int communicationAttempt;
+
+    @Expose(serialize = false)
+    private String communicationGuid;
+    @Expose
+    private Double latitude;
+    @Expose
+    private Double longitude;
+    @Expose(serialize = false)
+    private int imgDefinitionId1;
+    @Expose(serialize = false)
+    private int imgDefinitionId2;
+    @Expose(serialize = false)
+    private int imgDefinitionId3;
+    @Expose(serialize = false)
+    private int imgDefinitionId4;
+
+    @Expose(serialize = false)
+    private String imgExt1;
+    @Expose(serialize = false)
+    private String imgExt2;
+    @Expose(serialize = false)
+    private String imgExt3;
+    @Expose(serialize = false)
+    private String imgExt4;
+
+    @Expose
+    private List<Image> images;
 
     public Session() {
     }
 
-    public Session(int _id, String sessionGUID, int sessionNo, String img1, String img2, String img3, String img4, String img5, String img6, String img7, String img8, String img9, String img10, String img11, String img12, String sessionStartedOn, String sessionEndedOn, int communicationStatus, int communicationAttempt, int sessionStatus, String schoolGUID, String communicationGUID, String latitude, String longitude, String cameraIssue, String venueGUID, String userGUID, String shikshaMitraGUID) {
-        this._id = _id;
-        SessionGUID = sessionGUID;
-        SessionNo = sessionNo;
-        Img1 = img1;
-        Img2 = img2;
-        Img3 = img3;
-        Img4 = img4;
-        Img5 = img5;
-        Img6 = img6;
-        Img7 = img7;
-        Img8 = img8;
-        Img9 = img9;
-        Img10 = img10;
-        Img11 = img11;
-        Img12 = img12;
-        SessionStartedOn = sessionStartedOn;
-        SessionEndedOn = sessionEndedOn;
-        CommunicationStatus = communicationStatus;
-        CommunicationAttempt = communicationAttempt;
-        SessionStatus = sessionStatus;
-        SchoolGUID = schoolGUID;
-        CommunicationGUID = communicationGUID;
-        Latitude = latitude;
-        Longitude = longitude;
-        CameraIssue = cameraIssue;
-        VenueGUID = venueGUID;
-        UserGUID = userGUID;
-        ShikshaMitraGUID = shikshaMitraGUID;
+    public CommunicationSend createCommSend() {
+        CommunicationSend commSend = new CommunicationSend();
+        commSend.setProcessedOn(Common.iso8601Format.format(new Date()));
+        commSend.setprocessDetails("");
+        commSend.setProcessCount(0);
+        commSend.setCommand(Command.TEACHER_SESSION);
+        commSend.setCommandDate(Common.iso8601Format.format(new Date()));
+        commSend.setCommunicationGUID(this.communicationGuid);
+        commSend.setCommunicationStatusID(1);
+        commSend.setCreatedByID(PreferenceCommon.getInstance().getUserId());
+
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .setPrettyPrinting()
+                .create();
+
+        //Convert models to json object
+        String attendanceJson = gson.toJson(this);
+
+        commSend.setCommandDetails(attendanceJson);
+        return commSend;
     }
 
+    //create attendance from json
+    public static Session fromJson(String json) {
+
+        Gson gson = new Gson();
+        Session attendance = gson.fromJson(json, Session.class);
+
+        return attendance;
+    }
+
+    public String getJson() {
+
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .setPrettyPrinting()
+                .create();
+
+        //Convert models to json object
+        String venueJson = gson.toJson(this);
+
+        return venueJson;
+    }
+
+    /*
+    * Setter Getter
+    * */
+
     public int getSessionId() {
-        return _id;
+        return sessionId;
     }
 
     public void setSessionId(int sessionId) {
-        _id = sessionId;
+        this.sessionId = sessionId;
     }
 
-    public String getSessionGUID() {
-        return SessionGUID;
+    public String getSessionGuid() {
+        return sessionGuid;
     }
 
-    public void setSessionGUID(String sessionGUID) {
-        SessionGUID = sessionGUID;
+    public void setSessionGuid(String sessionGuid) {
+        this.sessionGuid = sessionGuid;
+    }
+
+    public String getUserGuid() {
+        return userGuid;
+    }
+
+    public void setUserGuid(String userGuid) {
+        this.userGuid = userGuid;
     }
 
     public int getSessionNo() {
-        return SessionNo;
+        return sessionNo;
     }
 
     public void setSessionNo(int sessionNo) {
-        SessionNo = sessionNo;
+        this.sessionNo = sessionNo;
+    }
+
+    public String getSchoolGuid() {
+        return schoolGuid;
+    }
+
+    public void setSchoolGuid(String schoolGuid) {
+        this.schoolGuid = schoolGuid;
+    }
+
+    public int getNoOfStudent() {
+        return noOfStudent;
+    }
+
+    public void setNoOfStudent(int noOfStudent) {
+        this.noOfStudent = noOfStudent;
     }
 
     public String getImg1() {
-        return Img1;
+        return img1;
     }
 
     public void setImg1(String img1) {
-        Img1 = img1;
+        this.img1 = img1;
     }
 
     public String getImg2() {
-        return Img2;
+        return img2;
     }
 
     public void setImg2(String img2) {
-        Img2 = img2;
+        this.img2 = img2;
     }
 
     public String getImg3() {
-        return Img3;
+        return img3;
     }
 
     public void setImg3(String img3) {
-        Img3 = img3;
+        this.img3 = img3;
     }
 
     public String getImg4() {
-        return Img4;
+        return img4;
     }
 
     public void setImg4(String img4) {
-        Img4 = img4;
+        this.img4 = img4;
     }
 
-    public String getImg5() {
-        return Img5;
+    public String getSessionStart() {
+        return sessionStart;
     }
 
-    public void setImg5(String img5) {
-        Img5 = img5;
+    public void setSessionStart(String sessionStart) {
+        this.sessionStart = sessionStart;
     }
 
-    public String getImg6() {
-        return Img6;
+    public String getSessionEnd() {
+        return sessionEnd;
     }
 
-    public void setImg6(String img6) {
-        Img6 = img6;
+    public void setSessionEnd(String sessionEnd) {
+        this.sessionEnd = sessionEnd;
     }
 
-    public String getImg7() {
-        return Img7;
+    public String getRemarks() {
+        return remarks;
     }
 
-    public void setImg7(String img7) {
-        Img7 = img7;
-    }
-
-    public String getImg8() {
-        return Img8;
-    }
-
-    public void setImg8(String img8) {
-        Img8 = img8;
-    }
-
-    public String getImg9() {
-        return Img9;
-    }
-
-    public void setImg9(String img9) {
-        Img9 = img9;
-    }
-
-    public String getImg10() {
-        return Img10;
-    }
-
-    public void setImg10(String img10) {
-        Img10 = img10;
-    }
-
-    public String getImg11() {
-        return Img11;
-    }
-
-    public void setImg11(String img11) {
-        Img11 = img11;
-    }
-
-    public String getImg12() {
-        return Img12;
-    }
-
-    public void setImg12(String img12) {
-        Img12 = img12;
-    }
-
-    public String getSessionStartedOn() {
-        return SessionStartedOn;
-    }
-
-    public void setSessionStartedOn(String sessionStartedOn) {
-        SessionStartedOn = sessionStartedOn;
-    }
-
-    public String getSessionEndedOn() {
-        return SessionEndedOn;
-    }
-
-    public void setSessionEndedOn(String sessionEndedOn) {
-        SessionEndedOn = sessionEndedOn;
-    }
-
-    public int getCommunicationStatus() {
-        return CommunicationStatus;
-    }
-
-    public void setCommunicationStatus(int communicationStatus) {
-        CommunicationStatus = communicationStatus;
-    }
-
-    public int getCommunicationAttempt() {
-        return CommunicationAttempt;
-    }
-
-    public void setCommunicationAttempt(int communicationAttempt) {
-        CommunicationAttempt = communicationAttempt;
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     public int getSessionStatus() {
-        return SessionStatus;
+        return sessionStatus;
     }
 
     public void setSessionStatus(int sessionStatus) {
-        SessionStatus = sessionStatus;
+        this.sessionStatus = sessionStatus;
     }
 
-    public String getSchoolGUID() {
-        return SchoolGUID;
+    public int getCommunicationStatus() {
+        return communicationStatus;
     }
 
-    public void setSchoolGUID(String schoolGUID) {
-        SchoolGUID = schoolGUID;
+    public void setCommunicationStatus(int communicationStatus) {
+        this.communicationStatus = communicationStatus;
     }
 
-    public String getCommunicationGUID() {
-        return CommunicationGUID;
+    public int getCommunicationAttempt() {
+        return communicationAttempt;
     }
 
-    public void setCommunicationGUID(String communicationGUID) {
-        CommunicationGUID = communicationGUID;
+    public void setCommunicationAttempt(int communicationAttempt) {
+        this.communicationAttempt = communicationAttempt;
     }
 
-    public String getLatitude() {
-        return Latitude;
+    public String getCommunicationGuid() {
+        return communicationGuid;
     }
 
-    public void setLatitude(String latitude) {
-        Latitude = latitude;
+    public void setCommunicationGuid(String communicationGuid) {
+        this.communicationGuid = communicationGuid;
     }
 
-    public String getLongitude() {
-        return Longitude;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setLongitude(String longitude) {
-        Longitude = longitude;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
-    public String getCameraIssue() {
-        return CameraIssue;
+    public Double getLongitude() {
+        return longitude;
     }
 
-    public void setCameraIssue(String cameraIssue) {
-        CameraIssue = cameraIssue;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
-    public String getVenueGUID() {
-        return VenueGUID;
+    public int getImgDefinitionId1() {
+        return imgDefinitionId1;
     }
 
-    public void setVenueGUID(String venueGUID) {
-        VenueGUID = venueGUID;
+    public void setImgDefinitionId1(int imgDefinitionId1) {
+        this.imgDefinitionId1 = imgDefinitionId1;
     }
 
-    public String getUserGUID() {
-        return UserGUID;
+    public int getImgDefinitionId2() {
+        return imgDefinitionId2;
     }
 
-    public void setUserGUID(String userGUID) {
-        UserGUID = userGUID;
+    public void setImgDefinitionId2(int imgDefinitionId2) {
+        this.imgDefinitionId2 = imgDefinitionId2;
     }
 
-    public String getShikshaMitraGUID() {
-        return ShikshaMitraGUID;
+    public int getImgDefinitionId3() {
+        return imgDefinitionId3;
     }
 
-    public void setShikshaMitraGUID(String shikshaMitraGUID) {
-        ShikshaMitraGUID = shikshaMitraGUID;
+    public void setImgDefinitionId3(int imgDefinitionId3) {
+        this.imgDefinitionId3 = imgDefinitionId3;
     }
 
-
-    public void populateFromCursor(Cursor cursorSession) {
-        int sessionIdCol = cursorSession.getColumnIndex("_id");
-        int sessionGUIDCol = cursorSession.getColumnIndex("SessionGUID");
-        int sessionNoCol = cursorSession.getColumnIndex("SessionNo");
-        int img1Col = cursorSession.getColumnIndex("Img1");
-        int img2Col = cursorSession.getColumnIndex("Img2");
-        int img3Col = cursorSession.getColumnIndex("Img3");
-        int img4Col = cursorSession.getColumnIndex("Img4");
-        int img5Col = cursorSession.getColumnIndex("Img5");
-        int img6Col = cursorSession.getColumnIndex("Img6");
-        int img7Col = cursorSession.getColumnIndex("Img7");
-        int img8Col = cursorSession.getColumnIndex("Img8");
-        int img9Col = cursorSession.getColumnIndex("Img9");
-        int img10Col = cursorSession.getColumnIndex("Img10");
-        int img11Col = cursorSession.getColumnIndex("Img11");
-        int img12Col = cursorSession.getColumnIndex("Img12");
-        int sessionStartedOnCol = cursorSession.getColumnIndex("SessionStartedOn");
-        int sessionEndedOnCol = cursorSession.getColumnIndex("SessionEndedOn");
-        int communicationStatusCol = cursorSession.getColumnIndex("CommunicationStatus");
-        int communicationAttemptCol = cursorSession.getColumnIndex("CommunicationAttempt");
-        int sessionStatusCol = cursorSession.getColumnIndex("SessionStatus");
-        int schoolGUIDCol = cursorSession.getColumnIndex("SchoolGUID");
-        int communicationGUIDCol = cursorSession.getColumnIndex("CommunicationGUID");
-        int latitudeCol = cursorSession.getColumnIndex("Latitude");
-        int longitudeCol = cursorSession.getColumnIndex("Longitude");
-        int cameraIssueCol = cursorSession.getColumnIndex("CameraIssue");
-        int venueGUIDCol = cursorSession.getColumnIndex("VenueGUID");
-        int userGUIDCol = cursorSession.getColumnIndex("UserGUID");
-        int shikshaMitraGUIDCol = cursorSession.getColumnIndex("ShikshaMitraGUID");
-
-        this._id = cursorSession.getInt(sessionIdCol);
-        this.SessionGUID = cursorSession.getString(sessionGUIDCol);
-        this.SessionNo = cursorSession.getInt(sessionNoCol);
-        this.Img1 = cursorSession.getString(img1Col);
-        this.Img2 = cursorSession.getString(img2Col);
-        this.Img3 = cursorSession.getString(img3Col);
-        this.Img4 = cursorSession.getString(img4Col);
-        this.Img5 = cursorSession.getString(img5Col);
-        this.Img6 = cursorSession.getString(img6Col);
-        this.Img7 = cursorSession.getString(img7Col);
-        this.Img8 = cursorSession.getString(img8Col);
-        this.Img9 = cursorSession.getString(img9Col);
-        this.Img10 = cursorSession.getString(img10Col);
-        this.Img11 = cursorSession.getString(img11Col);
-        this.Img12 = cursorSession.getString(img12Col);
-        this.SessionStartedOn = cursorSession.getString(sessionStartedOnCol);
-        this.SessionEndedOn = cursorSession.getString(sessionEndedOnCol);
-        this.CommunicationStatus = cursorSession.getInt(communicationStatusCol);
-        this.CommunicationAttempt = cursorSession.getInt(communicationAttemptCol);
-        this.SessionStatus = cursorSession.getInt(sessionStatusCol);
-        this.SchoolGUID = cursorSession.getString(schoolGUIDCol);
-        this.CommunicationGUID = cursorSession.getString(communicationGUIDCol);
-        this.Latitude = cursorSession.getString(latitudeCol);
-        this.Longitude = cursorSession.getString(longitudeCol);
-        this.CameraIssue = cursorSession.getString(cameraIssueCol);
-        this.VenueGUID = cursorSession.getString(venueGUIDCol);
-        this.UserGUID = cursorSession.getString(userGUIDCol);
-        this.ShikshaMitraGUID = cursorSession.getString(shikshaMitraGUIDCol);
+    public int getImgDefinitionId4() {
+        return imgDefinitionId4;
     }
 
+    public void setImgDefinitionId4(int imgDefinitionId4) {
+        this.imgDefinitionId4 = imgDefinitionId4;
+    }
+
+    public String getImgExt1() {
+        return imgExt1;
+    }
+
+    public void setImgExt1(String imgExt1) {
+        this.imgExt1 = imgExt1;
+    }
+
+    public String getImgExt2() {
+        return imgExt2;
+    }
+
+    public void setImgExt2(String imgExt2) {
+        this.imgExt2 = imgExt2;
+    }
+
+    public String getImgExt3() {
+        return imgExt3;
+    }
+
+    public void setImgExt3(String imgExt3) {
+        this.imgExt3 = imgExt3;
+    }
+
+    public String getImgExt4() {
+        return imgExt4;
+    }
+
+    public void setImgExt4(String imgExt4) {
+        this.imgExt4 = imgExt4;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
 }

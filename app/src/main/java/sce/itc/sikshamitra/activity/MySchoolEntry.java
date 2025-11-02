@@ -160,17 +160,25 @@ public class MySchoolEntry extends AppCompatActivity {
     }
 
     private void populateUserData() {
-        Cursor cursor = dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            User user = new User();
-            user.populateFromCursor(cursor);
-            String fullName = Common.getString(user.getFirstName()) + " " + Common.getString(user.getLastName());
-            binding.editNameSm.setText(fullName);
-            binding.editSmMobile.setText(Common.getString(user.getMobileNumber()));
-            binding.editSmEmail.setText(Common.getString(user.getEmail()));
+        try {
+
+
+            Cursor cursor = dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                User user = new User();
+                user.populateFromCursor(cursor);
+                String fullName = Common.getString(user.getFirstName()) + " " + Common.getString(user.getLastName());
+                binding.editNameSm.setText(fullName);
+                binding.editSmMobile.setText(Common.getString(user.getMobileNumber()));
+                binding.editSmEmail.setText(Common.getString(user.getEmail()));
+            }
+            cursor.close();
+        } catch (Exception e) {
+            Log.e(TAG, "populateUserData: ", e);
+
         }
-        cursor.close();
+
     }
 
 

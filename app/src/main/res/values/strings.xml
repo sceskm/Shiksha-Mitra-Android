@@ -37,5 +37,6 @@
     <string name="data_saved_uploaded">Data saved and uploaded successfully.</string>
     <string name="data_not_saved_message">Data not saved and uploaded.</string>
     <string name="data_saved_not_uploaded">Data saved but not uploaded.Try again later from synchronisation screen.</string>
+    <string name="datadownload_mesage">Click the "Data Download" button to syncronise the data. This may take 5 to 10 minutes and you require an internet connection.</string>
 
 </resources>
