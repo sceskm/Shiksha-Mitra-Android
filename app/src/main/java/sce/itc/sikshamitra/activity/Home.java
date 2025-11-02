@@ -1,6 +1,7 @@
 package sce.itc.sikshamitra.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -175,6 +176,20 @@ public class Home extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Exit")
+                .setMessage("Do you want to exit?")
+                .setCancelable(false)
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    finishAffinity(); // Close the App
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss(); // Close the dialog only
+                })
+                .show();
+    }
     /*private void requestAllPermissions() {
         // Build permission list
         if (shouldShowPermissionRationale()) {

@@ -36,6 +36,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -440,23 +441,26 @@ public class ConductedSessionBySM extends AppCompatActivity {
                 return false;
             }
         }
-        if (uriCompressedImage1.toString().isEmpty()) {
+        if (uriCompressedImage1 == null || uriCompressedImage1.toString().isEmpty()) {
             Toast.makeText(this, "Capture image 1", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (uriCompressedImage2.toString().isEmpty()) {
+        if (uriCompressedImage2 == null || uriCompressedImage2.toString().isEmpty()) {
             Toast.makeText(this, "Capture image 2", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (uriCompressedImage3.toString().isEmpty()) {
+        if (uriCompressedImage3 == null || uriCompressedImage3.toString().isEmpty()) {
             Toast.makeText(this, "Capture image 3", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (uriCompressedImage4.toString().isEmpty()) {
+        if (uriCompressedImage4 == null || uriCompressedImage4.toString().isEmpty()) {
             Toast.makeText(this, "Capture image 4", Toast.LENGTH_SHORT).show();
             return false;
         }
-        //TODO need to implement
+        if (binding.editRemarks.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Remarks blank", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 
@@ -738,5 +742,91 @@ public class ConductedSessionBySM extends AppCompatActivity {
         timer.schedule(timerTask, 0, 2000);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        try {
+            savedInstanceState.putString("Img1", imgImage1);
+            savedInstanceState.putString("Img2", imgImage2);
+            savedInstanceState.putString("Img3", imgImage3);
+            savedInstanceState.putString("Img4", imgImage4);
 
+            savedInstanceState.putString("capturedImg1", capturedImgStoragePathImage1);
+            savedInstanceState.putString("capturedImg2", capturedImgStoragePathImage2);
+            savedInstanceState.putString("capturedImg3", capturedImgStoragePathImage3);
+            savedInstanceState.putString("capturedImg4", capturedImgStoragePathImage4);
+
+
+            if (uriCompressedImage1 != null) {
+                savedInstanceState.putParcelable("uriImg1", uriCompressedImage1);
+            }
+            if (uriCompressedImage2 != null) {
+                savedInstanceState.putParcelable("uriImg2", uriCompressedImage2);
+            }
+            if (uriCompressedImage3 != null) {
+                savedInstanceState.putParcelable("uriImg3", uriCompressedImage3);
+            }
+            if (uriCompressedImage4 != null) {
+                savedInstanceState.putParcelable("uriImg4", uriCompressedImage4);
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "onSaveInstanceState: ", ex);
+        }
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        try {
+            imgImage1 = savedInstanceState.getString("Img1");
+            imgImage2 = savedInstanceState.getString("Img2");
+            imgImage3 = savedInstanceState.getString("Img3");
+            imgImage4 = savedInstanceState.getString("Img4");
+
+            capturedImgStoragePathImage1 = savedInstanceState.getString("capturedImg1");
+            capturedImgStoragePathImage2 = savedInstanceState.getString("capturedImg2");
+            capturedImgStoragePathImage3 = savedInstanceState.getString("capturedImg3");
+            capturedImgStoragePathImage4 = savedInstanceState.getString("capturedImg4");
+
+
+            if (savedInstanceState.getParcelable("uriImg1") != null) {
+                uriCompressedImage1 = savedInstanceState.getParcelable("uriImg1");
+                binding.imgCamera1.setImageURI(uriCompressedImage1);
+                binding.btnCapture1.setText("DELETE");
+            }
+            if (savedInstanceState.getParcelable("uriImg2") != null) {
+                uriCompressedImage2 = savedInstanceState.getParcelable("uriImg2");
+                binding.imgCamera2.setImageURI(uriCompressedImage2);
+                binding.btnCapture2.setText("DELETE");
+            }
+            if (savedInstanceState.getParcelable("uriImg3") != null) {
+                uriCompressedImage3 = savedInstanceState.getParcelable("uriImg3");
+                binding.imgCamera3.setImageURI(uriCompressedImage3);
+                binding.btnCapture3.setText("DELETE");
+            }
+            if (savedInstanceState.getParcelable("uriImg4") != null) {
+                uriCompressedImage4 = savedInstanceState.getParcelable("uriImg4");
+                binding.imgCamera4.setImageURI(uriCompressedImage4);
+                binding.btnCapture4.setText("DELETE");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "onRestoreInstanceState: ", e);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Exit")
+                .setMessage("Do you want to exit? Your data will loss.")
+                .setCancelable(false)
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    finish(); // Close the activity
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss(); // Close the dialog only
+                })
+                .show();
+    }
 }
