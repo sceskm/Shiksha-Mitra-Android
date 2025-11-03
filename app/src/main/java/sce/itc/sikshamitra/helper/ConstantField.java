@@ -2,7 +2,7 @@ package sce.itc.sikshamitra.helper;
 
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
-    public static final String APP_VERSION = "1.0";
+    public static final String APP_VERSION = "1.2";
 
     public static final String IMAGE_FORMAT = "jpg";
     public static final String ORIGINAL_IMAGE_NAME = "siksha_";

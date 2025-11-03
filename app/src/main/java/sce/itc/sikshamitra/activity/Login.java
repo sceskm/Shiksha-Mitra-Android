@@ -1,11 +1,13 @@
 package sce.itc.sikshamitra.activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -16,6 +18,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONObject;
 
@@ -53,22 +57,7 @@ public class Login extends AppCompatActivity {
     private final Login context = Login.this;
 
     //progress dialog for data upload
-    private ProgressDialog progressDialog;
-    private Handler mainHandler;
-    private Handler timerHandler = new Handler();
-
-    String username = "";
-    String password = "";
-    String userGuid = "";
-    String schoolGuid = "";
-    int roleId = 0;
-    String fName = "";
-    String lName = "";
-    String mobileNo = "";
-    int loggedIn = 0;
-    String email = "";
-    String lastLoggedIn = "";
-    private Response response;
+    //private ProgressDialog progressDialog;
     private Handler handler;
 
 
@@ -98,75 +87,28 @@ public class Login extends AppCompatActivity {
     private void populateData() {
         dbHelper = DatabaseHelper.getInstance(this);
 
-        mainHandler = new Handler(Looper.getMainLooper());
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
-
-        if (Common.DEBUGGING) {
-            populateStaticUser();
-
-            binding.editUsername.setText(username);
-            binding.editPwd.setText(password);
-
-        }
-
-
-    }
-
-    private void populateStaticUser() {
-        username = ConstantField.USER_NAME;
-        password = ConstantField.PASSWORD;
-        roleId = ConstantField.ROLE_ID_SHIKSHA_MITRA;
-        fName = "Arun";
-        lName = "Agarwal";
-        mobileNo = ConstantField.USER_NAME;
-        userGuid = "123e4567-e89b-12d3-a456-426614174000";
-        schoolGuid = "123e4567-e89b-12d3-a456-426614174001";
-        loggedIn = ConstantField.IN_ACTIVE;
-
-
+        //progressDialog = new ProgressDialog(context);
+        //progressDialog.setMessage("Please wait...");
+        //progressDialog.setCancelable(false);
+        handler = new Handler();
     }
 
     private void clickEvent() {
-        binding.btnLogin.setOnClickListener(v -> {
-            if (checkValidInputs()) {
-                try {
-                    progressDialog.show();
-                    binding.btnLogin.setEnabled(false);
-                    timerHandler.postDelayed(new Runnable() {
+        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkValidInputs()) {
+                    Common.enableButton(binding.btnLogin,false);
+                    //progressDialog.show();
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d(TAG, "run: save attendance");
+                            // Do something after 200ms
                             callNetworkApi();
-                            //saveUser();
-                            /*username = binding.editUsername.getText().toString().trim();
-                            password = binding.editPwd.getText().toString().trim();
-
-                            Intent intent = null;
-
-                            if (username.equals(ConstantField.USER_NAME_SM)) {
-                                intent = new Intent(context, Home.class);
-                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_AGENCY);
-                            } else if (username.equals(ConstantField.USER_NAME_AGENCY)) {
-                                intent = new Intent(context, AgencyHome.class);
-                                intent.putExtra("userRoleId", ConstantField.ROLE_ID_SHIKSHA_MITRA);
-                            } else {
-                                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show();
-                            }
-
-                            startActivity(intent);
-                            finish();*/
                         }
                     }, 200);
-
-                } catch (Exception e) {
-                    Log.e(TAG, "onClick: ", e);
-                } finally {
-                    binding.btnLogin.setEnabled(true);
                 }
-
-
             }
         });
     }
@@ -191,7 +133,8 @@ public class Login extends AppCompatActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     handler.post(() -> {
-                        progressDialog.dismiss();
+                        //progressDialog.dismiss();
+                        Common.enableButton(binding.btnLogin,true);
                         Common.showAlert(Login.this, "Internet connection failure.");
                     });
                 }
@@ -203,14 +146,15 @@ public class Login extends AppCompatActivity {
                         getResponse(uResponse);
                     } else {
                         handler.post(() -> {
-                            progressDialog.dismiss();
+                            //progressDialog.dismiss();
+                            Common.enableButton(binding.btnLogin,true);
                             Common.showAlert(Login.this, uResponse);
                         });
                     }
                 }
             });
         } catch (Exception e) {
-            progressDialog.dismiss();
+            //progressDialog.dismiss();
             e.printStackTrace();
         }
     }
@@ -242,9 +186,17 @@ public class Login extends AppCompatActivity {
             savePreferences(loginData);
             navigateNextPage(loginData);
         } else {
-            runOnUiThread(() -> {
-                progressDialog.dismiss();
-                Common.showAlert(Login.this, "Invalid server response");
+            handler = new Handler(Looper.getMainLooper());
+            handler.post(() -> {
+                new MaterialAlertDialogBuilder(context, R.style.RoundShapeTheme)
+                        .setTitle("Oops!")
+                        .setMessage("Invalid server response")
+                        .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        }).show();
             });
         }
 
@@ -268,29 +220,22 @@ public class Login extends AppCompatActivity {
     }
 
     private void navigateNextPage(LoginData loginData) {
-        Intent intent;
         try {
             if (loginData.getUser().getRoleId() == ConstantField.ROLE_ID_FIELD_TEAM) {
+                Intent intent;
                 intent = new Intent(context, AgencyHome.class);
                 intent.putExtra("userRoleId", loginData.getUser().getRoleId());
-
-            } else {
-                intent = new Intent(context, Home.class);
-                intent.putExtra("userRoleId", loginData.getUser().getRoleId());
-            }
-            runOnUiThread(() -> {
-                progressDialog.dismiss();
-                // Navigate to next screen or show success message
-                Toast.makeText(Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
                 finish();
 
-            });
+            } else {
+                Intent intent;
+                intent = new Intent(context, Home.class);
+                intent.putExtra("userRoleId", loginData.getUser().getRoleId());
+                startActivity(intent);
+                finish();
+            }
         } catch (Exception e) {
             Log.e(TAG, "saveUser: ", e);
-            Toast.makeText(context, "An error occurred while logging in", Toast.LENGTH_SHORT).show();
-            progressDialog.dismiss();
-            return;
         }
 
 
