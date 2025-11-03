@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "707262006845",
+    "project_id": "shikshamitra2025-497c3",
+    "storage_bucket": "shikshamitra2025-497c3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707262006845:android:e14dd106cc8d2286990c54",
+        "android_client_info": {
+          "package_name": "sce.itc.sikshamitra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKClOwIOgckMFJpo4lHkwiJOLxrGRZnlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

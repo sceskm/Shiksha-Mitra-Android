@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.json.JSONObject;
 
@@ -106,6 +107,7 @@ public class Login extends AppCompatActivity {
                         public void run() {
                             // Do something after 200ms
                             callNetworkApi();
+
                         }
                     }, 200);
                 }
@@ -156,6 +158,7 @@ public class Login extends AppCompatActivity {
         } catch (Exception e) {
             //progressDialog.dismiss();
             e.printStackTrace();
+            triggerTestCrash(e.toString());
         }
     }
 
@@ -258,5 +261,15 @@ public class Login extends AppCompatActivity {
 
         return isValid;
 
+    }
+
+    private void triggerTestCrash(String reports) {
+        FirebaseCrashlytics.getInstance().log("Testing Firebase Crashlytics crash report");
+
+        // Optional: add custom key-value info for debugging
+        FirebaseCrashlytics.getInstance().setCustomKey("UserID", PreferenceCommon.getInstance().getUserId());
+        FirebaseCrashlytics.getInstance().setCustomKey("Screen", "LoginActivity");
+
+        throw new RuntimeException(reports);
     }
 }

@@ -625,7 +625,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("RoleId", userDetails.getRoleId());
             newEntry.put("LastLoggedIn", userDetails.getLastLoggedIn());
             newEntry.put("UserRole", userDetails.getUserRoleName());
-            newEntry.put("InActive", userDetails.getInActive());
+            //newEntry.put("InActive", userDetails.getInActive());
 
             long retVal = myDataBase.insertOrThrow("sp_user", null, newEntry);
 
@@ -690,7 +690,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 dataSaved = true;
 
         } catch (SQLException ex) {
-            Log.e(TAG, "saveUser: EXCEPTION", ex);
+            Log.e(TAG, "saveSettings: EXCEPTION", ex);
             throw ex;
         }
         return dataSaved;

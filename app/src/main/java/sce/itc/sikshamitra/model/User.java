@@ -203,7 +203,7 @@ public class User {
         int roleIdCol = cursor.getColumnIndex("RoleId");
         int lastLoggedInCol = cursor.getColumnIndex("LastLoggedIn");
         int userRoleCol = cursor.getColumnIndex("UserRole");
-        int inActiveCol = cursor.getColumnIndex("InActive");
+        //int inActiveCol = cursor.getColumnIndex("InActive");
 
         this.setUserId(cursor.getInt(userIdCol));
         this.setUserName(cursor.getString(userNameCol));
@@ -217,7 +217,7 @@ public class User {
         this.setRoleId(cursor.getInt(roleIdCol));
         this.setLastLoggedIn(cursor.getString(lastLoggedInCol));
         this.setUserRoleName(cursor.getString(userRoleCol));
-        this.setInActive(cursor.getInt(inActiveCol));
+        //this.setInActive(cursor.getInt(inActiveCol));
     }
 
 }
