@@ -120,5 +120,19 @@
         <item name="cornerSize">16dp</item>
     </style>
 
+    <!--
+
+    -->
+    <!--Drop-down text field -->
+    <style name="primary_dropdown_layout" parent="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textColor">@color/title_text</item>
+
+    </style>
+
 
 </resources>

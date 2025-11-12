@@ -230,7 +230,7 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:id="@+id/img_venue"
+                            android:id="@+id/img_training_4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"

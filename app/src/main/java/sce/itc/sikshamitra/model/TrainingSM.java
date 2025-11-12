@@ -2,37 +2,72 @@ package sce.itc.sikshamitra.model;
 
 import android.database.Cursor;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
 public class TrainingSM {
+    @Expose(serialize = false)
     private int _id;
+    @Expose(serialize = false)
     private String VenueName;
+    @Expose(serialize = false)
     private String ScheduledDateTime;
-    private Double Latitude;
-    private Double Longitude;
+    @Expose
+    @SerializedName("latitude")
+    private Double latitude;
+    @Expose
+    @SerializedName("longitude")
+    private Double longitude;
+    @Expose(serialize = false)
     private Integer SMCount;
+    @Expose(serialize = false)
     private String Image1;
+    @Expose(serialize = false)
     private String Image2;
+    @Expose(serialize = false)
     private String Image3;
+    @Expose(serialize = false)
     private String Image4;
-    private String Remarks;
+    @Expose
+    @SerializedName("remarks")
+    private String remarks;
+    @Expose
+    @SerializedName("EndedOn")
+    private String endedOn;
+    @Expose
+    @SerializedName("StartedOn")
+    private String startedOn;
+    @Expose
+    @SerializedName("NoOfTeachers")
+    private int noOfTeachers;
+    @Expose
+    @SerializedName("OrganizationId")
+    private int organizationId;
+    @Expose
+    @SerializedName("VenueGuid")
+    private String venueGuid;
+    @Expose
+    private String trainingGuid;
+    @Expose
+    private String userGuid;
+    @Expose
+    @SerializedName("inActive")
+    private boolean inActive;
+    private List<Image> images;
 
-    public TrainingSM() {
-    }
+    @Expose(serialize = false)
+    private int imageDefinitionId;
+    @Expose(serialize = false)
+    private String imageFile;
+    @Expose(serialize = false)
+    private String imageExt;
 
-    // --- Parameterized Constructor ---
-    public TrainingSM(String venueName, String scheduledDateTime, Double latitude, Double longitude,
-                    Integer smCount, String image1, String image2, String image3,
-                    String image4, String remarks) {
-        this.VenueName = venueName;
-        this.ScheduledDateTime = scheduledDateTime;
-        this.Latitude = latitude;
-        this.Longitude = longitude;
-        this.SMCount = smCount;
-        this.Image1 = image1;
-        this.Image2 = image2;
-        this.Image3 = image3;
-        this.Image4 = image4;
-        this.Remarks = remarks;
-    }
+    /*
+    * Default constructor
+    * */
+    public TrainingSM() {}
 
     public int get_id() {
         return _id;
@@ -59,19 +94,19 @@ public class TrainingSM {
     }
 
     public Double getLatitude() {
-        return Latitude;
+        return latitude;
     }
 
     public void setLatitude(Double latitude) {
-        Latitude = latitude;
+        this.latitude = latitude;
     }
 
     public Double getLongitude() {
-        return Longitude;
+        return longitude;
     }
 
     public void setLongitude(Double longitude) {
-        Longitude = longitude;
+        this.longitude = longitude;
     }
 
     public Integer getSMCount() {
@@ -115,12 +150,116 @@ public class TrainingSM {
     }
 
     public String getRemarks() {
-        return Remarks;
+        return remarks;
     }
 
     public void setRemarks(String remarks) {
-        Remarks = remarks;
+        this.remarks = remarks;
     }
+
+    public String getEndedOn() {
+        return endedOn;
+    }
+
+    public void setEndedOn(String endedOn) {
+        this.endedOn = endedOn;
+    }
+
+    public String getStartedOn() {
+        return startedOn;
+    }
+
+    public void setStartedOn(String startedOn) {
+        this.startedOn = startedOn;
+    }
+
+    public int getNoOfTeachers() {
+        return noOfTeachers;
+    }
+
+    public void setNoOfTeachers(int noOfTeachers) {
+        this.noOfTeachers = noOfTeachers;
+    }
+
+    public int getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(int organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public String getVenueGuid() {
+        return venueGuid;
+    }
+
+    public void setVenueGuid(String venueGuid) {
+        this.venueGuid = venueGuid;
+    }
+
+    public String getTrainingGuid() {
+        return trainingGuid;
+    }
+
+    public void setTrainingGuid(String trainingGuid) {
+        this.trainingGuid = trainingGuid;
+    }
+
+    public String getUserGuid() {
+        return userGuid;
+    }
+
+    public void setUserGuid(String userGuid) {
+        this.userGuid = userGuid;
+    }
+
+    public boolean isInActive() {
+        return inActive;
+    }
+
+    public void setInActive(boolean inActive) {
+        this.inActive = inActive;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
+
+    public int getImageDefinitionId() {
+        return imageDefinitionId;
+    }
+
+    public void setImageDefinitionId(int imageDefinitionId) {
+        this.imageDefinitionId = imageDefinitionId;
+    }
+
+    public String getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(String imageFile) {
+        this.imageFile = imageFile;
+    }
+
+    public String getImageExt() {
+        return imageExt;
+    }
+
+    public void setImageExt(String imageExt) {
+        this.imageExt = imageExt;
+    }
+    /*
+    * Constructor with parameters
+    * */
+
+
+    /*
+    * Populate data from cursor
+    * */
 
     public void populateFromCursor(Cursor cursorTraining) {
         int idCol = cursorTraining.getColumnIndex("_id");

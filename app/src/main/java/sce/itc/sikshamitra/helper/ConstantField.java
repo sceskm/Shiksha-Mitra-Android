@@ -2,7 +2,7 @@ package sce.itc.sikshamitra.helper;
 
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
-    public static final String APP_VERSION = "1.0.0";
+    public static final String APP_VERSION = "1.2.1";
 
     public static final String IMAGE_FORMAT = "jpg";
     public static final String ORIGINAL_IMAGE_NAME = "siksha_";
@@ -79,11 +79,43 @@ public class ConstantField {
     public static final int SM_SESSION_IMAGE_DEFINITION_ID_3 = 20003;
     public static final int SM_SESSION_IMAGE_DEFINITION_ID_4 = 20004;
 
-    //Teacher - Session Images
+    //SM-Teacher - Session Images
     public static final int REQUEST_IMAGE_1 = 110;
     public static final int REQUEST_IMAGE_2 = 111;
     public static final int REQUEST_IMAGE_3 = 112;
     public static final int REQUEST_IMAGE_4 = 113;
+
+    //Field Team - SM-Training Camera Request
+    public static final int REQUEST_TRAINING_1 = 114;
+    public static final int REQUEST_TRAINING_2 = 115;
+    public static final int REQUEST_TRAINING_3 = 116;
+    public static final int REQUEST_TRAINING_4 = 117;
+
+    //Field Team - SM-Training Images Definition Ids
+    public static final int SM_TRAINING_IMAGE_DEFINITION_ID_1 = 50001;
+    public static final int SM_TRAINING_IMAGE_DEFINITION_ID_2 = 50002;
+    public static final int SM_TRAINING_IMAGE_DEFINITION_ID_3 = 50003;
+    public static final int SM_TRAINING_IMAGE_DEFINITION_ID_4 = 50004;
+
+    //Final Session Camera Request
+    public static final int REQUEST_FINAL_SESSION_EXTERIOR = 120;
+    public static final int REQUEST_FINAL_SESSION_QUIZ_PROGRESS_1 = 121;
+    public static final int REQUEST_FINAL_SESSION_QUIZ_PROGRESS_2 = 122;
+    public static final int REQUEST_FINAL_SESSION_REWARD_1 = 123;
+    public static final int REQUEST_FINAL_SESSION_REWARD_2 = 124;
+    public static final int REQUEST_FINAL_SESSION_REWARD_3 = 125;
+    public static final int REQUEST_FINAL_SESSION_REWARD_4 = 126;
+    public static final int REQUEST_FINAL_SESSION_HW_SAMPLE = 127;
+
+    //Field Team - Final Session Images
+    public static final int FINAL_SESSION_IMAGE_EXTERIOR = 30001;
+    public static final int FINAL_SESSION_QUIZ_PROGRESS_1 = 30002;
+    public static final int FINAL_SESSION_QUIZ_PROGRESS_2 = 30003;
+    public static final int FINAL_SESSION_REWARD_1 = 30004;
+    public static final int FINAL_SESSION_REWARD_2 = 30005;
+    public static final int FINAL_SESSION_REWARD_3 = 30006;
+    public static final int FINAL_SESSION_REWARD_4 = 30007;
+    public static final int FINAL_SESSION_HW_SAMPLE = 30008;
 
 
 

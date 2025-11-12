@@ -42,18 +42,19 @@
             android:name=".activity.Login"
             android:exported="false" />
         <activity
-            android:name=".activity.SMRegistration"
+            android:name=".activity.PreRegistrationActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.VenueData"
+            android:name=".activity.VenueActivity"
             android:exported="false" />
         <activity
             android:name=".activity.RetailOutReach"
             android:exported="false"
             />
         <activity
-            android:name=".activity.FinalSession"
+            android:name=".activity.FinalSessionActivity"
             android:exported="false"
+            android:label="Final Session"
             />
         <activity
             android:name=".activity.ConductedSessionBySM"

@@ -175,7 +175,7 @@ public class LoginData {
 
                 // -------------------- SCHOOL DATA --------------------
                 List<MySchoolData> schoolList = new ArrayList<>();
-                if (dataObject.has("schoolData")) {
+                if (dataObject.has("schoolData") && !dataObject.isNull("schoolData")) {
                     JSONArray schoolArray = dataObject.getJSONArray("schoolData");
                     for (int i = 0; i < schoolArray.length(); i++) {
                         JSONObject schoolObj = schoolArray.getJSONObject(i);

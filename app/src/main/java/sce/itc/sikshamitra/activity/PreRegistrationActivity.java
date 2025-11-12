@@ -2,7 +2,6 @@ package sce.itc.sikshamitra.activity;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,31 +18,17 @@ import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.Date;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.databinding.ActivitySmregistrationBinding;
-import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
-import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.GPSTracker;
-import sce.itc.sikshamitra.helper.NetworkUtils;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
-import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.PreRegistration;
-import sce.itc.sikshamitra.model.Venue;
 
-public class SMRegistration extends AppCompatActivity {
+public class PreRegistrationActivity extends AppCompatActivity {
     private static final String TAG = "SMRegistrationActivity";
     private ActivitySmregistrationBinding binding;
     private Toolbar toolbar;
@@ -51,7 +36,7 @@ public class SMRegistration extends AppCompatActivity {
     private GPSTracker gps;
     private double lastLatitude = 0.0;
     private double lastLongitude = 0.0;
-    private final SMRegistration context = SMRegistration.this;
+    private final PreRegistrationActivity context = PreRegistrationActivity.this;
 
     //progress dialog for data upload
     private ProgressDialog progressDialog;
@@ -135,11 +120,11 @@ public class SMRegistration extends AppCompatActivity {
         PreRegistration preRegistration = new PreRegistration();
         preRegistration.setFirstName(firstName);
         preRegistration.setLastName(lastName);
-        preRegistration.setMobile(mobileNumber);
+        preRegistration.setPhone(mobileNumber);
         preRegistration.setPassword(password);
-        preRegistration.setVenueGUID(venueGuid);
-        preRegistration.setUserGUID(PreferenceCommon.getInstance().getUserGUID());
-        preRegistration.setSMGUID(Common.createGuid());
+        preRegistration.setVenueGuid(venueGuid);
+        preRegistration.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
+        preRegistration.setSmGuid(Common.createGuid());
         preRegistration.setCreatedOn(Common.iso8601Format.format(new Date()));
         preRegistration.setLatitude(lastLatitude);
         preRegistration.setLongitude(lastLongitude);

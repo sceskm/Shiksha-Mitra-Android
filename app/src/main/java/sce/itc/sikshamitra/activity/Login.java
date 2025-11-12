@@ -58,7 +58,7 @@ public class Login extends AppCompatActivity {
     private final Login context = Login.this;
 
     //progress dialog for data upload
-    //private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
     private Handler handler;
 
 
@@ -88,9 +88,10 @@ public class Login extends AppCompatActivity {
     private void populateData() {
         dbHelper = DatabaseHelper.getInstance(this);
 
-        //progressDialog = new ProgressDialog(context);
-        //progressDialog.setMessage("Please wait...");
-        //progressDialog.setCancelable(false);
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Authenticating your data");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCancelable(false);
         handler = new Handler();
     }
 
@@ -99,8 +100,8 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checkValidInputs()) {
-                    Common.enableButton(binding.btnLogin,false);
-                    //progressDialog.show();
+                    Common.enableButton(binding.btnLogin, false);
+                    progressDialog.show();
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -135,8 +136,8 @@ public class Login extends AppCompatActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     handler.post(() -> {
-                        //progressDialog.dismiss();
-                        Common.enableButton(binding.btnLogin,true);
+                        progressDialog.dismiss();
+                        Common.enableButton(binding.btnLogin, true);
                         Common.showAlert(Login.this, "Internet connection failure.");
                     });
                 }
@@ -148,15 +149,15 @@ public class Login extends AppCompatActivity {
                         getResponse(uResponse);
                     } else {
                         handler.post(() -> {
-                            //progressDialog.dismiss();
-                            Common.enableButton(binding.btnLogin,true);
+                            progressDialog.dismiss();
+                            Common.enableButton(binding.btnLogin, true);
                             Common.showAlert(Login.this, uResponse);
                         });
                     }
                 }
             });
         } catch (Exception e) {
-            //progressDialog.dismiss();
+            progressDialog.dismiss();
             e.printStackTrace();
             triggerTestCrash(e.toString());
         }
@@ -183,8 +184,10 @@ public class Login extends AppCompatActivity {
             for (State state : loginData.getStates()) {
                 dbHelper.saveState(state);
             }
-            for (MySchoolData school : loginData.getSchoolData()) {
-                dbHelper.saveSchool(school);
+            if (loginData.getSchoolData() != null) {
+                for (MySchoolData school : loginData.getSchoolData()) {
+                    dbHelper.saveSchool(school);
+                }
             }
             savePreferences(loginData);
             navigateNextPage(loginData);
@@ -213,8 +216,13 @@ public class Login extends AppCompatActivity {
             PreferenceCommon.getInstance().setUsername(loginData.getUser().getUserName());
             PreferenceCommon.getInstance().setPassword(binding.editPwd.getText().toString().trim());
             PreferenceCommon.getInstance().setAccessToken(loginData.getUser().getAccessToken());
-            if (loginData.getLastSession().getSessionNo() > 0)
-                PreferenceCommon.getInstance().setLastSessionCount(loginData.getLastSession().getSessionNo());
+
+            if (loginData.getLastSession() != null) {
+                if (loginData.getLastSession().getSessionNo() > 0) {
+                    PreferenceCommon.getInstance().setLastSessionCount(loginData.getLastSession().getSessionNo());
+                }
+            }
+
             PreferenceCommon.getInstance().setLastLoggedInDateTime(Common.iso8601Format.format(new Date()));
 
         } catch (Exception e) {

@@ -34,6 +34,12 @@ public class Session {
     private String img3;
     @Expose(serialize = false)
     private String img4;
+    @Expose(serialize = false)
+    private String img5;
+    @Expose(serialize = false)
+    private String img6;
+    @Expose(serialize = false)
+    private String img7;
 
     @Expose
     private String sessionStart;
@@ -63,6 +69,12 @@ public class Session {
     private int imgDefinitionId3;
     @Expose(serialize = false)
     private int imgDefinitionId4;
+    @Expose(serialize = false)
+    private int imgDefinitionId5;
+    @Expose(serialize = false)
+    private int imgDefinitionId6;
+    @Expose(serialize = false)
+    private int imgDefinitionId7;
 
     @Expose(serialize = false)
     private String imgExt1;
@@ -72,6 +84,12 @@ public class Session {
     private String imgExt3;
     @Expose(serialize = false)
     private String imgExt4;
+    @Expose(serialize = false)
+    private String imgExt5;
+    @Expose(serialize = false)
+    private String imgExt6;
+    @Expose(serialize = false)
+    private String imgExt7;
 
     @Expose
     private List<Image> images;

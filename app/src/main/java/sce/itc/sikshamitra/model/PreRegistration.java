@@ -4,6 +4,8 @@ import android.database.Cursor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
@@ -11,42 +13,68 @@ import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
 
 public class PreRegistration {
+    @Expose(serialize = false)
     private int _id;
-
-    private String FirstName;
-    private String LastName;
-    private String Mobile;
-    private String Username;
-    private String Password;
-    private String SMGUID;
-    private String VenueGUID;
-    private String UserGUID;
-    private String CreatedOn;
-    private double Latitude;
-    private double Longitude;
-    private String CommunicationGUID;
-
+    @Expose
+    @SerializedName("firstName")
+    private String firstName;
+    @Expose
+    @SerializedName("lastName")
+    private String lastName;
+    @Expose
+    @SerializedName("phone")
+    private String phone;
+    @Expose (serialize = false)
+    private String userName;
+    @Expose
+    @SerializedName("password")
+    private String password;
+    @Expose (serialize = false)
+    private String smGuid;
+    @Expose
+    @SerializedName("venueGUID")
+    private String venueGuid;
+    @Expose
+    @SerializedName("userGUID")
+    private String userGuid;
+    @Expose(serialize = false)
+    private String createdOn;
+    @Expose(serialize = false)
+    private double latitude;
+    @Expose(serialize = false)
+    private double longitude;
+    @Expose(serialize = false)
+    private String communicationGuid;
+    @Expose
+    @SerializedName("email")
+    private String email;
+    @Expose
+    @SerializedName("city")
+    private String city;
+    @Expose
+    @SerializedName("udiseCoode")
+    private String udiseCode;
     // --- Empty Constructor ---
     public PreRegistration() {
     }
 
     // --- Parameterized Constructor ---
-    public PreRegistration(String firstName, String lastName, String mobile,
-                           String username, String password, String SMGUID,
-                           String venueGUID, String userGUID,
-                           String createdOn, double latitude, double longitude,String communicationGUID) {
-        this.FirstName = firstName;
-        this.LastName = lastName;
-        this.Mobile = mobile;
-        this.Username = username;
-        this.Password = password;
-        this.SMGUID = SMGUID;
-        this.VenueGUID = venueGUID;
-        this.UserGUID = userGUID;
-        this.CreatedOn = createdOn;
-        this.Latitude = latitude;
-        this.Longitude = longitude;
-        this.CommunicationGUID = communicationGUID;
+    public PreRegistration(String firstName, String lastName, String phone,
+                           String userName, String password, String smGuid,
+                           String venueGuid, String userGuid,
+                           String createdOn, double latitude, double longitude, String communicationGuid) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.userName = userName;
+        this.password = password;
+        this.smGuid = smGuid;
+        this.venueGuid = venueGuid;
+        this.userGuid = userGuid;
+        this.createdOn = createdOn;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.communicationGuid = communicationGuid;
     }
 
     // --- Getters and Setters ---
@@ -59,92 +87,92 @@ public class PreRegistration {
     }
 
     public String getFirstName() {
-        return FirstName;
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
-        FirstName = firstName;
+        this.firstName = firstName;
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
-    public String getMobile() {
-        return Mobile;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobile(String mobile) {
-        Mobile = mobile;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getUsername() {
-        return Username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        Username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 
-    public String getVenueGUID() {
-        return VenueGUID;
+    public String getVenueGuid() {
+        return venueGuid;
     }
 
-    public void setVenueGUID(String venueGUID) {
-        VenueGUID = venueGUID;
+    public void setVenueGuid(String venueGuid) {
+        this.venueGuid = venueGuid;
     }
 
-    public String getUserGUID() {
-        return UserGUID;
+    public String getUserGuid() {
+        return userGuid;
     }
 
-    public void setUserGUID(String userGUID) {
-        UserGUID = userGUID;
+    public void setUserGuid(String userGuid) {
+        this.userGuid = userGuid;
     }
 
-    public String getSMGUID() {
-        return SMGUID;
+    public String getSmGuid() {
+        return smGuid;
     }
 
-    public void setSMGUID(String SMGUID) {
-        this.SMGUID = SMGUID;
+    public void setSmGuid(String smGuid) {
+        this.smGuid = smGuid;
     }
     public String getCreatedOn() {
-        return CreatedOn;
+        return createdOn;
     }
     public void setCreatedOn(String createdOn) {
-        CreatedOn = createdOn;
+        this.createdOn = createdOn;
     }
     public double getLatitude() {
-        return Latitude;
+        return latitude;
     }
     public void setLatitude(double latitude) {
-        Latitude = latitude;
+        this.latitude = latitude;
     }
     public double getLongitude() {
-        return Longitude;
+        return longitude;
     }
     public void setLongitude(double longitude) {
-        Longitude = longitude;
+        this.longitude = longitude;
     }
 
-    public String getCommunicationGUID() {
-        return CommunicationGUID;
+    public String getCommunicationGuid() {
+        return communicationGuid;
     }
-    public void setCommunicationGUID(String communicationGUID) {
-        CommunicationGUID = communicationGUID;
+    public void setCommunicationGuid(String communicationGuid) {
+        this.communicationGuid = communicationGuid;
     }
 
     // --- populateFromCursor method ---
@@ -166,16 +194,16 @@ public class PreRegistration {
         this.set_id(cursorPreReg.getInt(idCol));
         this.setFirstName(cursorPreReg.getString(firstNameCol));
         this.setLastName(cursorPreReg.getString(lastNameCol));
-        this.setMobile(cursorPreReg.getString(mobileCol));
-        this.setUsername(cursorPreReg.getString(usernameCol));
+        this.setPhone(cursorPreReg.getString(mobileCol));
+        this.setUserName(cursorPreReg.getString(usernameCol));
         this.setPassword(cursorPreReg.getString(passwordCol));
-        this.setSMGUID(cursorPreReg.getString(shikshaMitraGUIDCol));
-        this.setVenueGUID(cursorPreReg.getString(venueGUIDCol));
-        this.setUserGUID(cursorPreReg.getString(userGUIDCol));
+        this.setSmGuid(cursorPreReg.getString(shikshaMitraGUIDCol));
+        this.setVenueGuid(cursorPreReg.getString(venueGUIDCol));
+        this.setUserGuid(cursorPreReg.getString(userGUIDCol));
         this.setCreatedOn(cursorPreReg.getString(createdOnCol));
         this.setLatitude(cursorPreReg.getDouble(latitudeCol));
         this.setLongitude(cursorPreReg.getDouble(longitudeCol));
-        this.setCommunicationGUID(cursorPreReg.getString(communicationGUIDCol));
+        this.setCommunicationGuid(cursorPreReg.getString(communicationGUIDCol));
     }
 
     public CommunicationSend createCommSend() {
@@ -185,7 +213,7 @@ public class PreRegistration {
         commSend.setProcessCount(0);
         commSend.setCommand(Command.ADD_TEACHER);
         commSend.setCommandDate(Common.iso8601Format.format(new Date()));
-        commSend.setCommunicationGUID(this.CommunicationGUID);
+        commSend.setCommunicationGUID(this.communicationGuid);
         commSend.setCommunicationStatusID(1);
         commSend.setCreatedByID(4);
 

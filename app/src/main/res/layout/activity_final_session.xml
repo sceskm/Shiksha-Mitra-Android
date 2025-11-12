@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/page_background_colour"
-        tools:context=".activity.FinalSession">
+        tools:context=".activity.FinalSessionActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -140,7 +140,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btncapture1"
+                        android:id="@+id/btn_capture_2"
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -185,7 +185,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btn_capture_2"
+                        android:id="@+id/btn_capture_3"
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -230,7 +230,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btn_capture_3"
+                        android:id="@+id/btn_capture_4"
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -275,7 +275,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btn_capture_4"
+                        android:id="@+id/btn_capture_5"
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -320,7 +320,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btn_capture_5"
+                        android:id="@+id/btn_capture_6"
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -365,7 +365,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btn_capture_6"
+                        android:id="@+id/btn_capture_7"
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -410,7 +410,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/btn_capture_7"
+                        android:id="@+id/btn_capture_8"
                         style="@style/SmallButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -28,4 +28,5 @@
 
     <string name="data_saved_uploaded">Data saved and uploaded successfully.</string>
     <string name="data_saved_not_uploaded">Data saved but not uploaded.Try again later from synchronisation screen.</string>
+    <string name="no_internet_connection">No internet.Try again later.</string>
 </resources>

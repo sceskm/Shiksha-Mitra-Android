@@ -196,6 +196,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean update = false;
         boolean isCheck;
         try {
+            if (version < 2){
+                myDataBase.beginTransaction();
+                update = true;
+                // Add column to isp_attendance
+                boolean isPresent = checkColumn("sp_training", "ImageExt1");
+                if (!isPresent) {
+                    myDataBase.execSQL("ALTER TABLE \"sp_training\" ADD COLUMN \"ImageExt1\" VARCHAR(10) ;");
+                }
+                //TODO - update statement
+
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -400,12 +412,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             newEntry.put("FirstName", preRegDetails.getFirstName());
             newEntry.put("LastName", preRegDetails.getLastName());
-            newEntry.put("Mobile", preRegDetails.getMobile());
-            newEntry.put("Username", preRegDetails.getUsername());
+            newEntry.put("Mobile", preRegDetails.getPhone());
+            newEntry.put("Username", preRegDetails.getUserName());
             newEntry.put("Password", preRegDetails.getPassword());
             newEntry.put("ShikshaMitraGUID", preRegDetails.getPassword());
-            newEntry.put("VenueGUID", preRegDetails.getVenueGUID());
-            newEntry.put("UserGUID", preRegDetails.getUserGUID());
+            newEntry.put("VenueGUID", preRegDetails.getVenueGuid());
+            newEntry.put("UserGUID", preRegDetails.getUserGuid());
             newEntry.put("CreatedOn", preRegDetails.getCreatedOn());
             newEntry.put("Latitude", preRegDetails.getLatitude());
             newEntry.put("Longitude", preRegDetails.getLongitude());
@@ -892,6 +904,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getSessionDetails(String sessionGuid) {
         String sql = "SELECT * FROM sp_session WHERE SessionGUID = '" + sessionGuid + "'";
+        return QueryDatabase(sql);
+    }
+
+    public Cursor getAllStates() {
+        String sql = "SELECT * FROM sp_state ORDER BY StateName ASC";
         return QueryDatabase(sql);
     }
 

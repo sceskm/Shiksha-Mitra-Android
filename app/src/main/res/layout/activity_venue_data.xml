@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
 
-            tools:context=".activity.VenueData">
+            tools:context=".activity.VenueActivity">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
@@ -95,8 +95,24 @@
                     android:text="State *" />
 
                 <EditText
-                    android:id="@+id/edit_state"
-                    style="@style/AppEditTextStyle" />
+                    style="@style/AppEditTextStyle"
+                    android:visibility="gone"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edit_state_layout"
+                    style="@style/primary_dropdown_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Item 1">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/edit_state"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!--Pin code-->
                 <TextView
@@ -110,7 +126,7 @@
                     style="@style/AppEditTextStyle"
                     android:inputType="numberSigned"
                     android:maxLength="6"
-                    android:maxLines="1"/>
+                    android:maxLines="1" />
 
                 <!-- Venue images-->
                 <TextView

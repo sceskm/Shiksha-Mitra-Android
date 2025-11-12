@@ -92,7 +92,7 @@ public class AgencyHome extends AppCompatActivity {
             public void onClick(View v) {
                 Common.enableButton(binding.btnVenueDetails,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, VenueData.class);
+                    Intent intent = new Intent(AgencyHome.this, VenueActivity.class);
                     startActivity(intent);
 
                 } else {
@@ -109,7 +109,7 @@ public class AgencyHome extends AppCompatActivity {
             public void onClick(View v) {
                 Common.enableButton(binding.btnRegistrationSm,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, SMRegistration.class);
+                    Intent intent = new Intent(AgencyHome.this, PreRegistrationActivity.class);
                     startActivity(intent);
                 } else {
                     requestPermission();
@@ -152,17 +152,17 @@ public class AgencyHome extends AppCompatActivity {
         /*
         * Module 7 by agency click event
         * */
-        binding.btnModule7Agency.setOnClickListener(new View.OnClickListener() {
+        binding.btnFinalSession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.enableButton(binding.btnModule7Agency,false);
+                Common.enableButton(binding.btnFinalSession,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, FinalSession.class);
+                    Intent intent = new Intent(AgencyHome.this, FinalSessionActivity.class);
                     startActivity(intent);
                 } else {
                     requestPermission();
                 }
-                Common.enableButton(binding.btnModule7Agency,true);
+                Common.enableButton(binding.btnFinalSession,true);
             }
         });
     }

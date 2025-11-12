@@ -20,13 +20,15 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -37,6 +39,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
@@ -67,8 +71,8 @@ import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.Image;
 import sce.itc.sikshamitra.model.Venue;
 
-public class VenueData extends AppCompatActivity {
-    private static final String TAG = "VenueDataActivity";
+public class VenueActivity extends AppCompatActivity {
+    private static final String TAG = "VenueActivity";
     private ActivityVenueDataBinding binding;
     private Toolbar toolbar;
 
@@ -93,6 +97,13 @@ public class VenueData extends AppCompatActivity {
 
     private String attendanceImage = "";
 
+    private MaterialAutoCompleteTextView stateAutoComplete;
+    private TextInputLayout stateInputLayout;
+
+    private String[] arrState;
+    private int[] arrStateId;
+    int selectedStateId = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +126,8 @@ public class VenueData extends AppCompatActivity {
 
         populateData();
 
+        populateSubTypes();
+
         clickEvent();
     }
 
@@ -136,6 +149,35 @@ public class VenueData extends AppCompatActivity {
 
     }
 
+    private void populateSubTypes() {
+        Cursor cursorState = dbHelper.getAllStates();
+        if (cursorState != null && cursorState.getCount() > 0) {
+
+            arrState = new String[cursorState.getCount()];
+            arrStateId = new int[cursorState.getCount()];
+
+            int i = 0;
+            if (cursorState.moveToFirst()) {
+                do {
+                    arrState[i] = cursorState.getString(cursorState.getColumnIndexOrThrow("StateName"));
+                    arrStateId[i] = cursorState.getInt(cursorState.getColumnIndexOrThrow("StateId"));
+                    i++;
+                } while (cursorState.moveToNext());
+            }
+        }
+
+        cursorState.close();
+
+        ArrayAdapter<String> adapterSubType =
+                new ArrayAdapter<>(this, R.layout.dropdown_item, arrState);
+
+        binding.editState.setAdapter(adapterSubType);
+        binding.editState.setOnItemClickListener((adapterView, view, i, l) -> {
+            selectedStateId = (i >= 0) ? arrStateId[i] : 0;
+        });
+    }
+
+
     private void clickEvent() {
         //button capture image
         binding.btnCaptureVenue.setOnClickListener(new View.OnClickListener() {
@@ -153,43 +195,55 @@ public class VenueData extends AppCompatActivity {
         });
 
         binding.btnRegister.setOnClickListener(v -> {
-            if (!checkGps()) {
-                permission();
-            } else {
-                gps = new GPSTracker(VenueData.this);
-                // check if GPS enabled
-                if (gps.canGetLocation()) {
-                    lastLatitude = gps.getLatitude();
-                    lastLongitude = gps.getLongitude();
-                }
-            }
+            if (Common.checkInternetConnectivity(VenueActivity.this)) {
+                if (!checkGps()) {
+                    permission();
+                } else {
+                    gps = new GPSTracker(VenueActivity.this);
+                    // check if GPS enabled
+                    if (gps.canGetLocation()) {
+                        lastLatitude = gps.getLatitude();
+                        lastLongitude = gps.getLongitude();
+                    }
 
-            if (Common.checkLatLong(ConstantField.TEST_LATITUDE, ConstantField.TEST_LONGITUDE)) {
-                //if (Common.checkLatLong(lastLatitude, lastLongitude)) {
-                if (checkValidation()) {
-                    try {
-                        progressDialog.show();
-                        binding.btnRegister.setEnabled(false);
-                        timerHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.d(TAG, "run: save attendance");
-                                saveVenueDetails();
-                            }
-                        }, 200);
-
-                    } catch (Exception e) {
-                        Log.e(TAG, "onClick: ", e);
-                    } finally {
-                        binding.btnRegister.setEnabled(true);
+                    if (Common.DEBUGGING) {
+                        lastLatitude = ConstantField.TEST_LATITUDE;
+                        lastLongitude = ConstantField.TEST_LONGITUDE;
                     }
                 }
-            } else {
-                locationErrorMessage(getResources().getString(R.string.incorrect_location_message)
-                        + getResources().getString(R.string.latitude) + String.valueOf(lastLatitude)
-                        + getResources().getString(R.string.longitude) + String.valueOf(lastLongitude));
-            }
+
+                //if (Common.checkLatLong(ConstantField.TEST_LATITUDE, ConstantField.TEST_LONGITUDE)) {
+                if (Common.checkLatLong(lastLatitude, lastLongitude)) {
+                    if (checkValidation()) {
+                        try {
+                            progressDialog.show();
+                            binding.btnRegister.setEnabled(false);
+                            timerHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "run: save attendance");
+                                    saveVenueDetails();
+                                }
+                            }, 200);
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "onClick: ", e);
+                        } finally {
+                            binding.btnRegister.setEnabled(true);
+                        }
+                    }
+                } else {
+                    locationErrorMessage(getResources().getString(R.string.incorrect_location_message)
+                            + getResources().getString(R.string.latitude) + String.valueOf(lastLatitude)
+                            + getResources().getString(R.string.longitude) + String.valueOf(lastLongitude));
+                }
+
+
+            } else
+                Common.showAlert(VenueActivity.this, getResources().getString(R.string.no_internet_connection));
         });
+
+
     }
 
     //launch camera
@@ -246,7 +300,7 @@ public class VenueData extends AppCompatActivity {
                 Common.getString(binding.editCity.getText().toString().trim()),
                 Common.getString(binding.editDistrict.getText().toString().trim()),
                 Common.getString(binding.editState.getText().toString().trim()),
-                29,
+                selectedStateId,
                 Common.getString(binding.editPinCode.getText().toString().trim()),
                 userId,
                 3,
@@ -359,7 +413,7 @@ public class VenueData extends AppCompatActivity {
     public void permission() {
         if (!checkGps()) {
             // notify user
-            AlertDialog.Builder dialog = new AlertDialog.Builder(VenueData.this);
+            AlertDialog.Builder dialog = new AlertDialog.Builder(VenueActivity.this);
             dialog.setMessage("Location Settings is turned off!! Please turn it on.");
             dialog.setCancelable(false);
             dialog.setPositiveButton("GO To Setup", new DialogInterface.OnClickListener() {
@@ -377,7 +431,7 @@ public class VenueData extends AppCompatActivity {
 
     //for checking GPS
     public boolean checkGps() {
-        LocationManager lm = (LocationManager) VenueData.this.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager lm = (LocationManager) VenueActivity.this.getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
 
@@ -399,7 +453,7 @@ public class VenueData extends AppCompatActivity {
     }
 
     private void locationErrorMessage(String s) {
-        new MaterialAlertDialogBuilder(VenueData.this, R.style.RoundShapeTheme)
+        new MaterialAlertDialogBuilder(VenueActivity.this, R.style.RoundShapeTheme)
                 .setTitle("Error").setMessage(s).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -417,7 +471,7 @@ public class VenueData extends AppCompatActivity {
         mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(() -> {
             progressDialog.dismiss();
-            new MaterialAlertDialogBuilder(VenueData.this, R.style.RoundShapeTheme)
+            new MaterialAlertDialogBuilder(VenueActivity.this, R.style.RoundShapeTheme)
                     .setTitle("Great").setMessage(s).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -443,8 +497,8 @@ public class VenueData extends AppCompatActivity {
     }
 
     // This function is called when the user accepts or decline the permission.
-    // Request Code is used to check which permission called this function.
-    // This request code is provided when the user is prompt for permission.
+// Request Code is used to check which permission called this function.
+// This request code is provided when the user is prompt for permission.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -488,7 +542,7 @@ public class VenueData extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(VenueData.this, "Captured image exceeds the free space in memory. " +
+                Toast.makeText(VenueActivity.this, "Captured image exceeds the free space in memory. " +
                         "Kindly free your phone memory and try again.", Toast.LENGTH_LONG).show();
                 //log exception in firebase
                 //new FirebaseLog().setFirebaseException(TAG, "onActivityResult()", e);
