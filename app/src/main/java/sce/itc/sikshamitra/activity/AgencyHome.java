@@ -125,7 +125,7 @@ public class AgencyHome extends AppCompatActivity {
             public void onClick(View v) {
                 Common.enableButton(binding.btnRetailOutreach,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, RetailOutReach.class);
+                    Intent intent = new Intent(AgencyHome.this, RetailOutReachActivity.class);
                     startActivity(intent);
                 } else {
                     requestPermission();

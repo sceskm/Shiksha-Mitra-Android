@@ -17,6 +17,8 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.CommunicationOn;
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.ComboProduct;
@@ -196,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean update = false;
         boolean isCheck;
         try {
-            if (version < 2){
+            if (version < 2) {
                 myDataBase.beginTransaction();
                 update = true;
                 // Add column to isp_attendance
@@ -534,9 +536,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean dataSaved = false;
 
         try {
-            deleteDownloadedSchool();
+            //deleteDownloadedSchool();
             ContentValues newEntry = new ContentValues();
-
             newEntry.put("SchoolId", schoolDetails.getSchoolId());
             newEntry.put("AssociateSchool", schoolDetails.getSchoolName());
             newEntry.put("SchoolGUID", schoolDetails.getSchoolGuid());
@@ -898,7 +899,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Fetch downloaded school data
      * */
     public Cursor getMySchoolData() {
-        String sql = "SELECT * FROM sp_school";
+        String sql = "SELECT * FROM sp_school WHERE SchoolGUID IS NOT NULL ORDER BY AssociateSchool ASC";
         return QueryDatabase(sql);
     }
 
@@ -910,6 +911,142 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getAllStates() {
         String sql = "SELECT * FROM sp_state ORDER BY StateName ASC";
         return QueryDatabase(sql);
+    }
+
+    // Save Store
+    public boolean saveDownloadedSchool(MySchoolData schoolDetails) {
+        boolean dataSaved = false;
+        Cursor cursorTest = null;
+        try {
+            ContentValues newEntry = new ContentValues();
+            newEntry.put("SchoolId", schoolDetails.getSchoolId());
+            newEntry.put("AssociateSchool", schoolDetails.getSchoolName());
+            newEntry.put("SchoolGUID", schoolDetails.getSchoolGuid());
+            newEntry.put("UDISECode", schoolDetails.getUdiseCode());
+            newEntry.put("District", schoolDetails.getDistrict());
+            newEntry.put("DistrictCode", schoolDetails.getDistrictCode());
+            newEntry.put("Block", schoolDetails.getBlockName());
+            newEntry.put("BlockCode", schoolDetails.getBlockCode());
+
+            cursorTest = checkSchoolByGuid(schoolDetails.getSchoolGuid());
+            long retVal = -1;
+            cursorTest.moveToFirst();
+            if (cursorTest.getCount() > 0) {
+                // update the row
+                String[] whereArgs = {String.valueOf(schoolDetails.getSchoolGuid())};
+                retVal = myDataBase.update("sp_school", newEntry, "SchoolGUID = ?", whereArgs);
+            } else {
+                // insert
+                retVal = myDataBase.insertOrThrow("sp_school", null, newEntry);
+            }
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            throw ex;
+        } finally {
+            if (cursorTest != null)
+                cursorTest.close();
+        }
+
+        return dataSaved;
+    }
+
+    // Check for Existing Store
+    public Cursor checkSchoolByGuid(String guid) {
+        String sql = "SELECT * " + " FROM sp_school " + " WHERE SchoolGUID = '" + guid + "'";
+        return QueryDatabase(sql);
+    }
+
+    //delete ids which are inactive
+    public boolean deleteIDs(String ids, String tableName, String coloumnName) {
+        try {
+            String sql = "DELETE FROM " + tableName + " WHERE " + coloumnName + " IN " + "(" + ids + ")";
+            myDataBase.execSQL(sql);
+        } catch (Exception ex) {
+            Log.e("TAG", "Deleted: IDs " + ex);
+        }
+        return true;
+    }
+
+    //last communication
+    public Cursor getLastCommDate(String action) {
+        String sql = "SELECT * FROM sp_communicationon WHERE Action = '" + action + "' ";
+
+        return QueryDatabase(sql);
+    }
+
+    public String getExistingID(String coloumnName, String tableName) {
+        int id = 0;
+        String ids = "";
+        Cursor cursor = this.getIDs(coloumnName, tableName);
+        cursor.moveToFirst();
+        while (cursor.isAfterLast() == false) {
+            id = cursor.getInt(0);
+            ids += String.valueOf(id) + ",";
+            cursor.moveToNext();
+        }
+        cursor.close();
+
+        //remove last comma using String.substring() method
+        if (!ids.isEmpty())
+            ids = ids.substring(0, ids.length() - 1);
+
+
+        return String.valueOf(ids);
+    }
+
+    // check for Existing ids
+    public Cursor getIDs(String coloumnName, String tableName) {
+        String sql = "SELECT " + coloumnName + " FROM " + tableName;
+
+        return QueryDatabase(sql);
+    }
+
+    //get last communication date
+    public boolean savedLastCommDate(String command) {
+        boolean saved = false;
+        CommunicationOn communicationOn = new CommunicationOn();
+        communicationOn.setAction(command);
+        communicationOn.setLastDate(Common.iso8601Format.format(new Date()));
+        saved = this.saveLastCommDate(communicationOn);
+
+        return saved;
+
+    }
+
+    public boolean saveLastCommDate(CommunicationOn communicationOn) {
+        Cursor cursorTest = null;
+        boolean dataSaved = false;
+        try {
+            // insert a row - we will always have only 1 row
+            ContentValues newEntry = new ContentValues();
+            newEntry.put("Action", communicationOn.getAction());
+            newEntry.put("LastDate", communicationOn.getLastDate());
+
+            cursorTest = getLastCommDate(communicationOn.getAction());
+
+            long retVal = -1;
+            cursorTest.moveToFirst();
+            if (cursorTest.getCount() > 0) {
+                // update the row
+                String[] whereArgs = {String.valueOf(communicationOn.getAction())};
+
+                retVal = myDataBase.update("isp_communicationOn", newEntry, "Action = ?", whereArgs);
+            } else {
+                // insert
+                retVal = myDataBase.insertOrThrow("isp_communicationOn", null, newEntry);
+            }
+            if (retVal > 0)
+                dataSaved = true;
+
+        } catch (SQLException ex) {
+            throw ex;
+        } finally {
+            if (cursorTest != null)
+                cursorTest.close();
+        }
+        return dataSaved;
     }
 
 

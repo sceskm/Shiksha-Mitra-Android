@@ -3,6 +3,8 @@ package sce.itc.sikshamitra.helper;
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
     public static final String APP_VERSION = "1.2.1";
+    public static final String SERVER_APP_VERSION = "310";
+
 
     public static final String IMAGE_FORMAT = "jpg";
     public static final String ORIGINAL_IMAGE_NAME = "siksha_";
@@ -66,6 +68,11 @@ public class ConstantField {
     public static final String USER_NAME_AGENCY = "agency";
     public static final String PASSWORD = "2233";
 
+    public static final String STATUS = "status";
+    public static final String DATA = "data";
+    public static final String DELETED_IDS = "deletedIds";
+    public static final String SCHOOL = "school";
+
     public static final int ROLE_ID_FIELD_TEAM = 4; // for agency - field team
     public static final int ROLE_ID_SHIKSHA_MITRA = 5; //for shiksha mitra - teacher
 
@@ -116,6 +123,11 @@ public class ConstantField {
     public static final int FINAL_SESSION_REWARD_3 = 30006;
     public static final int FINAL_SESSION_REWARD_4 = 30007;
     public static final int FINAL_SESSION_HW_SAMPLE = 30008;
+
+    //Retailer OutReach
+    public static final int RETAIL_IMAGE_SHOP = 130;
+    public static final int RETAIL_IMAGE_SHOP_IMAGE = 40001;
+
 
 
 

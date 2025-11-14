@@ -364,7 +364,6 @@ public class ConductedSessionBySM extends AppCompatActivity {
             }
         });
     }
-
     private void saveSession() {
         Session session = new Session();
 

@@ -1,0 +1,515 @@
+package sce.itc.sikshamitra.activity;
+
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.MediaStore;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.databinding.DataBindingUtil;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import sce.itc.sikshamitra.AlertCallBack;
+import sce.itc.sikshamitra.R;
+import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
+import sce.itc.sikshamitra.databinding.ActivityRetailOutReachBinding;
+import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.CompressedImage;
+import sce.itc.sikshamitra.helper.ConstantField;
+import sce.itc.sikshamitra.helper.GPSTracker;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
+import sce.itc.sikshamitra.model.RetailOutReachModel;
+
+public class RetailOutReachActivity extends AppCompatActivity {
+    private static final String TAG = "RetailOutReach";
+    private ActivityRetailOutReachBinding binding;
+    private Toolbar toolbar;
+    private DatabaseHelper dbHelper;
+
+    private GPSTracker gps;
+    private double lastLatitude = 0.0;
+    private double lastLongitude = 0.0;
+    private final RetailOutReachActivity context = RetailOutReachActivity.this;
+
+    //progress dialog for data upload
+    private ProgressDialog progressDialog;
+    private Handler mainHandler;
+    private String startDate = "";
+
+    /*
+     * Image 1
+     * */
+    private File photoFile;
+    private Uri uriImage1;
+    private String capturedImgStoragePathImage1 = "";
+    private Uri uriCompressedImage1;
+    private String imgImage1 = "";
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_retail_out_reach);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Retail OutReach");
+        }
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        populateData();
+        
+        clickEvents();
+
+    }
+
+    private void clickEvents() {
+        binding.btnSubmitRetailerData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Common.checkInternetConnectivity(RetailOutReachActivity.this)) {
+                    if (!checkGps()) {
+                        permission();
+                    } else {
+                        gps = new GPSTracker(RetailOutReachActivity.this);
+                        // check if GPS enabled
+                        if (gps.canGetLocation()) {
+                            lastLatitude = gps.getLatitude();
+                            lastLongitude = gps.getLongitude();
+                        }
+
+                        if (Common.DEBUGGING) {
+                            lastLatitude = ConstantField.TEST_LATITUDE;
+                            lastLongitude = ConstantField.TEST_LONGITUDE;
+                        }
+                    }
+                    if (Common.checkLatLong(lastLatitude, lastLongitude)) {
+                        if (checkValidation()) {
+                            try {
+                                progressDialog.show();
+                                binding.btnSubmitRetailerData.setEnabled(false);
+                                mainHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.d(TAG, "run: save attendance");
+                                        saveRetailData();
+                                        progressDialog.dismiss();
+                                    }
+                                }, 200);
+
+                            } catch (Exception e) {
+                                Log.e(TAG, "onClick: ", e);
+                            } finally {
+                                binding.btnSubmitRetailerData.setEnabled(true);
+                            }
+                        }
+                    } else {
+                        locationErrorMessage(getResources().getString(R.string.incorrect_location_message)
+                                + getResources().getString(R.string.latitude) + String.valueOf(lastLatitude)
+                                + getResources().getString(R.string.longitude) + String.valueOf(lastLongitude));
+                    }
+
+
+                } else
+                    Common.showAlert(RetailOutReachActivity.this, getResources().getString(R.string.no_internet_connection));
+
+            }
+        });
+
+        //Outside exterior image capture
+        binding.btnCapture1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (binding.btnCapture1.getText().toString().trim().equalsIgnoreCase(ConstantField.CAPTURE)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            launchCamera(ConstantField.RETAIL_IMAGE_SHOP);
+                        } else {
+                            ActivityCompat.requestPermissions(RetailOutReachActivity.this,
+                                    new String[]{Manifest.permission.CAMERA},
+                                    ConstantField.RETAIL_IMAGE_SHOP);
+                        }
+                    } else {
+                        launchCamera(ConstantField.RETAIL_IMAGE_SHOP);
+                    }
+
+                } else if (binding.btnCapture1.getText().toString().trim().equalsIgnoreCase(ConstantField.DELETE)) {
+                    Common.showDeleteImageAlert(RetailOutReachActivity.this, binding.btnCapture1, binding.imgCamera1, new AlertCallBack() {
+                        @Override
+                        public void onResult(boolean isDeleted) {
+                            if (isDeleted) {
+                                if (uriCompressedImage1 != null)
+                                    uriCompressedImage1 = null;
+                                if (!imgImage1.isEmpty())
+                                    imgImage1 = "";
+                            }
+
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void saveRetailData() {
+        try {
+            RetailOutReachModel retail = new RetailOutReachModel();
+            retail.setLatitude(Common.fourDecimalRoundOff(lastLatitude));
+            retail.setLongitude(Common.fourDecimalRoundOff(lastLongitude));
+            retail.setCreatedOn(Common.iso8601Format.format(new Date()));
+            //get data from fields
+            retail.setShopName(binding.editShopName.getText().toString().trim());
+            retail.setRetailOutreachGuid(Common.createGuid());
+            retail.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
+            //TODO - set organization id dynamically
+            retail.setOrganizationId(3);
+            retail.setNearbySchool("");
+            retail.setAddress1(binding.editAddressLine1.getText().toString().trim());
+            retail.setAddress2(binding.editAddressLine2.getText().toString().trim());
+            retail.setCity(binding.editCity.getText().toString().trim());
+            retail.setState(binding.editState.getText().toString().trim());
+            retail.setStateId(17);
+            retail.setPinCode(binding.editPinCode.getText().toString().trim());
+            retail.setContactName(binding.editContactPersonName.getText().toString().trim());
+            retail.setContactPhone(binding.editContactPersonPhoneNumber.getText().toString().trim());
+            retail.setContactName(binding.editContactPersonName.getText().toString().trim());
+            retail.setStockItcProducts(true);
+            retail.setBlock(binding.editBlock.getText().toString().trim());
+            retail.setBrandingInterested(true);
+            retail.setShopPainting(true);
+            retail.setDealerBoard(true);
+            retail.setPoster(true);
+            retail.setBunting(true);
+            retail.setHandwashPouchesSold(5);
+            retail.setSavlonSoapSold(4);
+            retail.setItcproductNames("Product1, Product2");
+            retail.setFmcgpurchaseFrom("Local Distributor");
+            retail.setDistributorDetails("Distributor XYZ, Contact: 1234567890");
+            retail.setMarketDetails("Local market details here");
+            retail.setImage1("image1.jpg");
+            retail.setImgDefinitionId1(123);
+
+
+
+            Toast.makeText(context, "Retail OutReach Data Saved Successfully", Toast.LENGTH_LONG).show();
+            finish();
+        } catch (Exception ex) {
+            Log.e(TAG, "saveRetailData: ", ex);
+            Toast.makeText(context, "Error in saving Retail OutReach Data", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void locationErrorMessage(String s) {
+        new MaterialAlertDialogBuilder(RetailOutReachActivity.this, R.style.RoundShapeTheme)
+                .setTitle("Error").setMessage(s).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                        dialogInterface.dismiss();
+
+                    }
+                }).setCancelable(false)
+                .show();
+
+
+    }
+
+    private boolean checkValidation() {
+        boolean ret = true;
+
+        //add validation code here
+
+        return ret;
+    }
+
+    private void populateData() {
+        dbHelper = new DatabaseHelper(this);
+        gps = new GPSTracker(context);
+
+        if (gps.canGetLocation()) {
+            lastLatitude = gps.getLatitude();
+            lastLongitude = gps.getLongitude();
+        } else {
+            gps.showSettingsAlert();
+        }
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("saving your data..");
+        progressDialog.setTitle("Please Wait..");
+        mainHandler = new Handler(Looper.getMainLooper());
+
+        startDate = Common.iso8601Format.format(new Date());
+    }
+
+    public void permission() {
+        if (!checkGps()) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(RetailOutReachActivity.this);
+            dialog.setMessage("Location Settings is turned off!! Please turn it on.");
+            dialog.setCancelable(false);
+            dialog.setPositiveButton("GO To Setup", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+                    //get gps
+                }
+            });
+            dialog.show();
+        }
+    }
+
+    //for checking GPS
+    public boolean checkGps() {
+        LocationManager lm = (LocationManager) RetailOutReachActivity.this.getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+            Log.e(TAG, "checkGps: ", ex);
+        }
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ex) {
+            Log.e(TAG, "checkGps: ", ex);
+        }
+
+        if (!gps_enabled && !network_enabled) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static File getFile(String fileName) {
+        File file = null;
+        try {
+            file = new File("", fileName);
+            if (file.exists()) {
+                return file;
+            } else {
+                return null;
+            }
+
+        } catch (Exception ex) {
+            file = null;
+        }
+
+        return file;
+    }
+
+    public static String getImageName(String fullString) {
+        String imagename = "";
+        String[] separated = fullString.split("/");
+        imagename = separated[10];
+        return imagename;
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 110) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permissions granted, proceed with image capture
+                Toast.makeText(context, "Permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                // Permission denied. You can handle this case, show an explanation, or disable functionality that requires the permission.
+                Toast.makeText(this, "Permissions required to capture images", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    private void launchCamera(int cameraRequest) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            photoFile = createImageFile(ConstantField.ORIGINAL_IMAGE_NAME);
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(
+                        this,
+                        "sce.itc.sikshamitra.fileprovider",
+                        photoFile
+                );
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
+                if (cameraRequest == ConstantField.RETAIL_IMAGE_SHOP) {
+                    uriImage1 = photoURI;
+                    capturedImgStoragePathImage1 = photoFile.getAbsolutePath();
+                    startActivityForResult(takePictureIntent, ConstantField.RETAIL_IMAGE_SHOP);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            try {
+                if (requestCode == ConstantField.RETAIL_IMAGE_SHOP) {
+                    binding.imgCamera1.setBackgroundResource(0);
+                    onCaptureImageResult(data, 1);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(RetailOutReachActivity.this, "Captured image exceeds the free space in memory. " +
+                        "Kindly free your phone memory and try again.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private File createImageFile(String filename) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imgfilename = filename + timeStamp;
+
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imgfilename /* prefix */, ConstantField.IMAGE_FORMAT,/* suffix */storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        Log.d(TAG, "createImageFile: Image File" + image.getPath());
+        Log.d(TAG, "createImageFile: Image Absolute path" + image.getAbsolutePath());
+
+        return image;
+    }
+
+    private void onCaptureImageResult(Intent data, int i) {
+        try {
+            if (i == 1) {
+                File f2 = getFile(capturedImgStoragePathImage1); //return original path
+                //compress the original image
+                //Common.getFileSize(f2);
+                CompressedImage getCompress = new CompressedImage(this);
+                String compressedImageStoragePath = getCompress.compressImage(capturedImgStoragePathImage1);
+                //Log.d(TAG, "onCaptureImageResult: " + compressedImageStoragePath);
+                //just testing-if we dont get compressed file then set original path
+                //if image is not compressed we can use the original image
+                if (!compressedImageStoragePath.isEmpty())
+                    imgImage1 = compressedImageStoragePath;
+                else
+                    imgImage1 = capturedImgStoragePathImage1;
+
+                if (!imgImage1.isEmpty())
+                    uriCompressedImage1 = Uri.parse(ConstantField.COMPRESS_PHOTO_URI + getImageName(imgImage1));
+
+                Log.d(TAG, "onCaptureFImageResult: " + uriCompressedImage1);
+
+                binding.imgCamera1.setImageURI(uriCompressedImage1);
+                binding.btnCapture1.setText("DELETE");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        try {
+            savedInstanceState.putString("Img1", imgImage1);
+
+
+            savedInstanceState.putString("capturedImg1", capturedImgStoragePathImage1);
+
+            if (uriCompressedImage1 != null) {
+                savedInstanceState.putParcelable("uriImg1", uriCompressedImage1);
+            }
+
+        } catch (Exception ex) {
+            Log.e(TAG, "onSaveInstanceState: ", ex);
+        }
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        try {
+            imgImage1 = savedInstanceState.getString("Img1");
+
+
+            capturedImgStoragePathImage1 = savedInstanceState.getString("capturedImg1");
+
+
+
+            if (savedInstanceState.getParcelable("uriImg1") != null) {
+                uriCompressedImage1 = savedInstanceState.getParcelable("uriImg1");
+                binding.imgCamera1.setImageURI(uriCompressedImage1);
+                binding.btnCapture1.setText("DELETE");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "onRestoreInstanceState: ", e);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Exit")
+                .setMessage("Do you want to exit? Your data will loss.")
+                .setCancelable(false)
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    finish(); // Close the activity
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    dialog.dismiss(); // Close the dialog only
+                })
+                .show();
+    }
+}

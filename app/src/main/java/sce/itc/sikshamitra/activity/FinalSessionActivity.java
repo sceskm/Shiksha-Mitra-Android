@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,15 +45,16 @@ import java.util.Date;
 import sce.itc.sikshamitra.AlertCallBack;
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
-import sce.itc.sikshamitra.databinding.ActivityFinalSessionBinding;
 import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.CompressedImage;
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.GPSTracker;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
+import sce.itc.sikshamitra.model.Session;
 
 public class FinalSessionActivity extends AppCompatActivity {
     public static final String TAG = FinalSessionActivity.class.getSimpleName();
-    private ActivityFinalSessionBinding binding;
+    private sce.itc.sikshamitra.databinding.ActivityFinalSessionBinding binding;
     private Toolbar toolbar;
     private DatabaseHelper dbHelper;
 
@@ -63,6 +66,7 @@ public class FinalSessionActivity extends AppCompatActivity {
     //progress dialog for data upload
     private ProgressDialog progressDialog;
     private Handler mainHandler;
+    private String startDate = "";
 
     /*
      * Image 1
@@ -101,36 +105,43 @@ public class FinalSessionActivity extends AppCompatActivity {
     private String imgImage4 = "";
 
     /*
-    * Image 5
-    * */
+     * Image 5
+     * */
     private Uri uriImage5;
     private String capturedImgStoragePathImage5 = "";
     private Uri uriCompressedImage5;
     private String imgImage5 = "";
 
     /*
-    * Image 6
-    * */
+     * Image 6
+     * */
     private Uri uriImage6;
     private String capturedImgStoragePathImage6 = "";
     private Uri uriCompressedImage6;
     private String imgImage6 = "";
 
     /*
-    * Image 7
-    * */
+     * Image 7
+     * */
     private Uri uriImage7;
     private String capturedImgStoragePathImage7 = "";
     private Uri uriCompressedImage7;
     private String imgImage7 = "";
 
     /*
-    * Image 8
-    * */
+     * Image 8
+     * */
     private Uri uriImage8;
     private String capturedImgStoragePathImage8 = "";
     private Uri uriCompressedImage8;
     private String imgImage8 = "";
+
+    private String[] arrSchool;
+    private String[] arrSchoolGuid;
+    private int[] arrSchoolId;
+    private int selectedSchoolId = -1;
+    private String selectedSchoolGuid = "";
+    private String selectedSchool = "";
 
 
     @Override
@@ -154,6 +165,8 @@ public class FinalSessionActivity extends AppCompatActivity {
 
         populateData();
 
+        populateSchools();
+
         clickEvent();
     }
 
@@ -173,6 +186,47 @@ public class FinalSessionActivity extends AppCompatActivity {
         progressDialog.setMessage("saving your data..");
         progressDialog.setTitle("Please Wait..");
         mainHandler = new Handler(Looper.getMainLooper());
+
+        startDate = Common.iso8601Format.format(new Date());
+    }
+
+    private void populateSchools() {
+        // Currently no implementation for populating schools
+        Cursor cursorState = dbHelper.getMySchoolData();
+        if (cursorState != null && cursorState.getCount() > 0) {
+
+            arrSchool = new String[cursorState.getCount()];
+            arrSchoolGuid = new String[cursorState.getCount()];
+            arrSchoolId = new int[cursorState.getCount()];
+
+            int i = 0;
+            if (cursorState.moveToFirst()) {
+                do {
+                    arrSchool[i] = cursorState.getString(cursorState.getColumnIndexOrThrow("AssociateSchool"));
+                    arrSchoolGuid[i] = cursorState.getString(cursorState.getColumnIndexOrThrow("SchoolGUID"));
+                    arrSchoolId[i] = cursorState.getInt(cursorState.getColumnIndexOrThrow("SchoolId"));
+                    i++;
+                } while (cursorState.moveToNext());
+            }
+        }
+
+        cursorState.close();
+
+        ArrayAdapter<String> adapterSubType =
+                new ArrayAdapter<>(this, R.layout.dropdown_item, arrSchool);
+
+        binding.editSchoolName.setAdapter(adapterSubType);
+        binding.editSchoolName.setOnItemClickListener((adapterView, view, i, l) -> {
+            if (i >= 0) {
+                selectedSchoolId = arrSchoolId[i];
+                selectedSchool = arrSchool[i];
+                selectedSchoolGuid = arrSchoolGuid[i];
+            } else {
+                selectedSchoolId = 0;
+                selectedSchool = "";
+                selectedSchoolGuid = "";
+            }
+        });
     }
 
     private void clickEvent() {
@@ -519,9 +573,85 @@ public class FinalSessionActivity extends AppCompatActivity {
 
 
     }
+
     //Saved final session data
     private void saveFinalSession() {
         // Currently no implementation for saving final session data
+        Session session = new Session();
+
+        String studentNo = Common.getString(binding.editNoOfStudents.getText().toString().trim());
+        //int sessionNo = Common.getInt(Common.getString(binding.edit.getText().toString().trim()));
+        session.setSessionNo(7);
+        session.setNoOfStudent(Common.getInt(studentNo));
+        session.setSchoolName("Test School Name");
+
+        session.setImg1(uriCompressedImage1.toString());
+        session.setImgDefinitionId1(ConstantField.FINAL_SESSION_IMAGE_EXTERIOR);
+
+        session.setImg2(uriCompressedImage2.toString());
+        session.setImgDefinitionId2(ConstantField.FINAL_SESSION_QUIZ_PROGRESS_1);
+
+        session.setImg3(uriCompressedImage3.toString());
+        session.setImgDefinitionId3(ConstantField.FINAL_SESSION_QUIZ_PROGRESS_2);
+
+        session.setImg4(uriCompressedImage4.toString());
+        session.setImgDefinitionId4(ConstantField.FINAL_SESSION_REWARD_1);
+
+        session.setImg5(uriCompressedImage5.toString());
+        session.setImgDefinitionId5(ConstantField.FINAL_SESSION_REWARD_2);
+
+        session.setImg6(uriCompressedImage6.toString());
+        session.setImgDefinitionId6(ConstantField.FINAL_SESSION_REWARD_3);
+
+        session.setImg7(uriCompressedImage7.toString());
+        session.setImgDefinitionId7(ConstantField.FINAL_SESSION_REWARD_4);
+
+        session.setImg8(uriCompressedImage8.toString());
+        session.setImgDefinitionId8(ConstantField.FINAL_SESSION_HW_SAMPLE);
+
+
+        session.setSessionGuid(Common.createGuid());
+        session.setSchoolGuid("schoolGuid");
+        session.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
+
+        session.setLatitude(Common.fourDecimalRoundOff(lastLatitude));
+        session.setLongitude(Common.fourDecimalRoundOff(lastLongitude));
+
+        session.setSessionStart(startDate);
+        session.setSessionEnd(Common.iso8601Format.format(new Date()));
+
+        session.setRemarks(Common.getString(binding.editRemarks.getText().toString().trim()));
+
+        //Communication
+        session.setCommunicationAttempt(0);
+        session.setCommunicationGuid(Common.createGuid());
+        session.setCommunicationStatus(ConstantField.COMM_STATUS_NOT_PROCESSED);
+
+        if (dbHelper.saveSession(session)) {
+            PreferenceCommon.getInstance().setLastSessionCount(7);
+            showSuccessAlert("Data saved successfully. Please upload the data from the 'Synchronise' page.");
+            Toast.makeText(this, "Data saved successfully.", Toast.LENGTH_SHORT).show();
+        } else {
+            showSuccessAlert("Something went wrong.");
+            Toast.makeText(this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showSuccessAlert(String s) {
+        mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
+            progressDialog.dismiss();
+            new MaterialAlertDialogBuilder(FinalSessionActivity.this, R.style.RoundShapeTheme)
+                    .setTitle("Great").setMessage(s).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                            dialogInterface.dismiss();
+
+                        }
+                    }).setCancelable(false)
+                    .show();
+        });
     }
 
     private void launchCamera(int cameraRequest) {
@@ -553,8 +683,7 @@ public class FinalSessionActivity extends AppCompatActivity {
                     uriImage4 = photoURI;
                     capturedImgStoragePathImage4 = photoFile.getAbsolutePath();
                     startActivityForResult(takePictureIntent, ConstantField.REQUEST_FINAL_SESSION_REWARD_1);
-                }
-                else if (cameraRequest == ConstantField.REQUEST_FINAL_SESSION_REWARD_2) {
+                } else if (cameraRequest == ConstantField.REQUEST_FINAL_SESSION_REWARD_2) {
                     uriImage5 = photoURI;
                     capturedImgStoragePathImage5 = photoFile.getAbsolutePath();
                     startActivityForResult(takePictureIntent, ConstantField.REQUEST_FINAL_SESSION_REWARD_2);
@@ -725,7 +854,7 @@ public class FinalSessionActivity extends AppCompatActivity {
 
                 binding.imgRewarded1.setImageURI(uriCompressedImage4);
                 binding.btnCapture4.setText("DELETE");
-            }else if (i == 5) {
+            } else if (i == 5) {
                 File f2 = getFile(capturedImgStoragePathImage5); //return original path
                 //compress the original image
                 //Common.getFileSize(f2);

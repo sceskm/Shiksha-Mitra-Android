@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.icu.text.DecimalFormat;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -364,6 +365,21 @@ public class Common {
         String[] separated = fullString.split(" ");
         endPart = separated[1];
         return endPart;
+    }
+
+    public static double fourDecimalRoundOff(double value) {
+        double retvalue = 0.00;
+        DecimalFormat newFormat = new DecimalFormat("#.####");
+        Double d = new Double(value);
+        try {
+            if (d != null)
+                retvalue = Double.valueOf(newFormat.format(d));
+        } catch (Exception e) {
+
+        }
+
+        return retvalue;
+
     }
 
 

@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 import okhttp3.MediaType;
@@ -35,9 +36,11 @@ import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.CommunicationOn;
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.NetworkUtils;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
+import sce.itc.sikshamitra.helper.ProcessResponse;
 import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.Image;
 import sce.itc.sikshamitra.model.Session;
@@ -306,6 +309,54 @@ public class Synchronise extends AppCompatActivity {
         }
     }
 
+    //Download school list
+    private void schoolList() {
+        String schoolListResponse = "";
+        // create your json here
+        String ids = dbHelper.getExistingID("SchoolId", "sp_school");
+
+        JSONObject jsonObject = new JSONObject();
+        JSONObject objData = new JSONObject();
+        try {
+            //get last communication data
+            String lastDate = fetchLastCommDate(Command.SCHOOL_LIST);
+
+            objData.put("lastDate", lastDate);
+            objData.put("existingIds", ids);
+
+            jsonObject.put(Command.COMMAND, Command.SCHOOL_LIST);
+            jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
+            jsonObject.put(Command.DATA, objData.toString());
+            jsonObject.put(Command.COMMAND_GUID, UUID.randomUUID().toString());
+            jsonObject.put(Command.PROCESS_COUNT, 1);
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+            Response response = NetworkUtils.excuteNetworkRequest(NETWORK_URL + ACTION_URL,
+                    body, true);
+            if (response != null) {
+                ResponseBody responseBody = response.body();
+                if (response.isSuccessful()) {
+                    schoolListResponse = responseBody.string();
+                    ProcessResponse processResponse = new ProcessResponse(this);
+                    processResponse.processSchoolList(schoolListResponse);
+                    Log.d(TAG, "onResponse: SchoolList" + schoolListResponse);
+                    //AFTER PROCESSING -save last date
+                    dbHelper.savedLastCommDate(Command.SCHOOL_LIST);
+                } else {
+                    //just increase the error count
+                    errorCount++;
+                    Log.e(TAG, "storeList: ");
+                }
+            }
+        } catch (Exception e) {
+            errorCount++;
+            e.printStackTrace();
+            Log.e(TAG, "storeList: ", e);
+        }
+    }
+
     @Override
     public void onBackPressed() {
     }
@@ -342,5 +393,26 @@ public class Synchronise extends AppCompatActivity {
 
             imageList.add(imgVenue);
         }
+    }
+    private String fetchLastCommDate(String action) {
+        CommunicationOn communicationOn = new CommunicationOn();
+        String lastDate = ConstantField.DEFAULT_DATE;
+        String last;
+        Cursor cursor = dbHelper.getLastCommDate(action);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            communicationOn.populateFromCursor(cursor);
+            last = communicationOn.getLastDate();
+            try {
+                if (!last.isEmpty() && Common.stringToDate(last) != null)
+                    lastDate = last;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        cursor.close();
+
+        return lastDate;
     }
 }

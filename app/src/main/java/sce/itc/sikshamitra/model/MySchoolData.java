@@ -2,6 +2,15 @@ package sce.itc.sikshamitra.model;
 
 import android.database.Cursor;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import sce.itc.sikshamitra.helper.Common;
+
 public class MySchoolData {
     private int schoolId;
     private String schoolGuid;
@@ -21,7 +30,6 @@ public class MySchoolData {
     private double latitude;
     private double longitude;
     private String state;
-
 
 
     public int getSchoolId() {
@@ -218,6 +226,29 @@ public class MySchoolData {
         this.setEmail(cursor.getString(emailCol));
         //this.setContactName(cursor.getString(contactNameCol));
         //this.setContactNumber(cursor.getString(contactNumberCol));
+    }
+
+    public static MySchoolData downloadMySchool(JSONObject jsonObject) {
+
+        MySchoolData school = null;
+        JSONObject schoolObject = null;
+
+        try {
+            schoolObject = jsonObject;
+            school = new MySchoolData();
+            school.schoolId = Common.getInt(schoolObject.getString("schoolId"));
+            school.schoolGuid = Common.getString(schoolObject.getString("schoolGuid"));
+            school.schoolName = Common.getString(schoolObject.getString("schoolName"));
+            school.udiseCode = Common.getString(schoolObject.getString("udiseCode"));
+            school.blockCode = Common.getString(schoolObject.getString("blockCode"));
+            school.blockName = Common.getString(schoolObject.getString("blockName"));
+            school.districtCode = Common.getString(schoolObject.getString("districtCode"));
+            school.district = Common.getString(schoolObject.getString("district"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return school;
     }
 
 

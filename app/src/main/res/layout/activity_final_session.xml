@@ -38,12 +38,21 @@
                     android:layout_height="wrap_content"
                     android:text="@string/name_of_the_school_being_visited" />
 
-                <EditText
-                    android:id="@+id/edit_school_name"
-                    android:inputType="text"
-                    style="@style/AppEditTextStyle"
-                    android:maxLines="1"
-                    android:maxLength="50"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edit_school_layout"
+                    style="@style/primary_dropdown_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Item 1">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/edit_school_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Facade photo -->
                 <TextView

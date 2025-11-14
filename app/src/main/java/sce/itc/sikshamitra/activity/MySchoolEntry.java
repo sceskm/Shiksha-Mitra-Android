@@ -43,7 +43,7 @@ public class MySchoolEntry extends AppCompatActivity {
     //progress dialog for data upload
     private ProgressDialog progressDialog;
     private Handler mainHandler;
-    private Handler timerHandler = new Handler();
+    //private Handler timerHandler = new Handler();
 
     private List<MySchoolData> schoolList;
 
@@ -161,8 +161,6 @@ public class MySchoolEntry extends AppCompatActivity {
 
     private void populateUserData() {
         try {
-
-
             Cursor cursor = dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();

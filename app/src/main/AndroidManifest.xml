@@ -48,7 +48,7 @@
             android:name=".activity.VenueActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.RetailOutReach"
+            android:name=".activity.RetailOutReachActivity"
             android:exported="false"
             />
         <activity

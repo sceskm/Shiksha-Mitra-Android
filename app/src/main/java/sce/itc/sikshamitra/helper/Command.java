@@ -9,6 +9,8 @@ public class Command {
     public static final String ADD_TEACHER = "ADDTEACHER";
     public static final String UDISE_DETAILS = "UDISEDETAILS";
     public static final String TEACHER_SESSION = "TEACHERSESSION";
+    public static final String SCHOOL_LIST = "SCHOOLLIST";
+    public static final String ADD_RETAIL = "ADDREALTOR";
 
 
     public static final String COMMAND = "command";

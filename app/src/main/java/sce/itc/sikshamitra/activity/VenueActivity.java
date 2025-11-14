@@ -20,7 +20,6 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -28,7 +27,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -126,7 +124,7 @@ public class VenueActivity extends AppCompatActivity {
 
         populateData();
 
-        populateSubTypes();
+        populateStates();
 
         clickEvent();
     }
@@ -149,7 +147,7 @@ public class VenueActivity extends AppCompatActivity {
 
     }
 
-    private void populateSubTypes() {
+    private void populateStates() {
         Cursor cursorState = dbHelper.getAllStates();
         if (cursorState != null && cursorState.getCount() > 0) {
 

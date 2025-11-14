@@ -23,6 +23,8 @@ public class Session {
     private int sessionNo;
     @Expose
     private String schoolGuid;
+    @Expose(serialize = false)
+    private String schoolName;
     @Expose
     private int noOfStudent;
 
@@ -40,6 +42,8 @@ public class Session {
     private String img6;
     @Expose(serialize = false)
     private String img7;
+    @Expose(serialize = false)
+    private String img8;
 
     @Expose
     private String sessionStart;
@@ -75,6 +79,8 @@ public class Session {
     private int imgDefinitionId6;
     @Expose(serialize = false)
     private int imgDefinitionId7;
+    @Expose(serialize = false)
+    private int imgDefinitionId8;
 
     @Expose(serialize = false)
     private String imgExt1;
@@ -90,6 +96,8 @@ public class Session {
     private String imgExt6;
     @Expose(serialize = false)
     private String imgExt7;
+    @Expose(serialize = false)
+    private String imgExt8;
 
     @Expose
     private List<Image> images;
@@ -145,6 +153,110 @@ public class Session {
     /*
     * Setter Getter
     * */
+
+    public String getImg8() {
+        return img8;
+    }
+
+    public void setImg8(String img8) {
+        this.img8 = img8;
+    }
+
+    public int getImgDefinitionId8() {
+        return imgDefinitionId8;
+    }
+
+    public void setImgDefinitionId8(int imgDefinitionId8) {
+        this.imgDefinitionId8 = imgDefinitionId8;
+    }
+
+    public String getImgExt8() {
+        return imgExt8;
+    }
+
+    public void setImgExt8(String imgExt8) {
+        this.imgExt8 = imgExt8;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public String getImg5() {
+        return img5;
+    }
+
+    public void setImg5(String img5) {
+        this.img5 = img5;
+    }
+
+    public String getImg6() {
+        return img6;
+    }
+
+    public void setImg6(String img6) {
+        this.img6 = img6;
+    }
+
+    public String getImg7() {
+        return img7;
+    }
+
+    public void setImg7(String img7) {
+        this.img7 = img7;
+    }
+
+    public int getImgDefinitionId5() {
+        return imgDefinitionId5;
+    }
+
+    public void setImgDefinitionId5(int imgDefinitionId5) {
+        this.imgDefinitionId5 = imgDefinitionId5;
+    }
+
+    public int getImgDefinitionId6() {
+        return imgDefinitionId6;
+    }
+
+    public void setImgDefinitionId6(int imgDefinitionId6) {
+        this.imgDefinitionId6 = imgDefinitionId6;
+    }
+
+    public int getImgDefinitionId7() {
+        return imgDefinitionId7;
+    }
+
+    public void setImgDefinitionId7(int imgDefinitionId7) {
+        this.imgDefinitionId7 = imgDefinitionId7;
+    }
+
+    public String getImgExt5() {
+        return imgExt5;
+    }
+
+    public void setImgExt5(String imgExt5) {
+        this.imgExt5 = imgExt5;
+    }
+
+    public String getImgExt6() {
+        return imgExt6;
+    }
+
+    public void setImgExt6(String imgExt6) {
+        this.imgExt6 = imgExt6;
+    }
+
+    public String getImgExt7() {
+        return imgExt7;
+    }
+
+    public void setImgExt7(String imgExt7) {
+        this.imgExt7 = imgExt7;
+    }
 
     public int getSessionId() {
         return sessionId;
