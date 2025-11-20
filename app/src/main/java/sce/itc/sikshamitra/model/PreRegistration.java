@@ -39,8 +39,11 @@ public class PreRegistration {
     @SerializedName("organizationId")
     private int organizationId;
     @Expose
-    @SerializedName("trainerKit")
-    private boolean trainerKit;
+    @SerializedName("email")
+    private String emailAddress;
+    @Expose
+    @SerializedName("city")
+    private String village;
 
     @Expose
     @SerializedName("productsReceived")
@@ -120,13 +123,19 @@ public class PreRegistration {
     public void setOrganizationId(int organizationId) {
         this.organizationId = organizationId;
     }
-    public boolean isTrainerKit() {
-        return trainerKit;
-    }
-    public void setTrainerKit(boolean trainerKit) {
-        this.trainerKit = trainerKit;
-    }
 
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+    public String getVillage() {
+        return village;
+    }
+    public void setVillage(String village) {
+        this.village = village;
+    }
 
     //create attendance from json
     public static Venue fromJson(String json) {

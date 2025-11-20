@@ -412,7 +412,7 @@ public class AddTrainingToSMActivity extends AppCompatActivity {
                                 if (progressDialog.isShowing()) progressDialog.dismiss();
                                 binding.btnSubmit.setEnabled(true);
                                 if (response.isSuccessful()) {
-                                    showSuccessAlert("Data submitted", responseBody);
+                                    showSuccessAlert("Submitted Successfully", "Training data submitted successfully.");
                                 } else {
                                     Toast.makeText(AddTrainingToSMActivity.this, "Server error during submission. - " + responseBody, Toast.LENGTH_LONG).show();
                                 }

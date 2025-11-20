@@ -834,10 +834,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean deleteEnteredVenueData(Venue venue) {
         try {
             String sql = "DELETE FROM sp_venue WHERE VenueGUID=" + "'" + venue.getVenueGuid() + "'";
-
-            myDataBase.execSQL(sql);
-
-            sql = "DELETE FROM sp_communicationsend WHERE CommunicationGUID=" + "'" + venue.getCommunicationGuid() + "'";
             myDataBase.execSQL(sql);
         } catch (Exception ex) {
             Log.e(TAG, "Deleted:" + ex);

@@ -44,6 +44,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,6 +69,7 @@ import sce.itc.sikshamitra.helper.NetworkUtils;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.Image;
+import sce.itc.sikshamitra.model.TrainingSM;
 import sce.itc.sikshamitra.model.Venue;
 
 public class VenueActivity extends AppCompatActivity {
@@ -85,8 +87,6 @@ public class VenueActivity extends AppCompatActivity {
 
     //progress dialog for data upload
     private ProgressDialog progressDialog;
-    private Handler mainHandler;
-    private Handler timerHandler = new Handler();
 
     public static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
 
@@ -144,7 +144,6 @@ public class VenueActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("saving your data..");
         progressDialog.setTitle("Please Wait..");
-        mainHandler = new Handler(Looper.getMainLooper());
 
     }
 
@@ -193,53 +192,56 @@ public class VenueActivity extends AppCompatActivity {
             }
         });
 
-        binding.btnRegister.setOnClickListener(v -> {
-            if (Common.checkInternetConnectivity(VenueActivity.this)) {
-                if (!checkGps()) {
-                    permission();
-                } else {
-                    gps = new GPSTracker(VenueActivity.this);
-                    // check if GPS enabled
-                    if (gps.canGetLocation()) {
-                        lastLatitude = gps.getLatitude();
-                        lastLongitude = gps.getLongitude();
-                    }
-
-                    if (Common.DEBUGGING) {
-                        lastLatitude = ConstantField.TEST_LATITUDE;
-                        lastLongitude = ConstantField.TEST_LONGITUDE;
-                    }
-                }
-
-                //if (Common.checkLatLong(ConstantField.TEST_LATITUDE, ConstantField.TEST_LONGITUDE)) {
-                if (Common.checkLatLong(lastLatitude, lastLongitude)) {
-                    if (checkValidation()) {
-                        try {
-                            progressDialog.show();
-                            binding.btnRegister.setEnabled(false);
-                            timerHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Log.d(TAG, "run: save attendance");
-                                    saveVenueDetails();
-                                }
-                            }, 200);
-
-                        } catch (Exception e) {
-                            Log.e(TAG, "onClick: ", e);
-                        } finally {
-                            binding.btnRegister.setEnabled(true);
+        binding.btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Common.checkInternetConnectivity(VenueActivity.this)) {
+                    if (!checkGps()) {
+                        permission();
+                    } else {
+                        gps = new GPSTracker(VenueActivity.this);
+                        // check if GPS enabled
+                        if (gps.canGetLocation()) {
+                            lastLatitude = gps.getLatitude();
+                            lastLongitude = gps.getLongitude();
                         }
                     }
-                } else {
-                    locationErrorMessage(getResources().getString(R.string.incorrect_location_message)
-                            + getResources().getString(R.string.latitude) + String.valueOf(lastLatitude)
-                            + getResources().getString(R.string.longitude) + String.valueOf(lastLongitude));
+                    if (Common.checkLatLong(lastLatitude, lastLongitude)) {
+                        if (checkValidation()) {
+                            binding.btnRegister.setEnabled(false); // disable to avoid multiple click
+                            // use static-safe handler to avoid memory leak
+                            handler.postDelayed(() -> {
+                                try {
+                                    Log.d(TAG, "run: save attendance");
+
+                                    // 1. Create model from UI form fields
+                                    Venue model = saveVenueDetails();
+
+                                    // 2. Call confirmation API
+                                    callNetworkApi(model);
+
+
+                                } catch (Exception e) {
+                                    Log.e(TAG, "onClick error: ", e);
+                                    binding.btnRegister.setEnabled(true); // recover
+                                }
+
+                            }, 200); // 200ms delay
+
+
+                        }
+                    }else {
+                        locationErrorMessage(getResources().getString(R.string.incorrect_location_message)
+                                + getResources().getString(R.string.latitude) + String.valueOf(lastLatitude)
+                                + getResources().getString(R.string.longitude) + String.valueOf(lastLongitude));
+                    }
+
+                }else {
+                    Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
                 }
 
 
-            } else
-                Common.showAlert(VenueActivity.this, getResources().getString(R.string.no_internet_connection));
+            }
         });
 
 
@@ -273,7 +275,7 @@ public class VenueActivity extends AppCompatActivity {
 
     }
 
-    private void saveVenueDetails() {
+    private Venue saveVenueDetails() {
         String scheduledDate = Common.iso8601Format.format(new Date());
         int userId = PreferenceCommon.getInstance().getUserId();
 
@@ -313,73 +315,68 @@ public class VenueActivity extends AppCompatActivity {
         data.setImageFile(imagePath);
         data.setImageExt(ConstantField.IMAGE_FORMAT);
 
-        if (dbHelper.saveVenueData(data)) {
-            callNetworkApi(data);
-        } else {
-            progressDialog.dismiss();
-            Common.showAlert(context, getResources().getString(R.string.data_not_saved_message));
-        }
+        return data;
     }
 
     /*
      * Call network api to upload data
      * */
     private void callNetworkApi(Venue attendanceDetail) {
-        //just now saved unprocessed message
-        Cursor cursorCount = dbHelper.currentUnprocessedCommSendMessage(Command.ADD_VENUE,
-                PreferenceCommon.getInstance().getUserGUID(), attendanceDetail.getCommunicationGuid());
-        if (cursorCount.getCount() > 0) {
-            cursorCount.moveToFirst();
-            CommunicationSend communicationSend = new CommunicationSend();
-            communicationSend.populateFromCursor(cursorCount);
-            if (!communicationSend.getCommandDetails().isEmpty()) {
-                Venue attendance = Venue.fromJson(communicationSend.getCommandDetails());
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put(Command.COMMAND, Command.ADD_VENUE);
-                    jsonObject.put(Command.DATA, attendance.getJson());
-                    jsonObject.put(Command.COMMAND_GUID, communicationSend.getCommunicationGUID());
-                    jsonObject.put(Command.PROCESS_COUNT, 0);
-                    jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
-                    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                    RequestBody body = RequestBody.create(JSON, jsonObject.toString());
-                    final OkHttpClient client = new OkHttpClient()
-                            .newBuilder()
-                            .connectTimeout(30, TimeUnit.SECONDS)
-                            .writeTimeout(30, TimeUnit.SECONDS)
-                            .readTimeout(30, TimeUnit.SECONDS)
-                            .build();
-                    client.newCall(NetworkUtils.enqueNetworkRequest(ConstantField.NETWORK_URL + ConstantField.ACTION_URL, body, true))
-                            .enqueue(new Callback() {
-                                @Override
-                                public void onFailure(Call call, IOException e) {
-                                    //delete entered venue data
-                                    dbHelper.deleteEnteredVenueData(attendance);
-                                    showErrorAlert("Network connection failed","Something went wrong.Try again later.");
-                                }
+        progressDialog.setMessage("Saving venue data...");
+        progressDialog.show();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Command.COMMAND, Command.ADD_VENUE);
+            jsonObject.put(Command.DATA, attendanceDetail.getJson());
+            jsonObject.put(Command.COMMAND_GUID, Common.createGuid());
+            jsonObject.put(Command.PROCESS_COUNT, 0);
+            jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+            final OkHttpClient client = new OkHttpClient()
+                    .newBuilder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
+            client.newCall(NetworkUtils.enqueNetworkRequest(ConstantField.NETWORK_URL + ConstantField.ACTION_URL, body, true))
+                    .enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            //delete entered venue data
+                            runOnUiThread(() -> {
+                                //dbHelper.deleteEnteredVenueData(attendanceDetail);
+                                if (progressDialog.isShowing()) progressDialog.dismiss();
+                                binding.btnRegister.setEnabled(true);
+                                Toast.makeText(VenueActivity.this, "Submission failed. Try again.", Toast.LENGTH_LONG).show();
+                            });
+                        }
 
-                                @Override
-                                public void onResponse(Call call, Response response) throws IOException {
-                                    String successMsg = response.body().string();
-                                    if (response.isSuccessful()) {
-                                        //update communication
-                                        dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
-                                                ConstantField.COMM_STATUS_PROCESSED, "success", false);
-                                        showSuccessAlert("Registered Successfully", "Your venue details have been registered successfully.");
-                                    } else {
-                                        //delete entered venue data
-                                        dbHelper.deleteEnteredVenueData(attendance);
-                                        showErrorAlert("Error Occurred","Something went wrong.Try again later.");
-                                    }
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            final String responseBody = response.body() != null ? response.body().string() : "";
+                            runOnUiThread(() -> {
+                                if (progressDialog.isShowing()) progressDialog.dismiss();
+                                binding.btnRegister.setEnabled(true);
+                                if (response.isSuccessful()) {
+                                    if (dbHelper.saveVenueData(attendanceDetail))
+                                        showSuccessAlert("Venue Created", "Venue details have been saved successfully.");
+                                    else
+                                        Toast.makeText(VenueActivity.this, "Failed to save venue data locally.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    //dbHelper.deleteEnteredVenueData(attendanceDetail);
+                                    Toast.makeText(VenueActivity.this, "Server error during submission. - " + responseBody, Toast.LENGTH_LONG).show();
                                 }
                             });
-                } catch (Exception e) {
-                    progressDialog.dismiss();
-                    e.printStackTrace();
-                }
-            }
-            cursorCount.close();
+                        }
+                    });
+        } catch (Exception e) {
+            if (progressDialog.isShowing()) progressDialog.dismiss();
+            binding.btnRegister.setEnabled(true);
+            e.printStackTrace();
+            Toast.makeText(this, "Unexpected error.", Toast.LENGTH_SHORT).show();
         }
+
 
     }
 
@@ -473,35 +470,17 @@ public class VenueActivity extends AppCompatActivity {
     }
 
     private void showSuccessAlert(String title, String message) {
-        mainHandler = new Handler(Looper.getMainLooper());
-        mainHandler.post(() -> {
-            progressDialog.dismiss();
-            new MaterialAlertDialogBuilder(VenueActivity.this, R.style.RoundShapeTheme)
-                    .setTitle(title).setMessage(message).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                            finish();
-                        }
-                    }).setCancelable(false)
-                    .show();
-        });
+        runOnUiThread(() -> {
+            androidx.appcompat.app.AlertDialog.Builder builder =
+                    new androidx.appcompat.app.AlertDialog.Builder(VenueActivity.this);
 
-    }
-
-    private void showErrorAlert(String title, String message) {
-        mainHandler = new Handler(Looper.getMainLooper());
-        mainHandler.post(() -> {
-            progressDialog.dismiss();
-            new MaterialAlertDialogBuilder(VenueActivity.this, R.style.RoundShapeTheme)
-                    .setTitle(title).setMessage(message).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            //deleteData();
-                            dialogInterface.dismiss();
-
-                        }
-                    }).setCancelable(false)
+            builder.setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Okay", (dialog, which) -> {
+                        dialog.dismiss();
+                        finish();   // 🔥 Close the activity after continue
+                    })
+                    .setCancelable(false)
                     .show();
         });
 
@@ -610,5 +589,38 @@ public class VenueActivity extends AppCompatActivity {
     private void requestPermissions() {
         // Request camera permission
         ActivityCompat.requestPermissions(this, new String[]{CAMERA_PERMISSION}, ConstantField.VENUE_CAMERA_REQUEST);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+// remove any pending messages/callbacks to avoid leaks
+        handler.removeCallbacksAndMessages(null);
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    // Use a handler implemented as a static inner class with WeakReference to avoid leaks
+    private final VenueActivity.SafeHandler handler = new VenueActivity.SafeHandler(this);
+
+
+    private static class SafeHandler extends Handler {
+        private final WeakReference<VenueActivity> activityRef;
+
+
+        SafeHandler(VenueActivity activity) {
+            super(Looper.getMainLooper());
+            activityRef = new WeakReference<>(activity);
+        }
+
+
+        @Override
+        public void handleMessage(@NonNull android.os.Message msg) {
+            VenueActivity activity = activityRef.get();
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+// handle messages if you use any; keep minimal to avoid coupling
+            super.handleMessage(msg);
+        }
     }
 }

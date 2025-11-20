@@ -39,7 +39,7 @@ import sce.itc.sikshamitra.R;
 public class Common {
     public static final boolean DEBUGGING = false;
 
-    public static final String APP_VERSION = "2.0.0";
+    public static final String APP_VERSION = "2.0.1";
 
     public static final String[] PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION,

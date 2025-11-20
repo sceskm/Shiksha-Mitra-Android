@@ -230,6 +230,14 @@ public class AddSMRegisterActivity extends AppCompatActivity {
         String password = binding.editPassword.getText().toString().trim();
         String venueGuid = selectedVenueGuid;
         String udiseCode = binding.editUdiseCode.getText().toString().trim();
+        String email = "";
+        String village = "";
+
+        if (!binding.editSmEmail.getText().toString().trim().isEmpty())
+            email = binding.editSmEmail.getText().toString().trim();
+
+        if (!binding.editSmVillage.getText().toString().trim().isEmpty())
+            village = binding.editSmVillage.getText().toString().trim();
 
         preRegistration.setFirstName(firstName);
         preRegistration.setLastName(lastName);
@@ -239,12 +247,8 @@ public class AddSMRegisterActivity extends AppCompatActivity {
         preRegistration.setUserGuid(Common.createGuid());
         preRegistration.setUdiseCode(udiseCode);
         preRegistration.setOrganizationId(ConstantField.ORGANIZATION_ID);
-
-        /*if (binding.checkboxTrainingKit.isChecked()){
-            preRegistration.setTrainerKit(true);
-        } else {
-            preRegistration.setTrainerKit(false);
-        }*/
+        preRegistration.setEmailAddress(email);
+        preRegistration.setVillage(village);
 
         sendComboProductList = new ArrayList<>();
 
@@ -351,7 +355,7 @@ public class AddSMRegisterActivity extends AppCompatActivity {
                                 if (progressDialog.isShowing()) progressDialog.dismiss();
                                 binding.btnRegister.setEnabled(true);
                                 if (response.isSuccessful()) {
-                                    showSuccessAlert("Registration submitted", responseBody);
+                                    showSuccessAlert("Registered Done", "SM registration submitted successfully.");
                                 } else {
                                     Toast.makeText(AddSMRegisterActivity.this, "Server error during submission. - " + responseBody, Toast.LENGTH_LONG).show();
                                 }
