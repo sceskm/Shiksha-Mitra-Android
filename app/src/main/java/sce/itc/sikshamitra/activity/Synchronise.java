@@ -130,9 +130,10 @@ public class Synchronise extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
+
                                 if (errorCount < maxErrorsAllowed) {
                                     uploadSessionData();
-                                    Log.d(TAG, "uploadAttendanceData() data upload completed");
+                                    Log.d(TAG, "uploadSessionData() data upload completed");
                                 }
                                 Synchronise.this.runOnUiThread(new Runnable() {
                                     @Override

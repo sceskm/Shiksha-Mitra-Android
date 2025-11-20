@@ -247,6 +247,7 @@ public class Venue {
     public int getImageDefinitionId() {
         return imageDefinitionId;
     }
+
     public CommunicationSend createCommSend() {
         CommunicationSend commSend = new CommunicationSend();
         commSend.setProcessedOn(Common.iso8601Format.format(new Date()));

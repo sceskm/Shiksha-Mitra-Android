@@ -48,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -301,7 +302,7 @@ public class VenueActivity extends AppCompatActivity {
                 selectedStateId,
                 Common.getString(binding.editPinCode.getText().toString().trim()),
                 userId,
-                3,
+                ConstantField.ORGANIZATION_ID,
                 Common.createGuid(),
                 lastLatitude,
                 lastLongitude,
@@ -342,15 +343,19 @@ public class VenueActivity extends AppCompatActivity {
                     jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
                     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                     RequestBody body = RequestBody.create(JSON, jsonObject.toString());
-                    final OkHttpClient client = new OkHttpClient();
-                    //.newBuilder().connectTimeout(10, TimeUnit.SECONDS)
-                    //.retryOnConnectionFailure(false)
-                    //.build();
+                    final OkHttpClient client = new OkHttpClient()
+                            .newBuilder()
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .build();
                     client.newCall(NetworkUtils.enqueNetworkRequest(ConstantField.NETWORK_URL + ConstantField.ACTION_URL, body, true))
                             .enqueue(new Callback() {
                                 @Override
                                 public void onFailure(Call call, IOException e) {
-                                    showSuccessAlert(getResources().getString(R.string.data_saved_not_uploaded), false);
+                                    //delete entered venue data
+                                    dbHelper.deleteEnteredVenueData(attendance);
+                                    showErrorAlert("Network connection failed","Something went wrong.Try again later.");
                                 }
 
                                 @Override
@@ -360,9 +365,11 @@ public class VenueActivity extends AppCompatActivity {
                                         //update communication
                                         dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
                                                 ConstantField.COMM_STATUS_PROCESSED, "success", false);
-                                        showSuccessAlert(getResources().getString(R.string.data_saved_uploaded), true);
+                                        showSuccessAlert("Registered Successfully", "Your venue details have been registered successfully.");
                                     } else {
-                                        showSuccessAlert(getResources().getString(R.string.data_saved_not_uploaded), false);
+                                        //delete entered venue data
+                                        dbHelper.deleteEnteredVenueData(attendance);
+                                        showErrorAlert("Error Occurred","Something went wrong.Try again later.");
                                     }
                                 }
                             });
@@ -465,15 +472,32 @@ public class VenueActivity extends AppCompatActivity {
 
     }
 
-    private void showSuccessAlert(String s, boolean isUpload) {
+    private void showSuccessAlert(String title, String message) {
         mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(() -> {
             progressDialog.dismiss();
             new MaterialAlertDialogBuilder(VenueActivity.this, R.style.RoundShapeTheme)
-                    .setTitle("Great").setMessage(s).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    .setTitle(title).setMessage(message).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            //finish();
+                            dialogInterface.dismiss();
+                            finish();
+                        }
+                    }).setCancelable(false)
+                    .show();
+        });
+
+    }
+
+    private void showErrorAlert(String title, String message) {
+        mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() -> {
+            progressDialog.dismiss();
+            new MaterialAlertDialogBuilder(VenueActivity.this, R.style.RoundShapeTheme)
+                    .setTitle(title).setMessage(message).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //deleteData();
                             dialogInterface.dismiss();
 
                         }

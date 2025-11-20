@@ -26,6 +26,7 @@ import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.MySchoolData;
 import sce.itc.sikshamitra.model.PreRegistration;
 import sce.itc.sikshamitra.model.Product;
+import sce.itc.sikshamitra.model.RetailOutReachModel;
 import sce.itc.sikshamitra.model.SchoolData;
 import sce.itc.sikshamitra.model.Session;
 import sce.itc.sikshamitra.model.Settings;
@@ -402,71 +403,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return rowID;
-    }
-
-    /*
-     * Save pre-registration data
-     * */
-    public boolean savePreRegistration(PreRegistration preRegDetails) {
-        boolean dataSaved = false;
-        try {
-            ContentValues newEntry = new ContentValues();
-
-            newEntry.put("FirstName", preRegDetails.getFirstName());
-            newEntry.put("LastName", preRegDetails.getLastName());
-            newEntry.put("Mobile", preRegDetails.getPhone());
-            newEntry.put("Username", preRegDetails.getUserName());
-            newEntry.put("Password", preRegDetails.getPassword());
-            newEntry.put("ShikshaMitraGUID", preRegDetails.getPassword());
-            newEntry.put("VenueGUID", preRegDetails.getVenueGuid());
-            newEntry.put("UserGUID", preRegDetails.getUserGuid());
-            newEntry.put("CreatedOn", preRegDetails.getCreatedOn());
-            newEntry.put("Latitude", preRegDetails.getLatitude());
-            newEntry.put("Longitude", preRegDetails.getLongitude());
-
-
-            // Insert into sp_preregistration table
-            long retVal = myDataBase.insertOrThrow("sp_preregistration", null, newEntry);
-
-            if (retVal > 0)
-                dataSaved = true;
-
-        } catch (SQLException ex) {
-            Log.e(TAG, "savePreRegistration: EXCEPTION", ex);
-            throw ex;
-        }
-
-        return dataSaved;
-    }
-
-    public boolean saveTrainingData(TrainingSM trainingDetails) {
-        boolean dataSaved = false;
-        try {
-            ContentValues newEntry = new ContentValues();
-
-            newEntry.put("VenueName", trainingDetails.getVenueName());
-            newEntry.put("ScheduledDateTime", trainingDetails.getScheduledDateTime());
-            newEntry.put("Latitude", trainingDetails.getLatitude());
-            newEntry.put("Longitude", trainingDetails.getLongitude());
-            newEntry.put("SMCount", trainingDetails.getSMCount());
-            newEntry.put("Image1", trainingDetails.getImage1());
-            newEntry.put("Image2", trainingDetails.getImage2());
-            newEntry.put("Image3", trainingDetails.getImage3());
-            newEntry.put("Image4", trainingDetails.getImage4());
-            newEntry.put("Remarks", trainingDetails.getRemarks());
-
-            // Insert into sp_training table
-            long retVal = myDataBase.insertOrThrow("sp_training", null, newEntry);
-
-            if (retVal > 0)
-                dataSaved = true;
-
-        } catch (SQLException ex) {
-            Log.e(TAG, "saveTraining: EXCEPTION", ex);
-            throw ex;
-        }
-
-        return dataSaved;
     }
 
     /*
@@ -895,6 +831,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean deleteEnteredVenueData(Venue venue) {
+        try {
+            String sql = "DELETE FROM sp_venue WHERE VenueGUID=" + "'" + venue.getVenueGuid() + "'";
+
+            myDataBase.execSQL(sql);
+
+            sql = "DELETE FROM sp_communicationsend WHERE CommunicationGUID=" + "'" + venue.getCommunicationGuid() + "'";
+            myDataBase.execSQL(sql);
+        } catch (Exception ex) {
+            Log.e(TAG, "Deleted:" + ex);
+        }
+        return true;
+    }
+
     /*
      * Fetch downloaded school data
      * */
@@ -912,6 +862,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql = "SELECT * FROM sp_state ORDER BY StateName ASC";
         return QueryDatabase(sql);
     }
+
 
     // Save Store
     public boolean saveDownloadedSchool(MySchoolData schoolDetails) {
@@ -1047,6 +998,95 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursorTest.close();
         }
         return dataSaved;
+    }
+
+
+    /*
+     * Retails details
+     * */
+    public boolean saveRetailDetails(RetailOutReachModel retailsDetails) {
+        boolean dataSaved = false;
+
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("ShopName", retailsDetails.getShopName());
+            newEntry.put("RetailOutReachGUID", retailsDetails.getRetailOutreachGuid());
+            newEntry.put("UserGUID", retailsDetails.getUserGuid());
+            newEntry.put("OrganizationId", 3);
+            newEntry.put("NearbySchool", retailsDetails.getNearbySchool()); // If you are treating this as nearby school
+            newEntry.put("SchoolGUID", retailsDetails.getSchoolGuid());
+            newEntry.put("ContactName", retailsDetails.getContactName()); // not in JSON
+            newEntry.put("ContactPhone", retailsDetails.getContactPhone());
+            newEntry.put("Address1", retailsDetails.getAddress1());
+            newEntry.put("Address2", retailsDetails.getAddress2()); // optional if not in JSON
+            newEntry.put("Division", retailsDetails.getDivision()); // If division = district or separate
+            newEntry.put("Block", retailsDetails.getBlock());
+            newEntry.put("City", retailsDetails.getCity());
+            newEntry.put("District", retailsDetails.getDistrict());
+            newEntry.put("StateId", retailsDetails.getStateId());
+            newEntry.put("PinCode", retailsDetails.getPinCode());
+            //true/false fields
+            newEntry.put("IsKeepITCProducts", retailsDetails.getIsKeepITCProducts());
+            newEntry.put("ITCProductNames", retailsDetails.getItcProductNames());
+            newEntry.put("HandwashPouchesSold", retailsDetails.getHandWashPouchesSold());
+
+            // BELOW FIELDS DO NOT EXIST IN YOUR JSON – set default 0 or empty
+//            newEntry.put("StockItcProducts", true);
+//            newEntry.put("BrandingInterested", true);
+//            newEntry.put("ShopPainting", true);
+//            newEntry.put("DealerBoard", true);
+//            newEntry.put("Poster", true);
+//            newEntry.put("Bunting", true);
+//            newEntry.put("IsKeepCompetitorProduct", 1);
+//            newEntry.put("ItcProductNames", "");
+
+//            newEntry.put("SavlonSoapSold", retailsDetails.getSavlonSoapSold());
+//            newEntry.put("FmcgPurchaseFrom", retailsDetails.getFmcgpurchaseFrom());
+//            newEntry.put("DistributorDetails", retailsDetails.getDistributorDetails());
+//            newEntry.put("MarketDetails", retailsDetails.getMarketDetails());
+
+            newEntry.put("Latitude", retailsDetails.getLatitude());
+            newEntry.put("Longitude", retailsDetails.getLongitude());
+
+            newEntry.put("Image1", retailsDetails.getImage1());
+            newEntry.put("ImgExt1", retailsDetails.getImgExt1());
+            newEntry.put("ImgDefinitionId1", retailsDetails.getImgDefinitionId1());
+
+            long retVal = myDataBase.insertOrThrow("sp_retailersdetails", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+            if (dataSaved) {
+                dataSaved = false;
+
+                CommunicationSend commSend = retailsDetails.createCommSend();
+
+                if (saveCommunicationSend(commSend) > 0)
+                    dataSaved = true;
+            }
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveRetails: EXCEPTION", ex);
+            throw ex;
+        }
+
+
+        return dataSaved;
+    }
+
+    public Cursor getTodayVenueDetails() {
+        String  today = Common.yyyymmddFormat.format(new Date());
+        String sql = "SELECT * FROM sp_venue"
+                + " WHERE DATE(ScheduledDateTime) BETWEEN DATE('" + today + " 00:00:00') AND DATE('" + today + " 23:59:59')";
+        return QueryDatabase(sql);
+    }
+
+    public Cursor getComboProduct() {
+        String  today = Common.yyyymmddFormat.format(new Date());
+        String sql = "SELECT * FROM sp_comboproduct";
+        return QueryDatabase(sql);
     }
 
 

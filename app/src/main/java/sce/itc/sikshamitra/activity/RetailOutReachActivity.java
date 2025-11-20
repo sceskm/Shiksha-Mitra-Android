@@ -70,7 +70,7 @@ public class RetailOutReachActivity extends AppCompatActivity {
 
     /*
      * Image 1
-     * */
+    * */
     private File photoFile;
     private Uri uriImage1;
     private String capturedImgStoragePathImage1 = "";
@@ -200,41 +200,50 @@ public class RetailOutReachActivity extends AppCompatActivity {
             retail.setLatitude(Common.fourDecimalRoundOff(lastLatitude));
             retail.setLongitude(Common.fourDecimalRoundOff(lastLongitude));
             retail.setCreatedOn(Common.iso8601Format.format(new Date()));
+            retail.setVisitedOn(Common.yyyymmddFormat.format(new Date()));
             //get data from fields
             retail.setShopName(binding.editShopName.getText().toString().trim());
             retail.setRetailOutreachGuid(Common.createGuid());
             retail.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
             //TODO - set organization id dynamically
             retail.setOrganizationId(3);
-            retail.setNearbySchool("");
+            retail.setNearbySchool("Nearby School ABC");
+            retail.setSchoolGuid("4fe77175-0403-4903-916c-3949a0ca5ffe");
             retail.setAddress1(binding.editAddressLine1.getText().toString().trim());
             retail.setAddress2(binding.editAddressLine2.getText().toString().trim());
             retail.setCity(binding.editCity.getText().toString().trim());
             retail.setState(binding.editState.getText().toString().trim());
             retail.setStateId(17);
             retail.setPinCode(binding.editPinCode.getText().toString().trim());
+            retail.setDistrict(binding.editDistrict.getText().toString().trim());
+            retail.setDivision("Division XYZ");
             retail.setContactName(binding.editContactPersonName.getText().toString().trim());
             retail.setContactPhone(binding.editContactPersonPhoneNumber.getText().toString().trim());
             retail.setContactName(binding.editContactPersonName.getText().toString().trim());
-            retail.setStockItcProducts(true);
+            retail.setIsKeepITCProducts(1);
             retail.setBlock(binding.editBlock.getText().toString().trim());
-            retail.setBrandingInterested(true);
-            retail.setShopPainting(true);
-            retail.setDealerBoard(true);
-            retail.setPoster(true);
-            retail.setBunting(true);
-            retail.setHandwashPouchesSold(5);
+            retail.setBrandingInterested(1);
+            retail.setShopPainting(1);
+            retail.setDealerBoard(1);
+            retail.setPoster(1);
+            retail.setBunting(1);
+            retail.setHandWashPouchesSold(5);
             retail.setSavlonSoapSold(4);
-            retail.setItcproductNames("Product1, Product2");
+            retail.setItcProductNames("Product1, Product2");
             retail.setFmcgpurchaseFrom("Local Distributor");
             retail.setDistributorDetails("Distributor XYZ, Contact: 1234567890");
             retail.setMarketDetails("Local market details here");
-            retail.setImage1("image1.jpg");
-            retail.setImgDefinitionId1(123);
 
+            //Image 1
+            retail.setImage1(uriCompressedImage1.toString());
+            retail.setImgDefinitionId1(ConstantField.RETAIL_IMAGE_SHOP_IMAGE);
+            retail.setImgExt1(ConstantField.IMAGE_FORMAT);
 
-
-            Toast.makeText(context, "Retail OutReach Data Saved Successfully", Toast.LENGTH_LONG).show();
+            if (dbHelper.saveRetailDetails(retail)) {
+                Log.d(TAG, "saveRetailData: Retail OutReach Data saved successfully in local database");
+            } else {
+                Log.e(TAG, "saveRetailData: Error in saving Retail OutReach Data in local database");
+            }
             finish();
         } catch (Exception ex) {
             Log.e(TAG, "saveRetailData: ", ex);

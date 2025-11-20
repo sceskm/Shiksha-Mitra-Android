@@ -36,13 +36,13 @@
             android:name=".activity.MySchoolEntry"
             android:exported="false" />
         <activity
-            android:name=".activity.TrainingToSM"
+            android:name=".activity.AddTrainingToSMActivity"
             android:exported="false" />
         <activity
             android:name=".activity.Login"
             android:exported="false" />
         <activity
-            android:name=".activity.PreRegistrationActivity"
+            android:name=".activity.AddSMRegisterActivity"
             android:exported="false" />
         <activity
             android:name=".activity.VenueActivity"

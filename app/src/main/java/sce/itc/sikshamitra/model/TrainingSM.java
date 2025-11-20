@@ -1,200 +1,85 @@
 package sce.itc.sikshamitra.model;
 
-import android.database.Cursor;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 public class TrainingSM {
-    @Expose(serialize = false)
-    private int _id;
-    @Expose(serialize = false)
-    private String VenueName;
-    @Expose(serialize = false)
-    private String ScheduledDateTime;
+
     @Expose
-    @SerializedName("latitude")
-    private Double latitude;
+    private String trainingGuid;
     @Expose
-    @SerializedName("longitude")
-    private Double longitude;
-    @Expose(serialize = false)
-    private Integer SMCount;
-    @Expose(serialize = false)
-    private String Image1;
-    @Expose(serialize = false)
-    private String Image2;
-    @Expose(serialize = false)
-    private String Image3;
-    @Expose(serialize = false)
-    private String Image4;
+    private String userGuid;
+    @Expose (serialize = false)
+    private String venueName;
     @Expose
-    @SerializedName("remarks")
-    private String remarks;
+    @SerializedName("VenueGuid")
+    private String venueGuid;
+    @Expose
+    @SerializedName("OrganizationId")
+    private int organizationId;
+    @Expose
+    @SerializedName("NoOfTeachers")
+    private int noOfTeachers;
     @Expose
     @SerializedName("EndedOn")
     private String endedOn;
     @Expose
     @SerializedName("StartedOn")
     private String startedOn;
+
     @Expose
-    @SerializedName("NoOfTeachers")
-    private int noOfTeachers;
+    @SerializedName("latitude")
+    private Double latitude;
     @Expose
-    @SerializedName("OrganizationId")
-    private int organizationId;
+    @SerializedName("longitude")
+    private Double longitude;
+
     @Expose
-    @SerializedName("VenueGuid")
-    private String venueGuid;
-    @Expose
-    private String trainingGuid;
-    @Expose
-    private String userGuid;
+    @SerializedName("remarks")
+    private String remarks;
+
     @Expose
     @SerializedName("inActive")
     private boolean inActive;
+
+    @Expose
+    @SerializedName("images")
     private List<Image> images;
 
     @Expose(serialize = false)
-    private int imageDefinitionId;
+    private int imageDefinitionId1;
     @Expose(serialize = false)
-    private String imageFile;
+    private String imageFile1;
     @Expose(serialize = false)
-    private String imageExt;
+    private String imageExt1;
 
-    /*
-    * Default constructor
-    * */
-    public TrainingSM() {}
+    @Expose(serialize = false)
+    private int imageDefinitionId2;
+    @Expose(serialize = false)
+    private String imageFile2;
+    @Expose(serialize = false)
+    private String imageExt2;
 
-    public int get_id() {
-        return _id;
-    }
+    @Expose(serialize = false)
+    private int imageDefinitionId3;
+    @Expose(serialize = false)
+    private String imageFile3;
+    @Expose(serialize = false)
+    private String imageExt3;
 
-    public void set_id(int _id) {
-        this._id = _id;
-    }
+    @Expose(serialize = false)
+    private int imageDefinitionId4;
+    @Expose(serialize = false)
+    private String imageFile4;
+    @Expose(serialize = false)
+    private String imageExt4;
 
-    public String getVenueName() {
-        return VenueName;
-    }
 
-    public void setVenueName(String venueName) {
-        VenueName = venueName;
-    }
-
-    public String getScheduledDateTime() {
-        return ScheduledDateTime;
-    }
-
-    public void setScheduledDateTime(String scheduledDateTime) {
-        ScheduledDateTime = scheduledDateTime;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Integer getSMCount() {
-        return SMCount;
-    }
-
-    public void setSMCount(Integer SMCount) {
-        this.SMCount = SMCount;
-    }
-
-    public String getImage1() {
-        return Image1;
-    }
-
-    public void setImage1(String image1) {
-        Image1 = image1;
-    }
-
-    public String getImage2() {
-        return Image2;
-    }
-
-    public void setImage2(String image2) {
-        Image2 = image2;
-    }
-
-    public String getImage3() {
-        return Image3;
-    }
-
-    public void setImage3(String image3) {
-        Image3 = image3;
-    }
-
-    public String getImage4() {
-        return Image4;
-    }
-
-    public void setImage4(String image4) {
-        Image4 = image4;
-    }
-
-    public String getRemarks() {
-        return remarks;
-    }
-
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
-    public String getEndedOn() {
-        return endedOn;
-    }
-
-    public void setEndedOn(String endedOn) {
-        this.endedOn = endedOn;
-    }
-
-    public String getStartedOn() {
-        return startedOn;
-    }
-
-    public void setStartedOn(String startedOn) {
-        this.startedOn = startedOn;
-    }
-
-    public int getNoOfTeachers() {
-        return noOfTeachers;
-    }
-
-    public void setNoOfTeachers(int noOfTeachers) {
-        this.noOfTeachers = noOfTeachers;
-    }
-
-    public int getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(int organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public String getVenueGuid() {
-        return venueGuid;
-    }
-
-    public void setVenueGuid(String venueGuid) {
-        this.venueGuid = venueGuid;
+    public TrainingSM() {
     }
 
     public String getTrainingGuid() {
@@ -213,6 +98,78 @@ public class TrainingSM {
         this.userGuid = userGuid;
     }
 
+    public String getVenueName() {
+        return venueName;
+    }
+
+    public void setVenueName(String venueName) {
+        this.venueName = venueName;
+    }
+
+    public String getVenueGuid() {
+        return venueGuid;
+    }
+
+    public void setVenueGuid(String venueGuid) {
+        this.venueGuid = venueGuid;
+    }
+
+    public int getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(int organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public int getNoOfTeachers() {
+        return noOfTeachers;
+    }
+
+    public void setNoOfTeachers(int noOfTeachers) {
+        this.noOfTeachers = noOfTeachers;
+    }
+
+    public String getEndedOn() {
+        return endedOn;
+    }
+
+    public void setEndedOn(String endedOn) {
+        this.endedOn = endedOn;
+    }
+
+    public String getStartedOn() {
+        return startedOn;
+    }
+
+    public void setStartedOn(String startedOn) {
+        this.startedOn = startedOn;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
     public boolean isInActive() {
         return inActive;
     }
@@ -229,61 +186,112 @@ public class TrainingSM {
         this.images = images;
     }
 
-    public int getImageDefinitionId() {
-        return imageDefinitionId;
+    public int getImageDefinitionId1() {
+        return imageDefinitionId1;
     }
 
-    public void setImageDefinitionId(int imageDefinitionId) {
-        this.imageDefinitionId = imageDefinitionId;
+    public void setImageDefinitionId1(int imageDefinitionId1) {
+        this.imageDefinitionId1 = imageDefinitionId1;
     }
 
-    public String getImageFile() {
-        return imageFile;
+    public String getImageFile1() {
+        return imageFile1;
     }
 
-    public void setImageFile(String imageFile) {
-        this.imageFile = imageFile;
+    public void setImageFile1(String imageFile1) {
+        this.imageFile1 = imageFile1;
     }
 
-    public String getImageExt() {
-        return imageExt;
+    public String getImageExt1() {
+        return imageExt1;
     }
 
-    public void setImageExt(String imageExt) {
-        this.imageExt = imageExt;
+    public void setImageExt1(String imageExt1) {
+        this.imageExt1 = imageExt1;
     }
-    /*
-    * Constructor with parameters
-    * */
 
+    public int getImageDefinitionId2() {
+        return imageDefinitionId2;
+    }
 
-    /*
-    * Populate data from cursor
-    * */
+    public void setImageDefinitionId2(int imageDefinitionId2) {
+        this.imageDefinitionId2 = imageDefinitionId2;
+    }
 
-    public void populateFromCursor(Cursor cursorTraining) {
-        int idCol = cursorTraining.getColumnIndex("_id");
-        int venueNameCol = cursorTraining.getColumnIndex("VenueName");
-        int scheduledDateTimeCol = cursorTraining.getColumnIndex("ScheduledDateTime");
-        int latitudeCol = cursorTraining.getColumnIndex("Latitude");
-        int longitudeCol = cursorTraining.getColumnIndex("Longitude");
-        int smCountCol = cursorTraining.getColumnIndex("SMCount");
-        int image1Col = cursorTraining.getColumnIndex("Image1");
-        int image2Col = cursorTraining.getColumnIndex("Image2");
-        int image3Col = cursorTraining.getColumnIndex("Image3");
-        int image4Col = cursorTraining.getColumnIndex("Image4");
-        int remarksCol = cursorTraining.getColumnIndex("Remarks");
+    public String getImageFile2() {
+        return imageFile2;
+    }
 
-        this.set_id(cursorTraining.getInt(idCol));
-        this.setVenueName(cursorTraining.getString(venueNameCol));
-        this.setScheduledDateTime(cursorTraining.getString(scheduledDateTimeCol));
-        this.setLatitude(cursorTraining.getDouble(latitudeCol));
-        this.setLongitude(cursorTraining.getDouble(longitudeCol));
-        this.setSMCount(cursorTraining.getInt(smCountCol));
-        this.setImage1(cursorTraining.getString(image1Col));
-        this.setImage2(cursorTraining.getString(image2Col));
-        this.setImage3(cursorTraining.getString(image3Col));
-        this.setImage4(cursorTraining.getString(image4Col));
-        this.setRemarks(cursorTraining.getString(remarksCol));
+    public void setImageFile2(String imageFile2) {
+        this.imageFile2 = imageFile2;
+    }
+
+    public String getImageExt2() {
+        return imageExt2;
+    }
+
+    public void setImageExt2(String imageExt2) {
+        this.imageExt2 = imageExt2;
+    }
+
+    public int getImageDefinitionId3() {
+        return imageDefinitionId3;
+    }
+
+    public void setImageDefinitionId3(int imageDefinitionId3) {
+        this.imageDefinitionId3 = imageDefinitionId3;
+    }
+
+    public String getImageFile3() {
+        return imageFile3;
+    }
+
+    public void setImageFile3(String imageFile3) {
+        this.imageFile3 = imageFile3;
+    }
+
+    public String getImageExt3() {
+        return imageExt3;
+    }
+
+    public void setImageExt3(String imageExt3) {
+        this.imageExt3 = imageExt3;
+    }
+
+    public int getImageDefinitionId4() {
+        return imageDefinitionId4;
+    }
+
+    public void setImageDefinitionId4(int imageDefinitionId4) {
+        this.imageDefinitionId4 = imageDefinitionId4;
+    }
+
+    public String getImageFile4() {
+        return imageFile4;
+    }
+
+    public void setImageFile4(String imageFile4) {
+        this.imageFile4 = imageFile4;
+    }
+
+    public String getImageExt4() {
+        return imageExt4;
+    }
+
+    public void setImageExt4(String imageExt4) {
+        this.imageExt4 = imageExt4;
+    }
+
+    public String getJson() {
+
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .setPrettyPrinting()
+                .create();
+
+        //Convert models to json object
+        String trainingJson = gson.toJson(this);
+
+        return trainingJson;
     }
 }

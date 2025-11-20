@@ -11,7 +11,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activity.PreRegistrationActivity">
+        tools:context=".activity.AddSMRegisterActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,11 +25,43 @@
                 android:background="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|enterAlways" />
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:orientation="vertical">
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Venue " />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edit_state_layout"
+                    style="@style/primary_dropdown_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Venue">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/edit_venue_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <!--Udise Code-->
+                <TextView
+                    style="@style/SubHeadingTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="UDISE CODE *" />
+
+                <EditText
+                    android:id="@+id/edit_udise_code"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="numberSigned"
+                    android:maxLength="15" />
                 <!-- First name-->
                 <TextView
                     style="@style/SubHeadingTextStyle"
@@ -93,12 +125,16 @@
                 <!--
                 Handed over training kit to SM
                 -->
-                <CheckBox
+                <TextView
                     android:id="@+id/checkbox_training_kit"
-                    style="@style/CheckboxTextStyle"
+                    style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Handed over the Training Kit to SM" />
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:textStyle="bold"
+                    android:text="Handed over the Training Kit to SM"
+                    />
 
                 <CheckBox
                     android:id="@+id/checkbox_item_1"

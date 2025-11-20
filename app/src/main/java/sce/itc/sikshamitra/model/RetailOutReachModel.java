@@ -24,6 +24,8 @@ public class RetailOutReachModel {
     @Expose
     private String nearbySchool;
     @Expose
+    private String schoolGuid;
+    @Expose
     private String contactName;
     @Expose
     private String contactPhone;
@@ -49,23 +51,31 @@ public class RetailOutReachModel {
     private String pinCode;
     @Expose
     @SerializedName("stockItcproducts")
-    private boolean stockItcProducts;
+    private int isKeepITCProducts;
+    @Expose
+    @SerializedName("itcproductNames")
+    private String itcProductNames;
+    @Expose
+    @SerializedName("handwashPouchesSold")
+    private int handWashPouchesSold;
+
+
+
+
     @Expose
     @SerializedName("brandingInterested")
-    private boolean brandingInterested;
+    private int brandingInterested;
     @Expose
-    private boolean shopPainting;
+    private int shopPainting;
     @Expose
-    private boolean dealerBoard;
+    private int dealerBoard;
     @Expose
-    private boolean poster;
+    private int poster;
     @Expose
-    private boolean bunting;
+    private int bunting;
     private int isKeepCompetitorProduct;
-    @Expose
-    private String itcproductNames;
-    @Expose
-    private int handwashPouchesSold;
+
+
     @Expose
     private int savlonSoapSold;
     @Expose
@@ -82,6 +92,8 @@ public class RetailOutReachModel {
     private String communicationGuid;
     @Expose(serialize = false)
     private String createdOn;
+    @Expose
+    private String visitedOn;
 
     @Expose
     private List<Image> images;
@@ -234,51 +246,51 @@ public class RetailOutReachModel {
         this.pinCode = pinCode;
     }
 
-    public boolean isStockItcProducts() {
-        return stockItcProducts;
+    public int getIsKeepITCProducts() {
+        return isKeepITCProducts;
     }
 
-    public void setStockItcProducts(boolean stockItcProducts) {
-        this.stockItcProducts = stockItcProducts;
+    public void setIsKeepITCProducts(int isKeepITCProducts) {
+        this.isKeepITCProducts = isKeepITCProducts;
     }
 
-    public boolean isBrandingInterested() {
+    public int getBrandingInterested() {
         return brandingInterested;
     }
 
-    public void setBrandingInterested(boolean brandingInterested) {
+    public void setBrandingInterested(int brandingInterested) {
         this.brandingInterested = brandingInterested;
     }
 
-    public boolean isShopPainting() {
+    public int getShopPainting() {
         return shopPainting;
     }
 
-    public void setShopPainting(boolean shopPainting) {
+    public void setShopPainting(int shopPainting) {
         this.shopPainting = shopPainting;
     }
 
-    public boolean isDealerBoard() {
+    public int getDealerBoard() {
         return dealerBoard;
     }
 
-    public void setDealerBoard(boolean dealerBoard) {
+    public void setDealerBoard(int dealerBoard) {
         this.dealerBoard = dealerBoard;
     }
 
-    public boolean isPoster() {
+    public int getPoster() {
         return poster;
     }
 
-    public void setPoster(boolean poster) {
+    public void setPoster(int poster) {
         this.poster = poster;
     }
 
-    public boolean isBunting() {
+    public int getBunting() {
         return bunting;
     }
 
-    public void setBunting(boolean bunting) {
+    public void setBunting(int bunting) {
         this.bunting = bunting;
     }
 
@@ -290,20 +302,20 @@ public class RetailOutReachModel {
         this.isKeepCompetitorProduct = isKeepCompetitorProduct;
     }
 
-    public String getItcproductNames() {
-        return itcproductNames;
+    public String getItcProductNames() {
+        return itcProductNames;
     }
 
-    public void setItcproductNames(String itcproductNames) {
-        this.itcproductNames = itcproductNames;
+    public void setItcProductNames(String itcProductNames) {
+        this.itcProductNames = itcProductNames;
     }
 
-    public int getHandwashPouchesSold() {
-        return handwashPouchesSold;
+    public int getHandWashPouchesSold() {
+        return handWashPouchesSold;
     }
 
-    public void setHandwashPouchesSold(int handwashPouchesSold) {
-        this.handwashPouchesSold = handwashPouchesSold;
+    public void setHandWashPouchesSold(int handWashPouchesSold) {
+        this.handWashPouchesSold = handWashPouchesSold;
     }
 
     public int getSavlonSoapSold() {
@@ -399,6 +411,21 @@ public class RetailOutReachModel {
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
     }
+
+    public String getVisitedOn() {
+        return visitedOn;
+    }
+    public void setVisitedOn(String visitedOn) {
+        this.visitedOn = visitedOn;
+    }
+
+    public String getSchoolGuid() {
+        return schoolGuid;
+    }
+    public void setSchoolGuid(String schoolGuid) {
+        this.schoolGuid = schoolGuid;
+    }
+
 
     public CommunicationSend createCommSend() {
         CommunicationSend commSend = new CommunicationSend();

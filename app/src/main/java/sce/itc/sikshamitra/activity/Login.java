@@ -232,16 +232,16 @@ public class Login extends AppCompatActivity {
 
     private void navigateNextPage(LoginData loginData) {
         try {
+            Intent intent = null;
             if (loginData.getUser().getRoleId() == ConstantField.ROLE_ID_FIELD_TEAM) {
-                Intent intent;
-                intent = new Intent(context, AgencyHome.class);
+                intent = new Intent(Login.this, AgencyHome.class);
                 intent.putExtra("userRoleId", loginData.getUser().getRoleId());
-                finish();
-
             } else {
-                Intent intent;
-                intent = new Intent(context, Home.class);
+                intent = new Intent(Login.this, Home.class);
                 intent.putExtra("userRoleId", loginData.getUser().getRoleId());
+            }
+            if (intent != null) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
             }

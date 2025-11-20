@@ -4,10 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,25 +32,39 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import sce.itc.sikshamitra.AlertCallBack;
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.databinding.ActivityTrainingShikshaMitraBinding;
+import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.CompressedImage;
 import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.GPSTracker;
+import sce.itc.sikshamitra.helper.NetworkUtils;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
+import sce.itc.sikshamitra.model.Image;
 import sce.itc.sikshamitra.model.TrainingSM;
 
-public class TrainingToSM extends AppCompatActivity {
-    private static final String TAG = "TrainingToSMActivity";
+public class AddTrainingToSMActivity extends AppCompatActivity {
+    private static final String TAG = "AddTrainingToSMActivity";
     private Toolbar toolbar;
     private ActivityTrainingShikshaMitraBinding binding;
     private DatabaseHelper dbHelper;
@@ -56,12 +72,11 @@ public class TrainingToSM extends AppCompatActivity {
     private GPSTracker gps;
     private double lastLatitude = 0.0;
     private double lastLongitude = 0.0;
-    private final TrainingToSM context = TrainingToSM.this;
+    private final AddTrainingToSMActivity context = AddTrainingToSMActivity.this;
 
     //progress dialog for data upload
     private ProgressDialog progressDialog;
-    private Handler mainHandler;
-    private Handler timerHandler = new Handler();
+
 
     /*
      * Image 1
@@ -99,6 +114,12 @@ public class TrainingToSM extends AppCompatActivity {
     private Uri uriCompressedImage4;
     private String imgImage4 = "";
 
+    private String[] arrVenue;
+    private String[] arrVenueGuid;
+    private String selectedVenueGuid = "";
+
+    private String startedOn = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +143,59 @@ public class TrainingToSM extends AppCompatActivity {
 
         populateDetails();
 
+        populateVenueDetails();
+
         clickEvent();
+    }
+
+    private void populateDetails() {
+        dbHelper = DatabaseHelper.getInstance(context);
+        gps = new GPSTracker(context);
+
+        if (gps.canGetLocation()) {
+            lastLatitude = gps.getLatitude();
+            lastLongitude = gps.getLongitude();
+        } else {
+            gps.showSettingsAlert();
+        }
+
+        progressDialog = new ProgressDialog(this);
+    }
+
+    private void populateVenueDetails() {
+        Cursor cursorState = dbHelper.getTodayVenueDetails();
+
+        if (cursorState != null) {
+            if (cursorState.getCount() > 0) {
+
+                arrVenue = new String[cursorState.getCount()];
+                arrVenueGuid = new String[cursorState.getCount()];
+
+                int i = 0;
+                if (cursorState.moveToFirst()) {
+                    do {
+                        arrVenue[i] = cursorState.getString(cursorState.getColumnIndexOrThrow("VenueName"));
+                        arrVenueGuid[i] = cursorState.getString(cursorState.getColumnIndexOrThrow("VenueGUID"));
+                        i++;
+                    } while (cursorState.moveToNext());
+                }
+
+            } else {
+                arrVenue = new String[]{"No venue found"};
+                arrVenueGuid = new String[]{""};
+            }
+
+            cursorState.close(); // ✔ safe place
+        }
+
+        ArrayAdapter<String> adapterSubType =
+                new ArrayAdapter<>(this, R.layout.dropdown_item, arrVenue);
+
+        binding.editVenueName.setAdapter(adapterSubType);
+
+        binding.editVenueName.setOnItemClickListener((adapterView, view, i, l) -> {
+            selectedVenueGuid = (i >= 0) ? arrVenueGuid[i] : "";
+        });
     }
 
     private void clickEvent() {
@@ -130,22 +203,25 @@ public class TrainingToSM extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checkValidation()) {
-                    try {
-                        progressDialog.show();
-                        binding.btnSubmit.setEnabled(false);
-                        timerHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                saveTrainingData();
-                                Log.d(TAG, "run: save btnSubmit");
-                            }
-                        }, 200);
+                    binding.btnSubmit.setEnabled(false); // disable to avoid multiple click
+                    // use static-safe handler to avoid memory leak
+                    handler.postDelayed(() -> {
+                        try {
+                            Log.d(TAG, "run: save attendance");
 
-                    } catch (Exception e) {
-                        Log.e(TAG, "onClick: ", e);
-                    } finally {
-                        binding.btnSubmit.setEnabled(true);
-                    }
+                            // 1. Create model from UI form fields
+                            TrainingSM model = modelTrainingData();
+
+                            // 2. Call confirmation API
+                            callNetworkApi(model);
+
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "onClick error: ", e);
+                            binding.btnSubmit.setEnabled(true); // recover
+                        }
+
+                    }, 200); // 200ms delay
 
 
                 }
@@ -160,9 +236,10 @@ public class TrainingToSM extends AppCompatActivity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                                 == PackageManager.PERMISSION_GRANTED) {
+                            startedOn = Common.iso8601Format.format(new Date());
                             launchCamera(ConstantField.REQUEST_TRAINING_1);
                         } else {
-                            ActivityCompat.requestPermissions(TrainingToSM.this,
+                            ActivityCompat.requestPermissions(AddTrainingToSMActivity.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     ConstantField.REQUEST_TRAINING_1);
                         }
@@ -171,7 +248,7 @@ public class TrainingToSM extends AppCompatActivity {
                     }
 
                 } else if (binding.btnCapture1.getText().toString().trim().equalsIgnoreCase(ConstantField.DELETE)) {
-                    Common.showDeleteImageAlert(TrainingToSM.this, binding.btnCapture1, binding.imgTraining1, new AlertCallBack() {
+                    Common.showDeleteImageAlert(AddTrainingToSMActivity.this, binding.btnCapture1, binding.imgTraining1, new AlertCallBack() {
                         @Override
                         public void onResult(boolean isDeleted) {
                             if (isDeleted) {
@@ -198,7 +275,7 @@ public class TrainingToSM extends AppCompatActivity {
                                 == PackageManager.PERMISSION_GRANTED) {
                             launchCamera(ConstantField.REQUEST_TRAINING_2);
                         } else {
-                            ActivityCompat.requestPermissions(TrainingToSM.this,
+                            ActivityCompat.requestPermissions(AddTrainingToSMActivity.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     ConstantField.REQUEST_TRAINING_2);
                         }
@@ -207,7 +284,7 @@ public class TrainingToSM extends AppCompatActivity {
                     }
 
                 } else if (binding.btnCapture2.getText().toString().trim().equalsIgnoreCase(ConstantField.DELETE)) {
-                    Common.showDeleteImageAlert(TrainingToSM.this, binding.btnCapture2, binding.imgTraining2, new AlertCallBack() {
+                    Common.showDeleteImageAlert(AddTrainingToSMActivity.this, binding.btnCapture2, binding.imgTraining2, new AlertCallBack() {
                         @Override
                         public void onResult(boolean isDeleted) {
                             if (isDeleted) {
@@ -234,7 +311,7 @@ public class TrainingToSM extends AppCompatActivity {
                                 == PackageManager.PERMISSION_GRANTED) {
                             launchCamera(ConstantField.REQUEST_TRAINING_3);
                         } else {
-                            ActivityCompat.requestPermissions(TrainingToSM.this,
+                            ActivityCompat.requestPermissions(AddTrainingToSMActivity.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     ConstantField.REQUEST_TRAINING_3);
                         }
@@ -243,7 +320,7 @@ public class TrainingToSM extends AppCompatActivity {
                     }
 
                 } else if (binding.btnCapture3.getText().toString().trim().equalsIgnoreCase(ConstantField.DELETE)) {
-                    Common.showDeleteImageAlert(TrainingToSM.this, binding.btnCapture3, binding.imgTraining3, new AlertCallBack() {
+                    Common.showDeleteImageAlert(AddTrainingToSMActivity.this, binding.btnCapture3, binding.imgTraining3, new AlertCallBack() {
                         @Override
                         public void onResult(boolean isDeleted) {
                             if (isDeleted) {
@@ -270,7 +347,7 @@ public class TrainingToSM extends AppCompatActivity {
                                 == PackageManager.PERMISSION_GRANTED) {
                             launchCamera(ConstantField.REQUEST_TRAINING_4);
                         } else {
-                            ActivityCompat.requestPermissions(TrainingToSM.this,
+                            ActivityCompat.requestPermissions(AddTrainingToSMActivity.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     ConstantField.REQUEST_TRAINING_4);
                         }
@@ -279,7 +356,7 @@ public class TrainingToSM extends AppCompatActivity {
                     }
 
                 } else if (binding.btnCapture4.getText().toString().trim().equalsIgnoreCase(ConstantField.DELETE)) {
-                    Common.showDeleteImageAlert(TrainingToSM.this, binding.btnCapture4, binding.imgTraining4, new AlertCallBack() {
+                    Common.showDeleteImageAlert(AddTrainingToSMActivity.this, binding.btnCapture4, binding.imgTraining4, new AlertCallBack() {
                         @Override
                         public void onResult(boolean isDeleted) {
                             if (isDeleted) {
@@ -298,90 +375,141 @@ public class TrainingToSM extends AppCompatActivity {
 
     }
 
-    private void populateDetails() {
-        dbHelper = DatabaseHelper.getInstance(context);
-        gps = new GPSTracker(context);
+    private void callNetworkApi(TrainingSM trainingData) {
+        progressDialog.setMessage("Submitting training data...");
+        progressDialog.show();
 
-        if (gps.canGetLocation()) {
-            lastLatitude = gps.getLatitude();
-            lastLongitude = gps.getLongitude();
-        } else {
-            gps.showSettingsAlert();
-        }
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("saving your data..");
-        progressDialog.setTitle("Please Wait..");
-        mainHandler = new Handler(Looper.getMainLooper());
-    }
-
-    private void saveTrainingData() {
-        TrainingSM trainingSM = new TrainingSM();
-        trainingSM.setSMCount(Integer.parseInt(binding.editSmCount.getText().toString().trim()));
-        trainingSM.setLatitude(lastLatitude);
-        trainingSM.setLongitude(lastLongitude);
-        trainingSM.setRemarks(binding.editRemarks.getText().toString().trim());
-        trainingSM.setScheduledDateTime(Common.iso8601Format.format(new Date()));
-        trainingSM.setStartedOn(Common.iso8601Format.format(new Date()));
-        trainingSM.setInActive(false);
-        //set images
-        trainingSM.setImage1(uriCompressedImage1.toString());
-        trainingSM.setImageDefinitionId(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_1);
-
-        trainingSM.setImage1(uriCompressedImage2.toString());
-        trainingSM.setImageDefinitionId(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_2);
-
-        trainingSM.setImage1(uriCompressedImage3.toString());
-        trainingSM.setImageDefinitionId(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_3);
-
-        trainingSM.setImage1(uriCompressedImage4.toString());
-        trainingSM.setImageDefinitionId(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_4);
-
-        if (dbHelper.saveTrainingData(trainingSM)) {
-            showSuccessAlert("Training data saved successfully", true);
-        } else {
-            mainHandler = new Handler(Looper.getMainLooper());
-            mainHandler.post(() -> {
-                progressDialog.dismiss();
-                new MaterialAlertDialogBuilder(this, R.style.RoundShapeTheme)
-                        .setTitle("Error").setMessage("Failed to save training data, please try again").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-
-                            }
-                        }).setCancelable(false)
-                        .show();
-            });
-
-        }
-
-
-    }
-
-    private void showSuccessAlert(String s, boolean isUpload) {
-        mainHandler = new Handler(Looper.getMainLooper());
-        mainHandler.post(() -> {
-            progressDialog.dismiss();
-            new MaterialAlertDialogBuilder(this, R.style.RoundShapeTheme)
-                    .setTitle("Great").setMessage(s).setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Command.COMMAND, Command.ADD_TRAINING);
+            jsonObject.put(Command.DATA, trainingData.getJson());
+            jsonObject.put(Command.COMMAND_GUID, Common.createGuid());
+            jsonObject.put(Command.PROCESS_COUNT, 0);
+            jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+            final OkHttpClient client = new OkHttpClient()
+                    .newBuilder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
+            client.newCall(NetworkUtils.enqueNetworkRequest(ConstantField.NETWORK_URL + ConstantField.ACTION_URL, body, true))
+                    .enqueue(new Callback() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                            dialogInterface.dismiss();
-
+                        public void onFailure(Call call, IOException e) {
+                            runOnUiThread(() -> {
+                                if (progressDialog.isShowing()) progressDialog.dismiss();
+                                binding.btnSubmit.setEnabled(true);
+                                Toast.makeText(AddTrainingToSMActivity.this, "Submission failed. Try again.", Toast.LENGTH_LONG).show();
+                            });
                         }
-                    }).setCancelable(false)
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            final String responseBody = response.body() != null ? response.body().string() : "";
+                            runOnUiThread(() -> {
+                                if (progressDialog.isShowing()) progressDialog.dismiss();
+                                binding.btnSubmit.setEnabled(true);
+                                if (response.isSuccessful()) {
+                                    showSuccessAlert("Data submitted", responseBody);
+                                } else {
+                                    Toast.makeText(AddTrainingToSMActivity.this, "Server error during submission. - " + responseBody, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
+        } catch (Exception e) {
+            if (progressDialog.isShowing()) progressDialog.dismiss();
+            binding.btnSubmit.setEnabled(true);
+            e.printStackTrace();
+            Toast.makeText(this, "Unexpected error.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void showSuccessAlert(String title, String message) {
+        runOnUiThread(() -> {
+            androidx.appcompat.app.AlertDialog.Builder builder =
+                    new androidx.appcompat.app.AlertDialog.Builder(AddTrainingToSMActivity.this);
+
+            builder.setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton("Okay", (dialog, which) -> {
+                        dialog.dismiss();
+                        finish();   // 🔥 Close the activity after continue
+                    })
+                    .setCancelable(false)
                     .show();
         });
+    }
 
+    private TrainingSM modelTrainingData() {
+        TrainingSM trainingSM = new TrainingSM();
+        trainingSM.setNoOfTeachers(Common.getInt(binding.editSmCount.getText().toString().trim()));
+        trainingSM.setLatitude(Common.fourDecimalRoundOff(lastLatitude));
+        trainingSM.setLongitude(Common.fourDecimalRoundOff(lastLongitude));
+        trainingSM.setRemarks(binding.editRemarks.getText().toString().trim());
+        trainingSM.setVenueGuid(selectedVenueGuid);
+        trainingSM.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
+        trainingSM.setTrainingGuid(Common.createGuid());
+
+        trainingSM.setOrganizationId(ConstantField.ORGANIZATION_ID); //hardcoded organization id
+
+        trainingSM.setStartedOn(startedOn);
+        trainingSM.setEndedOn(Common.iso8601Format.format(new Date()));
+        trainingSM.setInActive(false);
+        //set image1
+        trainingSM.setImageFile1(uriCompressedImage1.toString());
+        trainingSM.setImageDefinitionId1(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_1);
+        trainingSM.setImageExt1(ConstantField.IMAGE_FORMAT);
+//set image2
+        trainingSM.setImageFile2(uriCompressedImage2.toString());
+        trainingSM.setImageDefinitionId2(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_2);
+        trainingSM.setImageExt2(ConstantField.IMAGE_FORMAT);
+//set image3
+        trainingSM.setImageFile3(uriCompressedImage3.toString());
+        trainingSM.setImageDefinitionId3(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_3);
+        trainingSM.setImageExt3(ConstantField.IMAGE_FORMAT);
+        //set image4
+        trainingSM.setImageFile4(uriCompressedImage4.toString());
+        trainingSM.setImageDefinitionId4(ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_4);
+        trainingSM.setImageExt4(ConstantField.IMAGE_FORMAT);
+
+        List<Image> imageList = new ArrayList<>();
+        addImageToList(imageList, uriCompressedImage1.toString(), ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_1, this);
+        addImageToList(imageList, uriCompressedImage2.toString(), ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_2, this);
+        addImageToList(imageList, uriCompressedImage3.toString(), ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_3, this);
+        addImageToList(imageList, uriCompressedImage4.toString(), ConstantField.SM_TRAINING_IMAGE_DEFINITION_ID_4, this);
+
+        if (!imageList.isEmpty())
+            trainingSM.setImages(imageList);
+
+        return trainingSM;
     }
 
     private boolean checkValidation() {
         if (binding.editSmCount.getText().toString().trim().isEmpty()) {
-            binding.editSmCount.setError("Please enter training date");
+            Toast.makeText(AddTrainingToSMActivity.this, "Please enter teacher count", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if (uriCompressedImage1 == null || uriCompressedImage1.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 1", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage2 == null || uriCompressedImage2.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 2", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage3 == null || uriCompressedImage3.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 3", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage4 == null || uriCompressedImage4.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 4", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
 
         return true;
     }
@@ -399,22 +527,22 @@ public class TrainingToSM extends AppCompatActivity {
                 takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
-                if (cameraRequest == ConstantField.REQUEST_IMAGE_1) {
+                if (cameraRequest == ConstantField.REQUEST_TRAINING_1) {
                     uriImage1 = photoURI;
                     capturedImgStoragePathImage1 = photoFile.getAbsolutePath();
-                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_IMAGE_1);
-                } else if (cameraRequest == ConstantField.REQUEST_IMAGE_2) {
+                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_TRAINING_1);
+                } else if (cameraRequest == ConstantField.REQUEST_TRAINING_2) {
                     uriImage2 = photoURI;
                     capturedImgStoragePathImage2 = photoFile.getAbsolutePath();
-                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_IMAGE_2);
-                } else if (cameraRequest == ConstantField.REQUEST_IMAGE_3) {
+                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_TRAINING_2);
+                } else if (cameraRequest == ConstantField.REQUEST_TRAINING_3) {
                     uriImage3 = photoURI;
                     capturedImgStoragePathImage3 = photoFile.getAbsolutePath();
-                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_IMAGE_3);
-                } else if (cameraRequest == ConstantField.REQUEST_IMAGE_4) {
+                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_TRAINING_3);
+                } else if (cameraRequest == ConstantField.REQUEST_TRAINING_4) {
                     uriImage4 = photoURI;
                     capturedImgStoragePathImage4 = photoFile.getAbsolutePath();
-                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_IMAGE_4);
+                    startActivityForResult(takePictureIntent, ConstantField.REQUEST_TRAINING_4);
                 }
             }
         } catch (IOException e) {
@@ -446,7 +574,7 @@ public class TrainingToSM extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(TrainingToSM.this, "Captured image exceeds the free space in memory. " +
+                Toast.makeText(AddTrainingToSMActivity.this, "Captured image exceeds the free space in memory. " +
                         "Kindly free your phone memory and try again.", Toast.LENGTH_LONG).show();
             }
         }
@@ -688,6 +816,51 @@ public class TrainingToSM extends AppCompatActivity {
                     dialog.dismiss(); // Close the dialog only
                 })
                 .show();
+    }
+
+    private void addImageToList(List<Image> imageList, String imagePath, int imageDefId, Context context) {
+        if (imagePath != null && !imagePath.isEmpty()) {
+            Image imgVenue = new Image();
+            String imageBase64 = Common.convertBase64(imagePath, context);
+            imgVenue.setImageDefinitionId(imageDefId);
+            imgVenue.setImageName(imageBase64);
+            imgVenue.setImageFileExt(ConstantField.IMAGE_FORMAT);
+
+            imageList.add(imgVenue);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+// remove any pending messages/callbacks to avoid leaks
+        handler.removeCallbacksAndMessages(null);
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    // Use a handler implemented as a static inner class with WeakReference to avoid leaks
+    private final AddTrainingToSMActivity.SafeHandler handler = new AddTrainingToSMActivity.SafeHandler(this);
+
+
+    private static class SafeHandler extends Handler {
+        private final WeakReference<AddTrainingToSMActivity> activityRef;
+
+
+        SafeHandler(AddTrainingToSMActivity activity) {
+            super(Looper.getMainLooper());
+            activityRef = new WeakReference<>(activity);
+        }
+
+
+        @Override
+        public void handleMessage(@NonNull android.os.Message msg) {
+            AddTrainingToSMActivity activity = activityRef.get();
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+// handle messages if you use any; keep minimal to avoid coupling
+            super.handleMessage(msg);
+        }
     }
 
 }

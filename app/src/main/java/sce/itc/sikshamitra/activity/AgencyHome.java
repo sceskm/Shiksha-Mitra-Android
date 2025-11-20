@@ -1,13 +1,11 @@
 package sce.itc.sikshamitra.activity;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -22,9 +20,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
+import java.util.Date;
+
 import sce.itc.sikshamitra.R;
 import sce.itc.sikshamitra.databasehelper.DatabaseHelper;
 import sce.itc.sikshamitra.helper.Common;
+import sce.itc.sikshamitra.helper.ConstantField;
+import sce.itc.sikshamitra.helper.PreferenceCommon;
+import sce.itc.sikshamitra.model.User;
 
 public class AgencyHome extends AppCompatActivity {
     private static final int LOCATION_CAMERA_PERMISSION_CODE = 300;
@@ -33,11 +36,6 @@ public class AgencyHome extends AppCompatActivity {
     private sce.itc.sikshamitra.databinding.ActivityAgencyHomeBinding binding;
     private DatabaseHelper dbHelper;
     private final AgencyHome context = AgencyHome.this;
-
-    //progress dialog for data upload
-    private ProgressDialog progressDialog;
-    private Handler mainHandler;
-    private Handler timerHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,17 +66,37 @@ public class AgencyHome extends AppCompatActivity {
             Log.e(TAG, "onCreate: ", e);
         }
 
-        populateData();
+        populateHome();
 
         clickEvents();
     }
-    private void populateData() {
+
+    private void populateHome() {
         dbHelper = DatabaseHelper.getInstance(this);
 
-        mainHandler = new Handler(Looper.getMainLooper());
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Please wait...");
-        progressDialog.setCancelable(false);
+        try {
+            Cursor cursor = dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                User user = new User();
+                user.populateFromCursor(cursor);
+                String fullName = "Welcome " + Common.getString(user.getFirstName()) + " " + Common.getString(user.getLastName());
+
+                if (user.getRoleId() == ConstantField.ROLE_ID_FIELD_TEAM)
+                   fullName += " (Field Team)";
+
+                binding.txtUserName.setText(fullName);
+            }
+            cursor.close();
+        } catch (Exception ex) {
+            Log.e(TAG, "populateHome: ", ex);
+        }
+        String displayDate = Common.displayDate(Common.yyyymmddFormat.format(new Date()), "yyyy-MM-dd");
+        binding.txtCurrentDate.setText(displayDate);
+
+        String appVersion = Common.APP_VERSION;
+        binding.txtAppVersion.setText("App Version: " + appVersion);
+
 
     }
 
@@ -109,7 +127,7 @@ public class AgencyHome extends AppCompatActivity {
             public void onClick(View v) {
                 Common.enableButton(binding.btnRegistrationSm,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, PreRegistrationActivity.class);
+                    Intent intent = new Intent(AgencyHome.this, AddSMRegisterActivity.class);
                     startActivity(intent);
                 } else {
                     requestPermission();
@@ -141,7 +159,7 @@ public class AgencyHome extends AppCompatActivity {
             public void onClick(View v) {
                 Common.enableButton(binding.btnSmTrainingSession,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, TrainingToSM.class);
+                    Intent intent = new Intent(AgencyHome.this, AddTrainingToSMActivity.class);
                     startActivity(intent);
                 } else {
                     requestPermission();
