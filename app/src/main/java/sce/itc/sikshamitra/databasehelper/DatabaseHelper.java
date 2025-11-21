@@ -1000,7 +1000,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /*
      * Retails details
      * */
-    public boolean saveRetailDetails(RetailOutReachModel retailsDetails) {
+    public boolean saveRetailDetailsOld(RetailOutReachModel retailsDetails) {
         boolean dataSaved = false;
 
         try {
@@ -1009,7 +1009,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("ShopName", retailsDetails.getShopName());
             newEntry.put("RetailOutReachGUID", retailsDetails.getRetailOutreachGuid());
             newEntry.put("UserGUID", retailsDetails.getUserGuid());
-            newEntry.put("OrganizationId", 3);
+            newEntry.put("OrganizationId", retailsDetails.getOrganizationId());
             newEntry.put("NearbySchool", retailsDetails.getNearbySchool()); // If you are treating this as nearby school
             newEntry.put("SchoolGUID", retailsDetails.getSchoolGuid());
             newEntry.put("ContactName", retailsDetails.getContactName()); // not in JSON
@@ -1023,9 +1023,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("StateId", retailsDetails.getStateId());
             newEntry.put("PinCode", retailsDetails.getPinCode());
             //true/false fields
-            newEntry.put("IsKeepITCProducts", retailsDetails.getIsKeepITCProducts());
-            newEntry.put("ITCProductNames", retailsDetails.getItcProductNames());
-            newEntry.put("HandwashPouchesSold", retailsDetails.getHandWashPouchesSold());
+//            newEntry.put("IsKeepITCProducts", retailsDetails.getIsKeepITCProducts());
+//            newEntry.put("ITCProductNames", retailsDetails.getItcProductNames());
+//            newEntry.put("HandwashPouchesSold", retailsDetails.getHandWashPouchesSold());
 
             // BELOW FIELDS DO NOT EXIST IN YOUR JSON – set default 0 or empty
 //            newEntry.put("StockItcProducts", true);
@@ -1071,6 +1071,81 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return dataSaved;
     }
+
+    public boolean saveRetailDetails(RetailOutReachModel retailsDetails) {
+        boolean dataSaved = false;
+
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("ShopName", retailsDetails.getShopName());
+            newEntry.put("RetailOutReachGUID", retailsDetails.getRetailOutreachGuid());
+            newEntry.put("UserGUID", retailsDetails.getUserGuid());
+            newEntry.put("OrganizationId", retailsDetails.getOrganizationId());
+            newEntry.put("NearbySchool", retailsDetails.getNearbySchool());
+            newEntry.put("SchoolGUID", retailsDetails.getSchoolGuid());
+            newEntry.put("ContactName", retailsDetails.getContactName());
+            newEntry.put("ContactPhone", retailsDetails.getContactPhone());
+            newEntry.put("Address1", retailsDetails.getAddress1());
+            newEntry.put("Address2", retailsDetails.getAddress2());
+            newEntry.put("Division", retailsDetails.getDivision());
+            newEntry.put("Block", retailsDetails.getBlock());
+            newEntry.put("City", retailsDetails.getCity());
+            newEntry.put("District", retailsDetails.getDistrict());
+            newEntry.put("StateId", retailsDetails.getStateId());
+            newEntry.put("PinCode", retailsDetails.getPinCode());
+            newEntry.put("Latitude", retailsDetails.getLatitude());
+            newEntry.put("Longitude", retailsDetails.getLongitude());
+            newEntry.put("Image1", retailsDetails.getImage1());
+            newEntry.put("ImgExt1", retailsDetails.getImgExt1());
+            newEntry.put("ImgDefinitionId1", retailsDetails.getImgDefinitionId1());
+
+            newEntry.put("IsKeepITCProducts", retailsDetails.getIsKeepITCProducts());
+            newEntry.put("ITCProductNames", retailsDetails.getItcProductNames());
+            newEntry.put("HandwashPouchesSold", retailsDetails.getHandWashPouchesSold());
+
+            // BELOW FIELDS DO NOT EXIST IN YOUR JSON – set default 0 or empty
+            newEntry.put("BrandingInterested", retailsDetails.getBrandingInterested());
+            newEntry.put("ShopPainting", retailsDetails.getShopPainting());
+            newEntry.put("DealerBoard", retailsDetails.getDealerBoard());
+            newEntry.put("Poster", retailsDetails.getPoster());
+            newEntry.put("Bunting",retailsDetails.getBunting());
+            newEntry.put("ItcProductNames", retailsDetails.getItcProductNames());
+
+            newEntry.put("SavlonSoapSold", retailsDetails.getSavlonSoapSold());
+            newEntry.put("FmcgPurchaseFrom", retailsDetails.getFmcgpurchaseFrom());
+            newEntry.put("DistributorDetails", retailsDetails.getDistributorDetails());
+            newEntry.put("MarketDetails", retailsDetails.getMarketDetails());
+
+            long retVal = myDataBase.insertOrThrow("sp_retailersdetails", null, newEntry);
+
+            if (retVal > 0) {
+                CommunicationSend commSend = retailsDetails.createCommSend();
+
+                if (saveCommunicationSend(commSend) > 0) {
+                    dataSaved = true;
+                }
+            }
+
+        } catch (SQLException ex) {
+
+            Log.e(TAG, "SAVE ERROR in sp_retailersdetails → " + ex.getMessage());
+            ex.printStackTrace();  // full details in Logcat
+
+            // Optional — show toast or alert in UI for testing
+            // Toast.makeText(context, "DB Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+
+            return false;
+        } catch (Exception e) {
+
+            Log.e(TAG, "Unknown Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+
+        return dataSaved;
+    }
+
 
     public Cursor getTodayVenueDetails() {
         String  today = Common.yyyymmddFormat.format(new Date());

@@ -59,9 +59,6 @@ public class RetailOutReachModel {
     @SerializedName("handwashPouchesSold")
     private int handWashPouchesSold;
 
-
-
-
     @Expose
     @SerializedName("brandingInterested")
     private int brandingInterested;

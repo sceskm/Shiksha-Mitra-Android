@@ -38,6 +38,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -65,12 +66,11 @@ public class RetailOutReachActivity extends AppCompatActivity {
 
     //progress dialog for data upload
     private ProgressDialog progressDialog;
-    private Handler mainHandler;
     private String startDate = "";
 
     /*
      * Image 1
-    * */
+     * */
     private File photoFile;
     private Uri uriImage1;
     private String capturedImgStoragePathImage1 = "";
@@ -99,7 +99,7 @@ public class RetailOutReachActivity extends AppCompatActivity {
         });
 
         populateData();
-        
+
         clickEvents();
 
     }
@@ -126,22 +126,31 @@ public class RetailOutReachActivity extends AppCompatActivity {
                     }
                     if (Common.checkLatLong(lastLatitude, lastLongitude)) {
                         if (checkValidation()) {
-                            try {
-                                progressDialog.show();
-                                binding.btnSubmitRetailerData.setEnabled(false);
-                                mainHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
+                            if (checkValidation()) {
+                                binding.btnSubmitRetailerData.setEnabled(false); // disable to avoid multiple click
+                                // use static-safe handler to avoid memory leak
+                                handler.postDelayed(() -> {
+                                    try {
                                         Log.d(TAG, "run: save attendance");
-                                        saveRetailData();
-                                        progressDialog.dismiss();
-                                    }
-                                }, 200);
 
-                            } catch (Exception e) {
-                                Log.e(TAG, "onClick: ", e);
-                            } finally {
-                                binding.btnSubmitRetailerData.setEnabled(true);
+                                        // 1. Create model from UI form fields
+                                        RetailOutReachModel model = modelRetailData();
+
+                                        if (dbHelper.saveRetailDetails(model))
+                                            Toast.makeText(gps, "Data saved.", Toast.LENGTH_SHORT).show();
+
+                                        // 2. Call confirmation API
+                                        //callNetworkApi(model);
+
+
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "onClick error: ", e);
+                                        binding.btnSubmitRetailerData.setEnabled(true); // recover
+                                    }
+
+                                }, 200); // 200ms delay
+
+
                             }
                         }
                     } else {
@@ -194,61 +203,52 @@ public class RetailOutReachActivity extends AppCompatActivity {
         });
     }
 
-    private void saveRetailData() {
-        try {
-            RetailOutReachModel retail = new RetailOutReachModel();
-            retail.setLatitude(Common.fourDecimalRoundOff(lastLatitude));
-            retail.setLongitude(Common.fourDecimalRoundOff(lastLongitude));
-            retail.setCreatedOn(Common.iso8601Format.format(new Date()));
-            retail.setVisitedOn(Common.yyyymmddFormat.format(new Date()));
-            //get data from fields
-            retail.setShopName(binding.editShopName.getText().toString().trim());
-            retail.setRetailOutreachGuid(Common.createGuid());
-            retail.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
-            //TODO - set organization id dynamically
-            retail.setOrganizationId(3);
-            retail.setNearbySchool("Nearby School ABC");
-            retail.setSchoolGuid("4fe77175-0403-4903-916c-3949a0ca5ffe");
-            retail.setAddress1(binding.editAddressLine1.getText().toString().trim());
-            retail.setAddress2(binding.editAddressLine2.getText().toString().trim());
-            retail.setCity(binding.editCity.getText().toString().trim());
-            retail.setState(binding.editState.getText().toString().trim());
-            retail.setStateId(17);
-            retail.setPinCode(binding.editPinCode.getText().toString().trim());
-            retail.setDistrict(binding.editDistrict.getText().toString().trim());
-            retail.setDivision("Division XYZ");
-            retail.setContactName(binding.editContactPersonName.getText().toString().trim());
-            retail.setContactPhone(binding.editContactPersonPhoneNumber.getText().toString().trim());
-            retail.setContactName(binding.editContactPersonName.getText().toString().trim());
-            retail.setIsKeepITCProducts(1);
-            retail.setBlock(binding.editBlock.getText().toString().trim());
-            retail.setBrandingInterested(1);
-            retail.setShopPainting(1);
-            retail.setDealerBoard(1);
-            retail.setPoster(1);
-            retail.setBunting(1);
-            retail.setHandWashPouchesSold(5);
-            retail.setSavlonSoapSold(4);
-            retail.setItcProductNames("Product1, Product2");
-            retail.setFmcgpurchaseFrom("Local Distributor");
-            retail.setDistributorDetails("Distributor XYZ, Contact: 1234567890");
-            retail.setMarketDetails("Local market details here");
+    private RetailOutReachModel modelRetailData() {
 
-            //Image 1
-            retail.setImage1(uriCompressedImage1.toString());
-            retail.setImgDefinitionId1(ConstantField.RETAIL_IMAGE_SHOP_IMAGE);
-            retail.setImgExt1(ConstantField.IMAGE_FORMAT);
+        RetailOutReachModel retail = new RetailOutReachModel();
+        retail.setLatitude(Common.fourDecimalRoundOff(lastLatitude));
+        retail.setLongitude(Common.fourDecimalRoundOff(lastLongitude));
+        retail.setCreatedOn(Common.iso8601Format.format(new Date()));
+        retail.setVisitedOn(Common.yyyymmddFormat.format(new Date()));
+        //get data from fields
+        retail.setShopName(binding.editShopName.getText().toString().trim());
+        retail.setRetailOutreachGuid(Common.createGuid());
+        retail.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
+        //TODO - set organization id dynamically
+        retail.setOrganizationId(ConstantField.ORGANIZATION_ID);
+        retail.setNearbySchool("ABC Nearby School");
+        retail.setSchoolGuid("4fe77175-0403-4903-916c-3949a0ca5ffe");
+        retail.setAddress1(binding.editAddressLine1.getText().toString().trim());
+        retail.setAddress2(binding.editAddressLine2.getText().toString().trim());
+        retail.setCity(binding.editCity.getText().toString().trim());
+        retail.setState(binding.editState.getText().toString().trim());
+        retail.setStateId(17);
+        retail.setPinCode(binding.editPinCode.getText().toString().trim());
+        retail.setDistrict(binding.editDistrict.getText().toString().trim());
+        retail.setDivision("Division XYZ");
+        retail.setContactName(binding.editContactPersonName.getText().toString().trim());
+        retail.setContactPhone(binding.editContactPersonPhoneNumber.getText().toString().trim());
+        retail.setContactName(binding.editContactPersonName.getText().toString().trim());
+        retail.setIsKeepITCProducts(1);
+        retail.setBlock(binding.editBlock.getText().toString().trim());
+        retail.setBrandingInterested(1);
+        retail.setShopPainting(1);
+        retail.setDealerBoard(1);
+        retail.setPoster(1);
+        retail.setBunting(1);
+        retail.setHandWashPouchesSold(5);
+        retail.setSavlonSoapSold(4);
+        retail.setItcProductNames("Product1, Product2");
+        retail.setFmcgpurchaseFrom("Local Distributor");
+        retail.setDistributorDetails("Distributor XYZ, Contact: 1234567890");
+        retail.setMarketDetails("Local market details here");
 
-            if (dbHelper.saveRetailDetails(retail)) {
-                Log.d(TAG, "saveRetailData: Retail OutReach Data saved successfully in local database");
-            } else {
-                Log.e(TAG, "saveRetailData: Error in saving Retail OutReach Data in local database");
-            }
-            finish();
-        } catch (Exception ex) {
-            Log.e(TAG, "saveRetailData: ", ex);
-            Toast.makeText(context, "Error in saving Retail OutReach Data", Toast.LENGTH_LONG).show();
-        }
+        //Image 1
+        retail.setImage1(uriCompressedImage1.toString());
+        retail.setImgDefinitionId1(ConstantField.RETAIL_IMAGE_SHOP_IMAGE);
+        retail.setImgExt1(ConstantField.IMAGE_FORMAT);
+
+        return retail;
     }
 
     private void locationErrorMessage(String s) {
@@ -275,7 +275,7 @@ public class RetailOutReachActivity extends AppCompatActivity {
     }
 
     private void populateData() {
-        dbHelper = new DatabaseHelper(this);
+        dbHelper = DatabaseHelper.getInstance(this);
         gps = new GPSTracker(context);
 
         if (gps.canGetLocation()) {
@@ -284,12 +284,7 @@ public class RetailOutReachActivity extends AppCompatActivity {
         } else {
             gps.showSettingsAlert();
         }
-
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("saving your data..");
-        progressDialog.setTitle("Please Wait..");
-        mainHandler = new Handler(Looper.getMainLooper());
-
         startDate = Common.iso8601Format.format(new Date());
     }
 
@@ -496,7 +491,6 @@ public class RetailOutReachActivity extends AppCompatActivity {
             capturedImgStoragePathImage1 = savedInstanceState.getString("capturedImg1");
 
 
-
             if (savedInstanceState.getParcelable("uriImg1") != null) {
                 uriCompressedImage1 = savedInstanceState.getParcelable("uriImg1");
                 binding.imgCamera1.setImageURI(uriCompressedImage1);
@@ -520,5 +514,38 @@ public class RetailOutReachActivity extends AppCompatActivity {
                     dialog.dismiss(); // Close the dialog only
                 })
                 .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+// remove any pending messages/callbacks to avoid leaks
+        handler.removeCallbacksAndMessages(null);
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    // Use a handler implemented as a static inner class with WeakReference to avoid leaks
+    private final RetailOutReachActivity.SafeHandler handler = new RetailOutReachActivity.SafeHandler(this);
+
+
+    private static class SafeHandler extends Handler {
+        private final WeakReference<RetailOutReachActivity> activityRef;
+
+
+        SafeHandler(RetailOutReachActivity activity) {
+            super(Looper.getMainLooper());
+            activityRef = new WeakReference<>(activity);
+        }
+
+
+        @Override
+        public void handleMessage(@NonNull android.os.Message msg) {
+            RetailOutReachActivity activity = activityRef.get();
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+// handle messages if you use any; keep minimal to avoid coupling
+            super.handleMessage(msg);
+        }
     }
 }

@@ -97,14 +97,14 @@
                     style="@style/AppButtonStyle"
                     android:layout_marginTop="16dp"
                     android:text="Retailers Details"
-                    android:visibility="gone"/>
+                    android:visibility="visible"/>
 
                 <Button
                     android:id="@+id/btn_sync_data"
                     style="@style/AppButtonStyle"
                     android:layout_marginTop="16dp"
                     android:text="Synchronisation"
-                    android:visibility="gone"/>
+                    android:visibility="visible"/>
 
             </LinearLayout>
         </LinearLayout>
