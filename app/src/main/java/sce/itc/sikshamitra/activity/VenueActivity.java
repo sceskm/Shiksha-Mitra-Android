@@ -67,9 +67,7 @@ import sce.itc.sikshamitra.helper.ConstantField;
 import sce.itc.sikshamitra.helper.GPSTracker;
 import sce.itc.sikshamitra.helper.NetworkUtils;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
-import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.Image;
-import sce.itc.sikshamitra.model.TrainingSM;
 import sce.itc.sikshamitra.model.Venue;
 
 public class VenueActivity extends AppCompatActivity {
@@ -94,7 +92,7 @@ public class VenueActivity extends AppCompatActivity {
     private Uri imgURI;
     private String capturedImgStoragePath;
 
-    private String attendanceImage = "";
+    private String venueImage = "";
 
     private MaterialAutoCompleteTextView stateAutoComplete;
     private TextInputLayout stateInputLayout;
@@ -230,13 +228,13 @@ public class VenueActivity extends AppCompatActivity {
 
 
                         }
-                    }else {
+                    } else {
                         locationErrorMessage(getResources().getString(R.string.incorrect_location_message)
                                 + getResources().getString(R.string.latitude) + String.valueOf(lastLatitude)
                                 + getResources().getString(R.string.longitude) + String.valueOf(lastLongitude));
                     }
 
-                }else {
+                } else {
                     Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -569,12 +567,12 @@ public class VenueActivity extends AppCompatActivity {
             //just testing-if we dont get compressed file then set original path
             //if image is not compressed we can use the original image
             if (!compressedImageStoragePath.isEmpty()) {
-                attendanceImage = compressedImageStoragePath;
+                venueImage = compressedImageStoragePath;
             } else {
-                attendanceImage = capturedImgStoragePath;
+                venueImage = capturedImgStoragePath;
             }
-            if (!attendanceImage.isEmpty())
-                imgURI = Uri.parse(ConstantField.COMPRESS_PHOTO_URI + Common.getImageName(attendanceImage));
+            if (!venueImage.isEmpty())
+                imgURI = Uri.parse(ConstantField.COMPRESS_PHOTO_URI + Common.getImageName(venueImage));
 
             Log.d(TAG, "onCaptureFImageResult: " + imgURI);
             binding.imgVenue.setImageURI(imgURI);
@@ -589,6 +587,41 @@ public class VenueActivity extends AppCompatActivity {
     private void requestPermissions() {
         // Request camera permission
         ActivityCompat.requestPermissions(this, new String[]{CAMERA_PERMISSION}, ConstantField.VENUE_CAMERA_REQUEST);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        try {
+            savedInstanceState.putString("venue_image", venueImage);
+            savedInstanceState.putString("captured_image", capturedImgStoragePath);
+            if (imgURI != null) {
+                savedInstanceState.putParcelable("uri_venue", imgURI);
+            }
+
+        } catch (Exception ex) {
+            Log.e(TAG, "onSaveInstanceState: ", ex);
+        }
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        try {
+            venueImage = savedInstanceState.getString("venue_image");
+
+            capturedImgStoragePath = savedInstanceState.getString("captured_image");
+
+            if (savedInstanceState.getParcelable("uri_venue") != null) {
+                imgURI = savedInstanceState.getParcelable("uri_venue");
+                binding.imgVenue.setImageURI(imgURI);
+                binding.btnCaptureVenue.setText("DELETE");
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "onRestoreInstanceState: ", e);
+        }
     }
 
     @Override
