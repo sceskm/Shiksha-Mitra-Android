@@ -478,6 +478,28 @@ public class AddSMRegisterActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        try {
+
+
+        } catch (Exception ex) {
+            Log.e(TAG, "onSaveInstanceState: ", ex);
+        }
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        try {
+
+        } catch (Exception e) {
+            Log.e(TAG, "onRestoreInstanceState: ", e);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 // remove any pending messages/callbacks to avoid leaks

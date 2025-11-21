@@ -127,8 +127,12 @@ public class AgencyHome extends AppCompatActivity {
             public void onClick(View v) {
                 Common.enableButton(binding.btnRegistrationSm,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, AddSMRegisterActivity.class);
-                    startActivity(intent);
+                    if (checkTodayVenue()) {
+                        Intent intent = new Intent(AgencyHome.this, AddSMRegisterActivity.class);
+                        startActivity(intent);
+                    }else {
+                        Toast.makeText(AgencyHome.this,"Create today's venue first before starting the registration.",Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     requestPermission();
                 }
@@ -159,8 +163,12 @@ public class AgencyHome extends AppCompatActivity {
             public void onClick(View v) {
                 Common.enableButton(binding.btnSmTrainingSession,false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, AddTrainingToSMActivity.class);
-                    startActivity(intent);
+                    if (checkTodayVenue()) {
+                        Intent intent = new Intent(AgencyHome.this, AddTrainingToSMActivity.class);
+                        startActivity(intent);
+                    }else {
+                        Toast.makeText(AgencyHome.this,"Create today's venue first before starting the training.",Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     requestPermission();
                 }
@@ -183,6 +191,17 @@ public class AgencyHome extends AppCompatActivity {
                 Common.enableButton(binding.btnFinalSession,true);
             }
         });
+    }
+
+    private boolean checkTodayVenue(){
+        boolean isValid = false;
+        Cursor cursor = dbHelper.getTodayVenueDetails();
+        cursor.moveToFirst();
+        if (cursor.getCount()>0)
+            isValid = true;
+
+        cursor.close();
+        return isValid;
     }
 
     public boolean checkPermission() {
