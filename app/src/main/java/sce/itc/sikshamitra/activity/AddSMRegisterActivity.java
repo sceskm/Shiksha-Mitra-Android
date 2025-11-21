@@ -404,11 +404,14 @@ public class AddSMRegisterActivity extends AppCompatActivity {
             Toast.makeText(AddSMRegisterActivity.this, "Please enter confirm password.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (!binding.editConfirmPassword.getText().toString().trim().isEmpty()
-                && !binding.editPassword.getText().toString().isEmpty()) {
-            if (!binding.editConfirmPassword.getText().toString().trim().equals(binding.editConfirmPassword.getText().toString().trim())) {
-                Toast.makeText(AddSMRegisterActivity.this, "Password and confirm password must be same.", Toast.LENGTH_SHORT).show();
+        String password = binding.editPassword.getText().toString().trim();
+        String confirmPassword = binding.editConfirmPassword.getText().toString().trim();
 
+        if (!password.isEmpty() && !confirmPassword.isEmpty()) {
+            if (!password.equals(confirmPassword)) {
+                Toast.makeText(AddSMRegisterActivity.this,
+                        "Password and confirm password must be same.",
+                        Toast.LENGTH_SHORT).show();
                 return false;
             }
         }

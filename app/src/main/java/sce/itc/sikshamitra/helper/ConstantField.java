@@ -2,8 +2,8 @@ package sce.itc.sikshamitra.helper;
 
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
-    public static final String APP_VERSION = "1.2.1";
-    public static final String SERVER_APP_VERSION = "310";
+    public static final String APP_VERSION = "2.0.2";
+    public static final String SERVER_APP_VERSION = "2.0";
 
 
     public static final String IMAGE_FORMAT = "jpg";
@@ -130,6 +130,7 @@ public class ConstantField {
     public static final int RETAIL_IMAGE_SHOP_IMAGE = 40001;
 
     public static final int ORGANIZATION_ID = 3;
+    public static final int MAX_NO_SESSION_ALLOWED_SM = 6;
 
 
 

@@ -405,6 +405,15 @@ public class VenueActivity extends AppCompatActivity {
             isValid = false;
             return isValid;
         }
+        if(binding.editPinCode.getText().toString().trim().isEmpty()){
+            Toast.makeText(this, "Please enter pincode", Toast.LENGTH_SHORT).show();
+            isValid = false;
+            return isValid;
+        }
+        if (imgURI == null || imgURI.toString().isEmpty()) {
+            Toast.makeText(this, "Capture venue image", Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
         return isValid;
 

@@ -94,8 +94,8 @@ public class AgencyHome extends AppCompatActivity {
         String displayDate = Common.displayDate(Common.yyyymmddFormat.format(new Date()), "yyyy-MM-dd");
         binding.txtCurrentDate.setText(displayDate);
 
-        String appVersion = Common.APP_VERSION;
-        binding.txtAppVersion.setText("App Version: " + appVersion);
+        String appVersion = ConstantField.APP_VERSION;
+        binding.txtAppVersion.setText("Version " + appVersion);
 
 
     }

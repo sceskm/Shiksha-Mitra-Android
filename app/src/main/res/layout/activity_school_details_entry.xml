@@ -124,15 +124,15 @@
                     android:layout_height="wrap_content"
                     android:text="Village Name " />
 
-                <EditText
-                    android:id="@+id/edit_village_name"
-                    style="@style/AppEditTextStyle"
-                    android:inputType="text"
-                    />
                 <!--Mobile number-->
 
 
                 <!--Email-->
+                <EditText
+                    android:id="@+id/edit_village_name"
+                    style="@style/AppEditTextStyle"
+                    android:inputType="text" />
+
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"

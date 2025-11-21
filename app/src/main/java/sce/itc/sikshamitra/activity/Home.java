@@ -2,6 +2,7 @@ package sce.itc.sikshamitra.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,6 +22,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Date;
 
@@ -87,10 +90,13 @@ public class Home extends AppCompatActivity {
                 User user = new User();
                 user.populateFromCursor(cursor);
                 String fullName = "Welcome " + Common.getString(user.getFirstName()) + " " + Common.getString(user.getLastName());
+                if (user.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA)
+                    fullName += " (Shiksha Mitra)";
                 binding.txtUserName.setText(fullName);
 
-                if (user.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA)
-                    binding.txtRoleName.setText(" Shiksha Mitra (Teacher) ");
+                String version = "Version " + ConstantField.APP_VERSION;
+                binding.txtRoleName.setText(version);
+
             }
         } catch (Exception ex) {
             Log.e(TAG, "populateHome: ", ex);
@@ -109,8 +115,19 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checkPermission()) {
-                    Intent intent = new Intent(Home.this, ConductedSessionBySM.class);
-                    startActivity(intent);
+                    int sessionCont = PreferenceCommon.getInstance().getLastSessionCount();
+                    Log.d(TAG, "onClick: sessionCont : " + sessionCont);
+                    if (sessionCont <= ConstantField.MAX_NO_SESSION_ALLOWED_SM) {
+                        Intent intent = new Intent(Home.this, ConductedSessionBySM.class);
+                        startActivity(intent);
+                    } else {
+                        new MaterialAlertDialogBuilder(Home.this, R.style.RoundShapeTheme)
+                                .setTitle("Oops!")
+                                .setMessage("You are allowed only 6 sessions. Please contact the agency.")
+                                .setPositiveButton("Okay", (dialog, which) -> dialog.dismiss())
+                                .setCancelable(false)
+                                .show();
+                    }
                 } else {
                     requestPermission();
                 }
@@ -190,73 +207,5 @@ public class Home extends AppCompatActivity {
                 })
                 .show();
     }
-    /*private void requestAllPermissions() {
-        // Build permission list
-        if (shouldShowPermissionRationale()) {
-            showRationaleDialog();
-            return;
-        }
-
-        String[] perms;
-        if (Build.VERSION.SDK_INT <= 28) {
-            perms = new String[] { Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE };
-        } else {
-            perms = new String[] { Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION };
-        }
-        permissionLauncher.launch(perms);
-    }
-    private boolean shouldShowPermissionRationale() {
-        boolean show = false;
-        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) show = true;
-        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) show = true;
-        if (Build.VERSION.SDK_INT <= 28 && shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) show = true;
-        return show;
-    }
-    private void showRationaleDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Permissions required")
-                .setMessage("This app needs camera and location to capture photos and geo-tag them. Please grant the permissions.")
-                .setPositiveButton("Ok", (dialog, which) -> requestAllPermissions())
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-    private void showSettingsDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Permissions permanently denied")
-                .setMessage("You have permanently denied some permissions. Please open app settings to enable them.")
-                .setPositiveButton("Open Settings", (dialog, which) -> {
-                    try {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private void updateStatus() {
-        cameraPermissionGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
-        locationPermissionGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-        storageWritePermissionGranted = Build.VERSION.SDK_INT <= 28 ? (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) : true;
-
-        String status = String.format("Camera: %s\nLocation: %s\nStorage (write required <=28): %s",
-                cameraPermissionGranted ? "GRANTED" : "DENIED",
-                locationPermissionGranted ? "GRANTED" : "DENIED",
-                storageWritePermissionGranted ? "GRANTED" : "N/A or GRANTED");
-        tvStatus.setText(status);
-
-        btnTakePhoto.setEnabled(cameraPermissionGranted && locationPermissionGranted);
-    }
-    private boolean hasAllPermissions() {
-        boolean camera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
-        boolean location = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-        boolean storage = Build.VERSION.SDK_INT <= 28 ?
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED : true;
-        return camera && location && storage;
-    }*/
 
 }
