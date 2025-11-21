@@ -31,10 +31,10 @@ public class ProcessResponse {
         String deletedIDs = "";
         try {
             jsonObject = new JSONObject(userListResponse);
-            String status = jsonObject.getString(ConstantField.STATUS);
+            //String status = jsonObject.getString(ConstantField.STATUS);
             dataObject = jsonObject.getJSONObject(ConstantField.DATA);
             schoolArray = dataObject.getJSONArray(ConstantField.SCHOOL);
-            deletedIDs = dataObject.getString(ConstantField.DELETED_IDS);
+            //deletedIDs = dataObject.getString(ConstantField.DELETED_IDS);
             if (schoolArray.length() > 0) {
                 for (int i = 0; i < schoolArray.length(); i++) {
                     userObject = schoolArray.getJSONObject(i);
@@ -44,10 +44,10 @@ public class ProcessResponse {
                     }
                 }
             }
-            if (!deletedIDs.isEmpty()) {
+            /*if (!deletedIDs.isEmpty()) {
                 if (dbHelper.deleteIDs(deletedIDs, "sp_school", "SchoolId"))
                     Log.d(TAG, "processSchoolList: " + "deleted");
-            }
+            }*/
 
         } catch (JSONException e) {
             Log.e(TAG, "processUserList: ", e);

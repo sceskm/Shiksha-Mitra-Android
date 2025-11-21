@@ -43,6 +43,7 @@ import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.helper.ProcessResponse;
 import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.Image;
+import sce.itc.sikshamitra.model.RetailOutReachModel;
 import sce.itc.sikshamitra.model.Session;
 
 
@@ -130,6 +131,15 @@ public class Synchronise extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
+                                if (errorCount < maxErrorsAllowed) {
+                                    downloadSchoolList();
+                                    Log.d(TAG, "run: downloadSchool");
+                                }
+
+                                if (errorCount < maxErrorsAllowed){
+                                    uploadRetailData();
+                                    Log.d(TAG, "run: uploadRetailData()");
+                                }
 
                                 if (errorCount < maxErrorsAllowed) {
                                     uploadSessionData();
@@ -202,7 +212,6 @@ public class Synchronise extends AppCompatActivity {
             }
         });
     }
-
 
     //upload attendance data
     private void uploadSessionData() {
@@ -311,7 +320,7 @@ public class Synchronise extends AppCompatActivity {
     }
 
     //Download school list
-    private void schoolList() {
+    private void downloadSchoolList() {
         String schoolListResponse = "";
         // create your json here
         String ids = dbHelper.getExistingID("SchoolId", "sp_school");
@@ -326,7 +335,7 @@ public class Synchronise extends AppCompatActivity {
             objData.put("existingIds", ids);
 
             jsonObject.put(Command.COMMAND, Command.SCHOOL_LIST);
-            jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
+            jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
             jsonObject.put(Command.DATA, objData.toString());
             jsonObject.put(Command.COMMAND_GUID, UUID.randomUUID().toString());
             jsonObject.put(Command.PROCESS_COUNT, 1);
@@ -358,6 +367,89 @@ public class Synchronise extends AppCompatActivity {
         }
     }
 
+    //Upload retail out reach detail
+    private void uploadRetailData() {
+        Cursor cursor = dbHelper.unProcessedCommSendMessage(Command.ADD_RETAIL,
+                PreferenceCommon.getInstance().getUserGUID());
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            while (cursor.isAfterLast() == false) {
+
+                CommunicationSend communicationSend = new CommunicationSend();
+                communicationSend.populateFromCursor(cursor);
+
+                if (!communicationSend.getCommandDetails().isEmpty()) {
+                    String attendanceResponse = "";
+                    boolean isSuccess = false;
+                    RetailOutReachModel retailData = RetailOutReachModel.fromJson(communicationSend.getCommandDetails());
+
+                    //Extra code
+                    String image1 = "";
+                    String sGuid = retailData.getRetailOutreachGuid();
+                    Cursor cursor1 = dbHelper.getRetailsDetails(sGuid);
+                    cursor1.moveToFirst();
+                    if (cursor1.getCount() > 0) {
+                        image1 = cursor1.getString(cursor1.getColumnIndex("Image1"));
+                    }
+                    cursor1.close();
+
+                    List<Image> imageList = new ArrayList<>();
+
+                    addImageToList(imageList, image1, ConstantField.RETAIL_IMAGE_SHOP_IMAGE, this);
+
+                    if (!imageList.isEmpty())
+                        retailData.setImages(imageList);
+
+
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put(Command.COMMAND, Command.ADD_RETAIL);
+                        jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
+                        jsonObject.put(Command.DATA, retailData.getJson());
+                        jsonObject.put(Command.COMMAND_GUID, Common.createGuid());
+                        jsonObject.put(Command.PROCESS_COUNT, communicationSend.getProcessCount());
+
+                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+                        Response response = NetworkUtils.excuteNetworkRequest(NETWORK_URL
+                                + ACTION_URL, body, true);
+
+                        if (response != null) {
+                            ResponseBody responseBody = response.body();
+                            if (response.isSuccessful()) {
+                                isSuccess = true;
+                                attendanceResponse = responseBody.string();
+                            } else {
+                                //just increase the error count
+                                attendanceResponse = responseBody.string();
+                                errorCount++;
+                            }
+                            Log.d(TAG, "onResponse: uploadAttendanceData" + attendanceResponse);
+                        }
+                    } catch (Exception e) {
+                        errorCount++;
+                        e.printStackTrace();
+                    } finally {
+                        if (isSuccess) {
+                            // update the message as processed
+                            dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
+                                    ConstantField.COMM_STATUS_PROCESSED, "success", false);
+                        } else {
+                            // mark the message as failed
+                            dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
+                                    ConstantField.COMM_STATUS_ERROR, "error", true);
+                        }
+                    }
+                }
+                cursor.moveToNext();
+            }
+            cursor.close();
+
+        } else {
+            Log.d(TAG, "uploadSessionData: ");
+        }
+    }
     @Override
     public void onBackPressed() {
     }

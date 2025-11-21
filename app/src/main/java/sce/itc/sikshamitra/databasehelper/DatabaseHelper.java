@@ -27,7 +27,6 @@ import sce.itc.sikshamitra.model.MySchoolData;
 import sce.itc.sikshamitra.model.PreRegistration;
 import sce.itc.sikshamitra.model.Product;
 import sce.itc.sikshamitra.model.RetailOutReachModel;
-import sce.itc.sikshamitra.model.SchoolData;
 import sce.itc.sikshamitra.model.Session;
 import sce.itc.sikshamitra.model.Settings;
 import sce.itc.sikshamitra.model.State;
@@ -199,18 +198,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean update = false;
         boolean isCheck;
         try {
-            if (version < 2) {
-                myDataBase.beginTransaction();
-                update = true;
-                // Add column to isp_attendance
-                boolean isPresent = checkColumn("sp_training", "ImageExt1");
-                if (!isPresent) {
-                    myDataBase.execSQL("ALTER TABLE \"sp_training\" ADD COLUMN \"ImageExt1\" VARCHAR(10) ;");
-                }
-                //TODO - update statement
-
-            }
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -514,7 +501,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /*
      * Update school data entry
-     * */
+     * *//*
     public boolean updateSchool(SchoolData schoolDetails) {
         boolean dataUpdated = false;
         try {
@@ -552,7 +539,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return dataUpdated;
-    }
+    }*/
 
     /*
      * Save user data
@@ -979,10 +966,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 // update the row
                 String[] whereArgs = {String.valueOf(communicationOn.getAction())};
 
-                retVal = myDataBase.update("isp_communicationOn", newEntry, "Action = ?", whereArgs);
+                retVal = myDataBase.update("sp_communicationon", newEntry, "Action = ?", whereArgs);
             } else {
                 // insert
-                retVal = myDataBase.insertOrThrow("isp_communicationOn", null, newEntry);
+                retVal = myDataBase.insertOrThrow("sp_communicationon", null, newEntry);
             }
             if (retVal > 0)
                 dataSaved = true;
@@ -1157,6 +1144,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getComboProduct() {
         String  today = Common.yyyymmddFormat.format(new Date());
         String sql = "SELECT * FROM sp_comboproduct";
+        return QueryDatabase(sql);
+    }
+
+    public Cursor getRetailsDetails(String rGuid) {
+        String sql = "SELECT * FROM sp_retailersdetails WHERE RetailOutReachGUID = '" + rGuid + "'";
+        return QueryDatabase(sql);
+    }
+
+    public Cursor getSchoolDetails() {
+        String sql = "SELECT * FROM sp_school";
         return QueryDatabase(sql);
     }
 

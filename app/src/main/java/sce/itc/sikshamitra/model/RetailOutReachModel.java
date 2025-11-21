@@ -448,12 +448,12 @@ public class RetailOutReachModel {
     }
 
     //create attendance from json
-    public static Session fromJson(String json) {
+    public static RetailOutReachModel fromJson(String json) {
 
         Gson gson = new Gson();
-        Session attendance = gson.fromJson(json, Session.class);
+        RetailOutReachModel retails = gson.fromJson(json, RetailOutReachModel.class);
 
-        return attendance;
+        return retails;
     }
 
     public String getJson() {

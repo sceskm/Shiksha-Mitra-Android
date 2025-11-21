@@ -26,7 +26,6 @@ import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.GPSTracker;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
 import sce.itc.sikshamitra.model.MySchoolData;
-import sce.itc.sikshamitra.model.SchoolData;
 import sce.itc.sikshamitra.model.User;
 
 public class MySchoolEntry extends AppCompatActivity {
@@ -177,17 +176,6 @@ public class MySchoolEntry extends AppCompatActivity {
 
         }
 
-    }
-
-
-    /*
-     * Save data
-     * */
-    private void saveData() {
-        if (checkValidation()) {
-            SchoolData schoolData = new SchoolData();
-            schoolData.setSchoolName(Common.getString(binding.editSchoolName.getText().toString().trim()));
-        }
     }
 
     /*

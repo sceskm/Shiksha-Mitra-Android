@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 
@@ -77,6 +79,15 @@ public class RetailOutReachActivity extends AppCompatActivity {
     private Uri uriCompressedImage1;
     private String imgImage1 = "";
 
+    private String[] arrState;
+    private int[] arrStateId;
+    int selectedStateId = -1;
+
+    //school
+    private String[] arrSchool;
+    private String[] arrSchoolGuid;
+    String selectedSchoolGuid = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,11 +129,6 @@ public class RetailOutReachActivity extends AppCompatActivity {
                             lastLatitude = gps.getLatitude();
                             lastLongitude = gps.getLongitude();
                         }
-
-                        if (Common.DEBUGGING) {
-                            lastLatitude = ConstantField.TEST_LATITUDE;
-                            lastLongitude = ConstantField.TEST_LONGITUDE;
-                        }
                     }
                     if (Common.checkLatLong(lastLatitude, lastLongitude)) {
                         if (checkValidation()) {
@@ -138,10 +144,6 @@ public class RetailOutReachActivity extends AppCompatActivity {
 
                                         if (dbHelper.saveRetailDetails(model))
                                             Toast.makeText(gps, "Data saved.", Toast.LENGTH_SHORT).show();
-
-                                        // 2. Call confirmation API
-                                        //callNetworkApi(model);
-
 
                                     } catch (Exception e) {
                                         Log.e(TAG, "onClick error: ", e);
@@ -216,32 +218,63 @@ public class RetailOutReachActivity extends AppCompatActivity {
         retail.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
         //TODO - set organization id dynamically
         retail.setOrganizationId(ConstantField.ORGANIZATION_ID);
-        retail.setNearbySchool("ABC Nearby School");
-        retail.setSchoolGuid("4fe77175-0403-4903-916c-3949a0ca5ffe");
+        retail.setNearbySchool("");
+        retail.setSchoolGuid(selectedSchoolGuid);
         retail.setAddress1(binding.editAddressLine1.getText().toString().trim());
         retail.setAddress2(binding.editAddressLine2.getText().toString().trim());
         retail.setCity(binding.editCity.getText().toString().trim());
         retail.setState(binding.editState.getText().toString().trim());
-        retail.setStateId(17);
+        retail.setStateId(selectedStateId);
         retail.setPinCode(binding.editPinCode.getText().toString().trim());
         retail.setDistrict(binding.editDistrict.getText().toString().trim());
-        retail.setDivision("Division XYZ");
+        retail.setDivision(binding.editDivision.getText().toString().toString());
         retail.setContactName(binding.editContactPersonName.getText().toString().trim());
         retail.setContactPhone(binding.editContactPersonPhoneNumber.getText().toString().trim());
         retail.setContactName(binding.editContactPersonName.getText().toString().trim());
-        retail.setIsKeepITCProducts(1);
         retail.setBlock(binding.editBlock.getText().toString().trim());
-        retail.setBrandingInterested(1);
-        retail.setShopPainting(1);
-        retail.setDealerBoard(1);
-        retail.setPoster(1);
-        retail.setBunting(1);
-        retail.setHandWashPouchesSold(5);
-        retail.setSavlonSoapSold(4);
-        retail.setItcProductNames("Product1, Product2");
-        retail.setFmcgpurchaseFrom("Local Distributor");
-        retail.setDistributorDetails("Distributor XYZ, Contact: 1234567890");
-        retail.setMarketDetails("Local market details here");
+
+//      radio button isKeepITCProduct   1--> yes , 2 --> no , other --> 0
+        if (binding.rdoItcYes.isChecked())
+            retail.setIsKeepITCProducts(1);
+        else if (binding.rdoItcNo.isChecked())
+            retail.setIsKeepITCProducts(2);
+        else
+            retail.setIsKeepITCProducts(0);
+
+//radio button isKeepITCProduct   1--> yes , 2 --> no , other --> 0
+        if (binding.rdoBrandingYes.isChecked())
+            retail.setBrandingInterested(1);
+        else if (binding.rdoBrandingYes.isChecked())
+            retail.setBrandingInterested(2);
+        else
+            retail.setBrandingInterested(0);
+
+        if (binding.chkShopPainting.isChecked())
+            retail.setShopPainting(1);
+        else
+            retail.setShopPainting(0);
+
+        if (binding.chkDealerBoard.isChecked())
+            retail.setDealerBoard(1);
+        else
+            retail.setDealerBoard(0);
+
+        if (binding.chkPoster.isChecked())
+            retail.setPoster(1);
+        else
+            retail.setPoster(0);
+
+        if (binding.chkBunting.isChecked())
+            retail.setBunting(1);
+        else
+            retail.setBunting(0);
+
+        retail.setHandWashPouchesSold(Common.getInt(binding.editHandwashPouchesSold.getText().toString().trim()));
+        retail.setSavlonSoapSold(Common.getInt(binding.editSavlonSoapSold.getText().toString().trim()));
+        retail.setItcProductNames(binding.editItcProductsAvailable.getText().toString().trim());
+        retail.setFmcgpurchaseFrom(binding.editFmcgProductSource.getText().toString().trim());
+        retail.setDistributorDetails(binding.editDistributerDetails.getText().toString().trim());
+        retail.setMarketDetails(binding.editNearbyWholeSaleMarket.getText().toString().trim());
 
         //Image 1
         retail.setImage1(uriCompressedImage1.toString());
@@ -286,6 +319,60 @@ public class RetailOutReachActivity extends AppCompatActivity {
         }
         progressDialog = new ProgressDialog(this);
         startDate = Common.iso8601Format.format(new Date());
+
+        //Populate state
+        Cursor cursorState = dbHelper.getAllStates();
+        if (cursorState != null && cursorState.getCount() > 0) {
+
+            arrState = new String[cursorState.getCount()];
+            arrStateId = new int[cursorState.getCount()];
+
+            int i = 0;
+            if (cursorState.moveToFirst()) {
+                do {
+                    arrState[i] = cursorState.getString(cursorState.getColumnIndexOrThrow("StateName"));
+                    arrStateId[i] = cursorState.getInt(cursorState.getColumnIndexOrThrow("StateId"));
+                    i++;
+                } while (cursorState.moveToNext());
+            }
+        }
+
+        cursorState.close();
+
+        ArrayAdapter<String> adapterSubType =
+                new ArrayAdapter<>(this, R.layout.dropdown_item, arrState);
+
+        binding.editState.setAdapter(adapterSubType);
+        binding.editState.setOnItemClickListener((adapterView, view, i, l) -> {
+            selectedStateId = (i >= 0) ? arrStateId[i] : 0;
+        });
+
+        //Populate school
+        Cursor cursorSchool = dbHelper.getSchoolDetails();
+        if (cursorSchool != null && cursorSchool.getCount() > 0) {
+
+            arrSchool = new String[cursorSchool.getCount()];
+            arrSchoolGuid = new String [cursorSchool.getCount()];
+
+            int i = 0;
+            if (cursorSchool.moveToFirst()) {
+                do {
+                    arrSchool[i] = cursorSchool.getString(cursorSchool.getColumnIndexOrThrow("AssociateSchool"));
+                    arrSchoolGuid[i] = cursorSchool.getString(cursorSchool.getColumnIndexOrThrow("SchoolGUID"));
+                    i++;
+                } while (cursorSchool.moveToNext());
+            }
+        }
+
+        cursorSchool.close();
+
+        ArrayAdapter<String> adapterSchool =
+                new ArrayAdapter<>(this, R.layout.dropdown_item, arrSchool);
+
+        binding.editSchoolName.setAdapter(adapterSchool);
+        binding.editSchoolName.setOnItemClickListener((adapterView, view, i, l) -> {
+            selectedSchoolGuid = (i >= 0) ? arrSchoolGuid[i] : "0";
+        });
     }
 
     public void permission() {

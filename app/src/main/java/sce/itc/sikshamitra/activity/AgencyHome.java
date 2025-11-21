@@ -94,7 +94,7 @@ public class AgencyHome extends AppCompatActivity {
         String displayDate = Common.displayDate(Common.yyyymmddFormat.format(new Date()), "yyyy-MM-dd");
         binding.txtCurrentDate.setText(displayDate);
 
-        String appVersion = Common.APP_VERSION;
+        String appVersion = ConstantField.APP_VERSION;
         binding.txtAppVersion.setText("App Version: " + appVersion);
 
 
@@ -189,6 +189,20 @@ public class AgencyHome extends AppCompatActivity {
                     requestPermission();
                 }
                 Common.enableButton(binding.btnFinalSession,true);
+            }
+        });
+
+        binding.btnSyncData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Common.enableButton(binding.btnSyncData,false);
+                if (checkPermission()) {
+                    Intent intent = new Intent(AgencyHome.this, Synchronise.class);
+                    startActivity(intent);
+                } else {
+                    requestPermission();
+                }
+                Common.enableButton(binding.btnSyncData,true);
             }
         });
     }
