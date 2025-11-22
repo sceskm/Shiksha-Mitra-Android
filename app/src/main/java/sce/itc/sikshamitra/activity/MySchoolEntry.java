@@ -154,6 +154,7 @@ public class MySchoolEntry extends AppCompatActivity {
                 binding.editBlockCode.setText(school.getBlockCode());
                 binding.editNameSm.setText(PreferenceCommon.getInstance().getUsername());
                 binding.editSmMobile.setText(school.getPhone());
+                binding.editVillageName.setText(school.getCity());
             }
         }
     }
