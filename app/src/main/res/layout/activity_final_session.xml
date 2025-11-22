@@ -436,6 +436,7 @@
                     android:text="Handed over item to SM" />
 
                 <CheckBox
+                    android:id="@+id/chk_teacher_product_1"
                     style="@style/CheckboxTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -454,15 +455,18 @@
                     style="@style/CheckboxTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Certificate" />
+                    android:text="Certificate"
+                    android:visibility="gone"/>
 
                 <CheckBox
+                    android:id="@+id/chk_student_product_1"
                     style="@style/CheckboxTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Water Bottle" />
 
                 <CheckBox
+                    android:id="@+id/chk_student_product_2"
                     style="@style/CheckboxTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

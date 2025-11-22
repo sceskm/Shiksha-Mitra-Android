@@ -4,10 +4,13 @@ package sce.itc.sikshamitra.model;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 import java.util.List;
 
+import sce.itc.sikshamitra.helper.ApiExclusionStrategy;
+import sce.itc.sikshamitra.helper.ApiGroup;
 import sce.itc.sikshamitra.helper.Command;
 import sce.itc.sikshamitra.helper.Common;
 import sce.itc.sikshamitra.helper.PreferenceCommon;
@@ -102,9 +105,34 @@ public class Session {
     @Expose
     private List<Image> images;
 
+    @Expose
+    @ApiGroup("final")
+    @SerializedName("SessionProducts")
+    private List<SendProductModel> products;
+
+    @Expose(serialize = false)
+    private int productId1;
+
+    @Expose(serialize = false)
+    private int isDistributed1;
+
+    @Expose(serialize = false)
+    private int productId2;
+
+    @Expose(serialize = false)
+    private int isDistributed2;
+
+    @Expose(serialize = false)
+    private int teacherProductId1;
+
+    @Expose(serialize = false)
+    private int teacherIsDistributed1;
+
+
     public Session() {
     }
 
+    //For Teacher (SM)
     public CommunicationSend createCommSend() {
         CommunicationSend commSend = new CommunicationSend();
         commSend.setProcessedOn(Common.iso8601Format.format(new Date()));
@@ -118,6 +146,7 @@ public class Session {
 
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
+                .addSerializationExclusionStrategy(new ApiExclusionStrategy("conducted"))
                 .setPrettyPrinting()
                 .create();
 
@@ -128,6 +157,32 @@ public class Session {
         return commSend;
     }
 
+    /*
+    * Final Session
+    * */
+    public CommunicationSend createFinalCommSend() {
+        CommunicationSend commSend = new CommunicationSend();
+        commSend.setProcessedOn(Common.iso8601Format.format(new Date()));
+        commSend.setprocessDetails("");
+        commSend.setProcessCount(0);
+        commSend.setCommand(Command.ADD_FINAL_SESSION);
+        commSend.setCommandDate(Common.iso8601Format.format(new Date()));
+        commSend.setCommunicationGUID(this.communicationGuid);
+        commSend.setCommunicationStatusID(1);
+        commSend.setCreatedByID(PreferenceCommon.getInstance().getUserId());
+
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .addSerializationExclusionStrategy(new ApiExclusionStrategy("final"))
+                .setPrettyPrinting()
+                .create();
+
+        //Convert models to json object
+        String attendanceJson = gson.toJson(this);
+
+        commSend.setCommandDetails(attendanceJson);
+        return commSend;
+    }
     //create attendance from json
     public static Session fromJson(String json) {
 
@@ -480,5 +535,61 @@ public class Session {
 
     public void setImages(List<Image> images) {
         this.images = images;
+    }
+
+    public List<SendProductModel> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<SendProductModel> products) {
+        this.products = products;
+    }
+
+    public int getProductId1() {
+        return productId1;
+    }
+
+    public void setProductId1(int productId1) {
+        this.productId1 = productId1;
+    }
+
+    public int getIsDistributed1() {
+        return isDistributed1;
+    }
+
+    public void setIsDistributed1(int isDistributed1) {
+        this.isDistributed1 = isDistributed1;
+    }
+
+    public int getProductId2() {
+        return productId2;
+    }
+
+    public void setProductId2(int productId2) {
+        this.productId2 = productId2;
+    }
+
+    public int getIsDistributed2() {
+        return isDistributed2;
+    }
+
+    public void setIsDistributed2(int isDistributed2) {
+        this.isDistributed2 = isDistributed2;
+    }
+
+    public int getTeacherProductId1() {
+        return teacherProductId1;
+    }
+
+    public void setTeacherProductId1(int teacherProductId1) {
+        this.teacherProductId1 = teacherProductId1;
+    }
+
+    public int getTeacherIsDistributed1() {
+        return teacherIsDistributed1;
+    }
+
+    public void setTeacherIsDistributed1(int teacherIsDistributed1) {
+        this.teacherIsDistributed1 = teacherIsDistributed1;
     }
 }

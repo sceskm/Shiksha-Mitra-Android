@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import sce.itc.sikshamitra.AlertCallBack;
 import sce.itc.sikshamitra.R;
+import sce.itc.sikshamitra.model.User;
 
 public class Common {
     public static final boolean DEBUGGING = false;
@@ -44,6 +45,7 @@ public class Common {
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.CAMERA,
     };
+    public static User loggedUser;
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
     public static SimpleDateFormat dateDisplay = new SimpleDateFormat("dd-MMM");

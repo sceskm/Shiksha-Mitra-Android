@@ -116,57 +116,78 @@ public class RetailOutReachActivity extends AppCompatActivity {
     }
 
     private void clickEvents() {
+        /*
+         * Submit action
+         * */
         binding.btnSubmitRetailerData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Common.checkInternetConnectivity(RetailOutReachActivity.this)) {
-                    if (!checkGps()) {
-                        permission();
-                    } else {
-                        gps = new GPSTracker(RetailOutReachActivity.this);
-                        // check if GPS enabled
-                        if (gps.canGetLocation()) {
-                            lastLatitude = gps.getLatitude();
-                            lastLongitude = gps.getLongitude();
-                        }
+
+                if (!Common.checkInternetConnectivity(RetailOutReachActivity.this)) {
+                    Common.showAlert(RetailOutReachActivity.this,
+                            getResources().getString(R.string.no_internet_connection));
+                    return;
+                }
+
+                // GPS check
+                if (!checkGps()) {
+                    permission();
+                    return;
+                } else {
+                    gps = new GPSTracker(RetailOutReachActivity.this);
+                    if (gps.canGetLocation()) {
+                        lastLatitude = gps.getLatitude();
+                        lastLongitude = gps.getLongitude();
                     }
-                    if (Common.checkLatLong(lastLatitude, lastLongitude)) {
-                        if (checkValidation()) {
-                            if (checkValidation()) {
-                                binding.btnSubmitRetailerData.setEnabled(false); // disable to avoid multiple click
-                                // use static-safe handler to avoid memory leak
-                                handler.postDelayed(() -> {
-                                    try {
-                                        Log.d(TAG, "run: save attendance");
+                }
 
-                                        // 1. Create model from UI form fields
-                                        RetailOutReachModel model = modelRetailData();
+                // Lat long validation
+                if (!Common.checkLatLong(lastLatitude, lastLongitude)) {
+                    locationErrorMessage(
+                            getResources().getString(R.string.incorrect_location_message)
+                                    + getResources().getString(R.string.latitude) + lastLatitude
+                                    + getResources().getString(R.string.longitude) + lastLongitude
+                    );
+                    return;
+                }
 
-                                        if (dbHelper.saveRetailDetails(model))
-                                            Toast.makeText(gps, "Data saved.", Toast.LENGTH_SHORT).show();
+                // Form validation
+                if (!checkValidation()) {
+                    return;
+                }
 
-                                    } catch (Exception e) {
-                                        Log.e(TAG, "onClick error: ", e);
-                                        binding.btnSubmitRetailerData.setEnabled(true); // recover
-                                    }
+                // Disable button to avoid multiple clicks
+                binding.btnSubmitRetailerData.setEnabled(false);
 
-                                }, 200); // 200ms delay
+                handler.postDelayed(() -> {
+                    try {
+                        RetailOutReachModel model = modelRetailData();
 
+                        if (dbHelper.saveRetailDetails(model)) {
 
-                            }
+                            // ⭐ SUCCESS ALERT AFTER SAVE ⭐
+                            androidx.appcompat.app.AlertDialog.Builder builder =
+                                    new androidx.appcompat.app.AlertDialog.Builder(RetailOutReachActivity.this);
+
+                            builder.setTitle("Success")
+                                    .setMessage("Retail data saved successfully.")
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", (dialog, which) -> {
+                                        dialog.dismiss();
+                                        finish(); // close activity after saving
+                                    })
+                                    .show();
                         }
-                    } else {
-                        locationErrorMessage(getResources().getString(R.string.incorrect_location_message)
-                                + getResources().getString(R.string.latitude) + String.valueOf(lastLatitude)
-                                + getResources().getString(R.string.longitude) + String.valueOf(lastLongitude));
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "onClick error: ", e);
+                        binding.btnSubmitRetailerData.setEnabled(true); // re-enable button on error
                     }
 
-
-                } else
-                    Common.showAlert(RetailOutReachActivity.this, getResources().getString(R.string.no_internet_connection));
-
+                }, 200); // 200ms delay
             }
         });
+
 
         //Outside exterior image capture
         binding.btnCapture1.setOnClickListener(new View.OnClickListener() {
@@ -281,6 +302,10 @@ public class RetailOutReachActivity extends AppCompatActivity {
         retail.setImgDefinitionId1(ConstantField.RETAIL_IMAGE_SHOP_IMAGE);
         retail.setImgExt1(ConstantField.IMAGE_FORMAT);
 
+        retail.setCommunicationAttempt(0);
+        retail.setCommunicationStatus(ConstantField.COMM_STATUS_NOT_PROCESSED);
+        retail.setCommunicationGuid(Common.createGuid());
+
         return retail;
     }
 
@@ -301,6 +326,92 @@ public class RetailOutReachActivity extends AppCompatActivity {
 
     private boolean checkValidation() {
         boolean ret = true;
+        if (binding.editShopName.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Please fill retailer outlet name.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editContactPersonName.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Please fill contact person name.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editContactPersonPhoneNumber.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Please fill contact number.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!binding.editContactPersonPhoneNumber.getText().toString().isEmpty()) {
+            String mobilePattern = "^[6-9]\\d{9}$";
+            String mobileNumber = binding.editContactPersonPhoneNumber.getText().toString().trim();
+            if (!mobileNumber.matches(mobilePattern)) {
+                Toast.makeText(RetailOutReachActivity.this, "Invalid mobile number. It must be a valid 10-digit Indian number.", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+        if (binding.editAddressLine1.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter address1", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editAddressLine2.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter address2", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editCity.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter retailer's city/ village", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editLocality.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter retailer's locality", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editBlock.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter retailer's block", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editDistrict.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter retailer's district", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editDivision.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter retailer's division", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (selectedStateId <= 0 || selectedStateId == -1) {
+            Toast.makeText(RetailOutReachActivity.this, "Choose retailer's state ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editPinCode.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter pin code.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (selectedSchoolGuid.isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Choose nearest school. ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!binding.rdoItcYes.isChecked() && !binding.rdoItcNo.isChecked()){
+            Toast.makeText(RetailOutReachActivity.this, "Please select whether the outlet keeps ITC products. ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!binding.rdoBrandingYes.isChecked() && !binding.rdoBrandingYes.isChecked()){
+            Toast.makeText(RetailOutReachActivity.this, "Please select whether the interested ITC branding. ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!binding.rdoYes.isChecked() && !binding.rdoNo.isChecked()){
+            Toast.makeText(RetailOutReachActivity.this, "Please select whether the selling hand wash or not . ", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (binding.editFmcgProductSource.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter FMCG product store.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editDistributerDetails.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter distributor's.details", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editNearbyWholeSaleMarket.getText().toString().isEmpty()) {
+            Toast.makeText(RetailOutReachActivity.this, "Enter nearby whole sale market.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
 
         //add validation code here
 
@@ -352,7 +463,7 @@ public class RetailOutReachActivity extends AppCompatActivity {
         if (cursorSchool != null && cursorSchool.getCount() > 0) {
 
             arrSchool = new String[cursorSchool.getCount()];
-            arrSchoolGuid = new String [cursorSchool.getCount()];
+            arrSchoolGuid = new String[cursorSchool.getCount()];
 
             int i = 0;
             if (cursorSchool.moveToFirst()) {

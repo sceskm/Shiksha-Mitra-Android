@@ -44,7 +44,9 @@ import sce.itc.sikshamitra.helper.ProcessResponse;
 import sce.itc.sikshamitra.model.CommunicationSend;
 import sce.itc.sikshamitra.model.Image;
 import sce.itc.sikshamitra.model.RetailOutReachModel;
+import sce.itc.sikshamitra.model.SendProductModel;
 import sce.itc.sikshamitra.model.Session;
+import sce.itc.sikshamitra.model.User;
 
 
 public class Synchronise extends AppCompatActivity {
@@ -115,6 +117,14 @@ public class Synchronise extends AppCompatActivity {
         String version = "Version  " + ConstantField.APP_VERSION;
         txtVersion.setText(version);
 
+        Cursor cursor = dbHelper.getUser(PreferenceCommon.getInstance().getUserGUID());
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            Common.loggedUser = new User();
+            Common.loggedUser.populateFromCursor(cursor);
+        }
+        cursor.close();
+
     }
 
     private void clickEvent() {
@@ -131,19 +141,25 @@ public class Synchronise extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                if (errorCount < maxErrorsAllowed) {
-                                    downloadSchoolList();
-                                    Log.d(TAG, "run: downloadSchool");
+                                if (Common.loggedUser.getRoleId() == ConstantField.ROLE_ID_SHIKSHA_MITRA) {
+                                    if (errorCount < maxErrorsAllowed) {
+                                        uploadSessionData();
+                                        Log.d(TAG, "uploadSessionData() data upload completed");
+                                    }
                                 }
-
-                                if (errorCount < maxErrorsAllowed){
-                                    uploadRetailData();
-                                    Log.d(TAG, "run: uploadRetailData()");
-                                }
-
-                                if (errorCount < maxErrorsAllowed) {
-                                    uploadSessionData();
-                                    Log.d(TAG, "uploadSessionData() data upload completed");
+                                if (Common.loggedUser.getRoleId() == ConstantField.ROLE_ID_FIELD_TEAM) {
+                                    if (errorCount < maxErrorsAllowed) {
+                                        downloadSchoolList();
+                                        Log.d(TAG, "run: downloadSchool");
+                                    }
+                                    if (errorCount < maxErrorsAllowed) {
+                                        uploadFinalSessionData();
+                                        Log.d(TAG, "uploadSessionData() data upload completed");
+                                    }
+                                    if (errorCount < maxErrorsAllowed) {
+                                        uploadRetailData();
+                                        Log.d(TAG, "run: uploadRetailData()");
+                                    }
                                 }
                                 Synchronise.this.runOnUiThread(new Runnable() {
                                     @Override
@@ -213,7 +229,7 @@ public class Synchronise extends AppCompatActivity {
         });
     }
 
-    //upload attendance data
+    //upload session data - SM
     private void uploadSessionData() {
         Cursor cursor = dbHelper.unProcessedCommSendMessage(Command.TEACHER_SESSION, PreferenceCommon.getInstance().getUserGUID());
         if (cursor.getCount() > 0) {
@@ -272,7 +288,7 @@ public class Synchronise extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put(Command.COMMAND, Command.TEACHER_SESSION);
-                        jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
+                        jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
                         jsonObject.put(Command.DATA, sessionData.getJson());
                         jsonObject.put(Command.COMMAND_GUID, communicationSend.getCommunicationGUID());
                         jsonObject.put(Command.PROCESS_COUNT, communicationSend.getProcessCount());
@@ -319,7 +335,7 @@ public class Synchronise extends AppCompatActivity {
         }
     }
 
-    //Download school list
+    //Download school list - Field Team
     private void downloadSchoolList() {
         String schoolListResponse = "";
         // create your json here
@@ -335,7 +351,7 @@ public class Synchronise extends AppCompatActivity {
             objData.put("existingIds", ids);
 
             jsonObject.put(Command.COMMAND, Command.SCHOOL_LIST);
-            jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
+            jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
             jsonObject.put(Command.DATA, objData.toString());
             jsonObject.put(Command.COMMAND_GUID, UUID.randomUUID().toString());
             jsonObject.put(Command.PROCESS_COUNT, 1);
@@ -367,10 +383,9 @@ public class Synchronise extends AppCompatActivity {
         }
     }
 
-    //Upload retail out reach detail
-    private void uploadRetailData() {
-        Cursor cursor = dbHelper.unProcessedCommSendMessage(Command.ADD_RETAIL,
-                PreferenceCommon.getInstance().getUserGUID());
+    //Upload final session - Field Team
+    private void uploadFinalSessionData() {
+        Cursor cursor = dbHelper.unProcessedCommSendMessage(Command.ADD_FINAL_SESSION, PreferenceCommon.getInstance().getUserGUID());
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             while (cursor.isAfterLast() == false) {
@@ -381,32 +396,83 @@ public class Synchronise extends AppCompatActivity {
                 if (!communicationSend.getCommandDetails().isEmpty()) {
                     String attendanceResponse = "";
                     boolean isSuccess = false;
-                    RetailOutReachModel retailData = RetailOutReachModel.fromJson(communicationSend.getCommandDetails());
+                    Session sessionData = Session.fromJson(communicationSend.getCommandDetails());
 
                     //Extra code
                     String image1 = "";
-                    String sGuid = retailData.getRetailOutreachGuid();
-                    Cursor cursor1 = dbHelper.getRetailsDetails(sGuid);
+                    String image2 = "";
+                    String image3 = "";
+                    String image4 = "";
+                    String image5 = "";
+                    String image6 = "";
+                    String image7 = "";
+                    String image8 = "";
+                    int teacherProdId = 0;
+                    int isTeacherDistributed = 0;
+
+                    int studentProdId1 = 0;
+                    int isStudentDistributed1 = 0;
+
+                    int studentProdId2 = 0;
+                    int isStudentDistributed2 = 0;
+                    String sGuid = sessionData.getSessionGuid();
+                    Cursor cursor1 = dbHelper.getSessionDetails(sGuid);
                     cursor1.moveToFirst();
                     if (cursor1.getCount() > 0) {
-                        image1 = cursor1.getString(cursor1.getColumnIndex("Image1"));
+
+                        image1 = cursor1.getString(cursor1.getColumnIndex("Img1"));
+                        image2 = cursor1.getString(cursor1.getColumnIndex("Img2"));
+                        image3 = cursor1.getString(cursor1.getColumnIndex("Img3"));
+                        image4 = cursor1.getString(cursor1.getColumnIndex("Img4"));
+                        image5 = cursor1.getString(cursor1.getColumnIndex("Img5"));
+                        image6 = cursor1.getString(cursor1.getColumnIndex("Img6"));
+                        image7 = cursor1.getString(cursor1.getColumnIndex("Img7"));
+                        image8 = cursor1.getString(cursor1.getColumnIndex("Img8"));
+                        teacherProdId = cursor1.getInt(cursor1.getColumnIndex("TeacherProductId1"));
+                        isTeacherDistributed = cursor1.getInt(cursor1.getColumnIndex("IsTeacherProductDistributed1"));
+                        studentProdId1 = cursor1.getInt(cursor1.getColumnIndex("StudentProductId1"));
+                        isStudentDistributed1 = cursor1.getInt(cursor1.getColumnIndex("IsStudentProductDistributed1"));
+                        studentProdId2 = cursor1.getInt(cursor1.getColumnIndex("StudentProductId1"));
+                        isStudentDistributed2 = cursor1.getInt(cursor1.getColumnIndex("IsStudentProductDistributed2"));
+
                     }
                     cursor1.close();
 
                     List<Image> imageList = new ArrayList<>();
 
-                    addImageToList(imageList, image1, ConstantField.RETAIL_IMAGE_SHOP_IMAGE, this);
+                    addImageToList(imageList, image1, ConstantField.FINAL_SESSION_IMAGE_EXTERIOR, this);
+                    addImageToList(imageList, image2, ConstantField.FINAL_SESSION_QUIZ_PROGRESS_1, this);
+                    addImageToList(imageList, image3, ConstantField.FINAL_SESSION_QUIZ_PROGRESS_2, this);
+                    addImageToList(imageList, image4, ConstantField.FINAL_SESSION_REWARD_1, this);
+                    addImageToList(imageList, image5, ConstantField.FINAL_SESSION_REWARD_2, this);
+                    addImageToList(imageList, image6, ConstantField.FINAL_SESSION_REWARD_3, this);
+                    addImageToList(imageList, image7, ConstantField.FINAL_SESSION_REWARD_4, this);
+                    addImageToList(imageList, image8, ConstantField.FINAL_SESSION_HW_SAMPLE, this);
 
                     if (!imageList.isEmpty())
-                        retailData.setImages(imageList);
+                        sessionData.setImages(imageList);
+
+                    List<SendProductModel> productList = new ArrayList<>();
+
+                    SendProductModel teacherProduct = new SendProductModel(teacherProdId, isTeacherDistributed);
+                    productList.add(teacherProduct);
+
+                    SendProductModel studentProduct1 = new SendProductModel(studentProdId1, isStudentDistributed1);
+                    productList.add(studentProduct1);
+
+                    SendProductModel studentProduct2 = new SendProductModel(studentProdId2, isStudentDistributed2);
+                    productList.add(studentProduct2);
+
+                    if (!productList.isEmpty())
+                        sessionData.setProducts(productList);
 
 
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put(Command.COMMAND, Command.ADD_RETAIL);
-                        jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
-                        jsonObject.put(Command.DATA, retailData.getJson());
-                        jsonObject.put(Command.COMMAND_GUID, Common.createGuid());
+                        jsonObject.put(Command.COMMAND, Command.ADD_FINAL_SESSION);
+                        jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
+                        jsonObject.put(Command.DATA, sessionData.getJson());
+                        jsonObject.put(Command.COMMAND_GUID, communicationSend.getCommunicationGUID());
                         jsonObject.put(Command.PROCESS_COUNT, communicationSend.getProcessCount());
 
                         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -450,6 +516,91 @@ public class Synchronise extends AppCompatActivity {
             Log.d(TAG, "uploadSessionData: ");
         }
     }
+
+    //Upload retail out reach detail - Field Team
+    private void uploadRetailData() {
+        Cursor cursor = dbHelper.unProcessedCommSendMessage(Command.ADD_RETAIL,
+                PreferenceCommon.getInstance().getUserGUID());
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            while (cursor.isAfterLast() == false) {
+
+                CommunicationSend communicationSend = new CommunicationSend();
+                communicationSend.populateFromCursor(cursor);
+
+                if (!communicationSend.getCommandDetails().isEmpty()) {
+                    String attendanceResponse = "";
+                    boolean isSuccess = false;
+                    RetailOutReachModel retailData = RetailOutReachModel.fromJson(communicationSend.getCommandDetails());
+
+                    //Extra code
+                    String image1 = "";
+                    String sGuid = retailData.getRetailOutreachGuid();
+                    Cursor cursor1 = dbHelper.getRetailsDetails(sGuid);
+                    cursor1.moveToFirst();
+                    if (cursor1.getCount() > 0) {
+                        image1 = cursor1.getString(cursor1.getColumnIndex("Image1"));
+                    }
+                    cursor1.close();
+
+                    List<Image> imageList = new ArrayList<>();
+
+                    addImageToList(imageList, image1, ConstantField.RETAIL_IMAGE_SHOP_IMAGE, this);
+
+                    if (!imageList.isEmpty())
+                        retailData.setImages(imageList);
+
+
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put(Command.COMMAND, Command.ADD_RETAIL);
+                        jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
+                        jsonObject.put(Command.DATA, retailData.getJson());
+                        jsonObject.put(Command.COMMAND_GUID, communicationSend.getCommunicationGUID());
+                        jsonObject.put(Command.PROCESS_COUNT, communicationSend.getProcessCount());
+
+                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+                        Response response = NetworkUtils.excuteNetworkRequest(NETWORK_URL
+                                + ACTION_URL, body, true);
+
+                        if (response != null) {
+                            ResponseBody responseBody = response.body();
+                            if (response.isSuccessful()) {
+                                isSuccess = true;
+                                attendanceResponse = responseBody.string();
+                            } else {
+                                //just increase the error count
+                                attendanceResponse = responseBody.string();
+                                errorCount++;
+                            }
+                            Log.d(TAG, "onResponse: uploadAttendanceData" + attendanceResponse);
+                        }
+                    } catch (Exception e) {
+                        errorCount++;
+                        e.printStackTrace();
+                    } finally {
+                        if (isSuccess) {
+                            // update the message as processed
+                            dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
+                                    ConstantField.COMM_STATUS_PROCESSED, "success", false);
+                        } else {
+                            // mark the message as failed
+                            dbHelper.updateCommunicationSendStatus(communicationSend.getID(),
+                                    ConstantField.COMM_STATUS_ERROR, "error", true);
+                        }
+                    }
+                }
+                cursor.moveToNext();
+            }
+            cursor.close();
+
+        } else {
+            Log.d(TAG, "uploadSessionData: ");
+        }
+    }
+
     @Override
     public void onBackPressed() {
     }
@@ -487,6 +638,7 @@ public class Synchronise extends AppCompatActivity {
             imageList.add(imgVenue);
         }
     }
+
     private String fetchLastCommDate(String action) {
         CommunicationOn communicationOn = new CommunicationOn();
         String lastDate = ConstantField.DEFAULT_DATE;

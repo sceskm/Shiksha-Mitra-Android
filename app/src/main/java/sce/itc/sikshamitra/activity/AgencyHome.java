@@ -1,6 +1,7 @@
 package sce.itc.sikshamitra.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -19,6 +20,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Date;
 
@@ -83,7 +86,7 @@ public class AgencyHome extends AppCompatActivity {
                 String fullName = "Welcome " + Common.getString(user.getFirstName()) + " " + Common.getString(user.getLastName());
 
                 if (user.getRoleId() == ConstantField.ROLE_ID_FIELD_TEAM)
-                   fullName += " (Field Team)";
+                    fullName += " (Field Team)";
 
                 binding.txtUserName.setText(fullName);
             }
@@ -96,124 +99,146 @@ public class AgencyHome extends AppCompatActivity {
 
         String appVersion = ConstantField.APP_VERSION;
 
-       binding.txtAppVersion.setText("Version " + appVersion);
-
-
-
+        binding.txtAppVersion.setText("Version " + appVersion);
     }
 
     private void clickEvents() {
         /*
-        * Venue details button click event
-        *
-        * */
+         * Venue details button click event
+         *
+         * */
         binding.btnVenueDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.enableButton(binding.btnVenueDetails,false);
+                Common.enableButton(binding.btnVenueDetails, false);
                 if (checkPermission()) {
                     Intent intent = new Intent(AgencyHome.this, VenueActivity.class);
                     startActivity(intent);
-
                 } else {
                     requestPermission();
                 }
-                Common.enableButton(binding.btnVenueDetails,true);
+                Common.enableButton(binding.btnVenueDetails, true);
             }
         });
         /*
-        * SM Registration button click event
-        * */
+         * SM Registration button click event
+         * */
         binding.btnRegistrationSm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.enableButton(binding.btnRegistrationSm,false);
+                Common.enableButton(binding.btnRegistrationSm, false);
                 if (checkPermission()) {
                     if (checkTodayVenue()) {
                         Intent intent = new Intent(AgencyHome.this, AddSMRegisterActivity.class);
                         startActivity(intent);
-                    }else {
-                        Toast.makeText(AgencyHome.this,"Create today's venue first before starting the registration.",Toast.LENGTH_SHORT).show();
+                    } else {
+                        showAlert("Warning","Create today's venue first before starting the registration.");
+                        //Toast.makeText(AgencyHome.this, "Create today's venue first before starting the registration.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     requestPermission();
                 }
-                Common.enableButton(binding.btnRegistrationSm,true);
-            }
-        });
-       /*
-       * Retail Outreach button click event
-       * */
-        binding.btnRetailOutreach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Common.enableButton(binding.btnRetailOutreach,false);
-                if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, RetailOutReachActivity.class);
-                    startActivity(intent);
-                } else {
-                    requestPermission();
-                }
-                Common.enableButton(binding.btnRetailOutreach,true);
+                Common.enableButton(binding.btnRegistrationSm, true);
             }
         });
         /*
-        * SM Training Session button click event
-        * */
+         * Retail Outreach button click event
+         * */
+        binding.btnRetailOutreach.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Common.enableButton(binding.btnRetailOutreach, false);
+                if (checkPermission()) {
+                    if (checkSchoolData()) {
+                        Intent intent = new Intent(AgencyHome.this, RetailOutReachActivity.class);
+                        startActivity(intent);
+                    }else {
+                        showAlert("Warning","Please download data from the Synchronisation page before starting Retail Outreach.");
+                        //Toast.makeText(AgencyHome.this,"Download data from Synchronise before start Retail Outreach",Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    requestPermission();
+                }
+                Common.enableButton(binding.btnRetailOutreach, true);
+            }
+        });
+        /*
+         * SM Training Session button click event
+         * */
         binding.btnSmTrainingSession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.enableButton(binding.btnSmTrainingSession,false);
+                Common.enableButton(binding.btnSmTrainingSession, false);
                 if (checkPermission()) {
                     if (checkTodayVenue()) {
                         Intent intent = new Intent(AgencyHome.this, AddTrainingToSMActivity.class);
                         startActivity(intent);
-                    }else {
-                        Toast.makeText(AgencyHome.this,"Create today's venue first before starting the training.",Toast.LENGTH_SHORT).show();
+                    } else {
+                        showAlert("Warning","Create today's venue first before starting the training.");
+                        //Toast.makeText(AgencyHome.this, "Create today's venue first before starting the training.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     requestPermission();
                 }
-                Common.enableButton(binding.btnSmTrainingSession,true);
+                Common.enableButton(binding.btnSmTrainingSession, true);
             }
         });
         /*
-        * Module 7 by agency click event
-        * */
+         * Module 7 by agency click event
+         * */
         binding.btnFinalSession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.enableButton(binding.btnFinalSession,false);
+                Common.enableButton(binding.btnFinalSession, false);
                 if (checkPermission()) {
-                    Intent intent = new Intent(AgencyHome.this, FinalSessionActivity.class);
-                    startActivity(intent);
+                    if (checkSchoolData()) {
+                        Intent intent = new Intent(AgencyHome.this, FinalSessionActivity.class);
+                        startActivity(intent);
+                    }else {
+                        showAlert("Warning","Please download data from the Synchronisation page before starting Retail Outreach.");
+                        //Toast.makeText(AgencyHome.this,"Please download data from Synchronise.",Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     requestPermission();
                 }
-                Common.enableButton(binding.btnFinalSession,true);
+                Common.enableButton(binding.btnFinalSession, true);
             }
         });
 
         binding.btnSyncData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.enableButton(binding.btnSyncData,false);
+                Common.enableButton(binding.btnSyncData, false);
                 if (checkPermission()) {
                     Intent intent = new Intent(AgencyHome.this, Synchronise.class);
                     startActivity(intent);
                 } else {
                     requestPermission();
                 }
-                Common.enableButton(binding.btnSyncData,true);
+                Common.enableButton(binding.btnSyncData, true);
             }
         });
     }
 
-    private boolean checkTodayVenue(){
+    private boolean checkTodayVenue() {
         boolean isValid = false;
         Cursor cursor = dbHelper.getTodayVenueDetails();
         cursor.moveToFirst();
-        if (cursor.getCount()>0)
+        if (cursor.getCount() > 0)
+            isValid = true;
+
+        cursor.close();
+        return isValid;
+    }
+
+    /*
+     * Check school data downloaded
+     * */
+    private boolean checkSchoolData() {
+        boolean isValid = false;
+        Cursor cursor = dbHelper.getSchoolData();
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0)
             isValid = true;
 
         cursor.close();
@@ -246,4 +271,16 @@ public class AgencyHome extends AppCompatActivity {
 
         }
     }
+    private void showAlert(String title, String message){
+        new MaterialAlertDialogBuilder(context, R.style.RoundShapeTheme)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).show();
+    }
+
 }

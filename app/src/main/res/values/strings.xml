@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Shiksha Mitra</string>
     <string name="session_no_day">No. of session (Day) * </string>
-    <string name="retail_shop_or_outlet_name">Retail Shop / Outlet name</string>
+    <string name="retail_shop_or_outlet_name">Retail Shop / Outlet name *</string>
     <string name="remarks_if_any">Remarks if any</string>
     <string name="photo_of_students_with_sm_holding_hw_samples">Photo of students &amp; SM holding HW samples *</string>
     <string name="photo_of_students_getting_rewarded_4">Photo of students getting rewarded - 4 *</string>
@@ -12,13 +12,13 @@
     <string name="name_of_the_students">No. of students attended *</string>
     <string name="photograph_of_school_facade_exterior">Photograph of school facade / exterior *</string>
     <string name="name_of_the_school_being_visited">Name of the school being visited *</string>
-    <string name="contact_person">Contact person\'s name</string>
+    <string name="contact_person">Contact person\'s name *</string>
     <string name="shop_contact_person_phone_number">Shop / Contact person phone number</string>
     <string name="village">Village</string>
-    <string name="block">Block</string>
-    <string name="district">District</string>
-    <string name="pin_code">Pin code</string>
-    <string name="state">State</string>
+    <string name="block">Block*</string>
+    <string name="district">District*</string>
+    <string name="pin_code">Pin code*</string>
+    <string name="state">State*</string>
     <string name="competitors_products_available">Competitor brand available</string>
     <string name="interested_in_selling_savlon_handwash">Interested in selling \'Savlon Handwash\'</string>
     <string name="handwash_pouches_sold">No. of handwash pouches sold</string>

@@ -101,7 +101,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="City" />
+                    android:text="City / Village *" />
 
                 <EditText
                     android:id="@+id/edit_city"
@@ -113,7 +113,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Locality" />
+                    android:text="Locality*" />
 
                 <EditText
                     android:id="@+id/edit_locality"
@@ -124,7 +124,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Division" />
+                    android:text="Division*" />
 
                 <EditText
                     android:id="@+id/edit_division"
@@ -481,11 +481,11 @@
 
                         <ImageView
                             android:id="@+id/img_camera_1"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center|center_horizontal"
 
-                            android:src="@drawable/ic_baseline_add_a_photo_24" />
+                            android:src="@drawable/icon_images" />
                     </LinearLayout>
 
                     <Button

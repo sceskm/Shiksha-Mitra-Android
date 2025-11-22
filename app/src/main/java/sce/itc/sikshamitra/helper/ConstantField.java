@@ -2,10 +2,8 @@ package sce.itc.sikshamitra.helper;
 
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
-    public static final String APP_VERSION = "2.0.2";
-public static final String SERVER_APP_VERSION = "2.0";
-
-
+    public static final String APP_VERSION = "2.1.0";
+    public static final String SERVER_APP_VERSION = "2.0";
 
     public static final String IMAGE_FORMAT = "jpg";
     public static final String ORIGINAL_IMAGE_NAME = "siksha_";
@@ -56,8 +54,8 @@ public static final String SERVER_APP_VERSION = "2.0";
     public static final String ACCESS_TOKEN = "accesstoken";
     public static final String LOGIN_URL = "/mobile/v1/appauth/login";
     //added https at dev server
-    public static final String NETWORK_URL = "https://sm2025api.dhanushteam.com";
-    //public static final String NETWORK_URL = "https://sm2025devapi.dhanushteam.com";
+    //public static final String NETWORK_URL = "https://sm2025api.dhanushteam.com";
+    public static final String NETWORK_URL = "https://sm2025devapi.dhanushteam.com";
     public static final String DEFAULT_DATE = "2010-01-01 00:00:00";
     public static final String REFRESH_TOKEN_CREATED = "refreshtokencreated";
     public static final String ACTION_URL = "/mobile/v1/AppAuth/action";
@@ -132,6 +130,7 @@ public static final String SERVER_APP_VERSION = "2.0";
 
     public static final int ORGANIZATION_ID = 3;
     public static final int MAX_NO_SESSION_ALLOWED_SM = 6;
+    public static final int FINAL_NO_SESSION_ALLOWED_AGENCY = 7;
 
 
 

@@ -460,6 +460,13 @@ public class ConductedSessionBySM extends AppCompatActivity {
             Toast.makeText(this, "Remarks blank", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if (!binding.editSessionCount.getText().toString().isEmpty()){
+            int count = Common.getInt(binding.editSessionCount.getText().toString().trim());
+            if (count > 6){
+                Toast.makeText(ConductedSessionBySM.this, "Teachers are not eligible to run 7th session.", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
         return true;
     }
 

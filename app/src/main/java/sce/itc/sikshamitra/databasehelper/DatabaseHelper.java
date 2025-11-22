@@ -393,7 +393,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-     * Insert session data
+     * Insert session Teacher(SM) end
      * */
     public boolean saveSession(Session sessionDetails) {
         boolean dataSaved = false;
@@ -437,6 +437,83 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 dataSaved = false;
 
                 CommunicationSend commSend = sessionDetails.createCommSend();
+
+                if (saveCommunicationSend(commSend) > 0)
+                    dataSaved = true;
+            }
+
+
+        } catch (SQLException ex) {
+            Log.e(TAG, "saveSession: EXCEPTION", ex);
+            throw ex;
+        }
+
+        return dataSaved;
+    }
+
+    /*
+    * nsert session from Agency end
+    * */
+    public boolean saveFinalSession(Session sessionDetails) {
+        boolean dataSaved = false;
+        try {
+            ContentValues newEntry = new ContentValues();
+
+            newEntry.put("SessionGUID", sessionDetails.getSessionGuid());
+            newEntry.put("UserGUID", sessionDetails.getUserGuid());
+            newEntry.put("SessionNo", sessionDetails.getSessionNo());
+            newEntry.put("SchoolGUID", sessionDetails.getSchoolGuid());
+            newEntry.put("NoOfStudents", sessionDetails.getNoOfStudent());
+            newEntry.put("Img1", sessionDetails.getImg1());
+            newEntry.put("Img2", sessionDetails.getImg2());
+            newEntry.put("Img3", sessionDetails.getImg3());
+            newEntry.put("Img4", sessionDetails.getImg4());
+            newEntry.put("Img5", sessionDetails.getImg1());
+            newEntry.put("Img6", sessionDetails.getImg2());
+            newEntry.put("Img7", sessionDetails.getImg3());
+            newEntry.put("Img8", sessionDetails.getImg4());
+            newEntry.put("SessionStartedOn", sessionDetails.getSessionStart());
+            newEntry.put("SessionEndedOn", sessionDetails.getSessionEnd());
+            newEntry.put("Remarks", sessionDetails.getRemarks());
+            newEntry.put("SessionStatus", sessionDetails.getSessionStatus());
+            newEntry.put("CommunicationStatus", sessionDetails.getCommunicationStatus());
+            newEntry.put("CommunicationAttempt", sessionDetails.getCommunicationAttempt());
+            newEntry.put("CommunicationGUID", sessionDetails.getCommunicationGuid());
+            newEntry.put("Latitude", sessionDetails.getLatitude());
+            newEntry.put("Longitude", sessionDetails.getLongitude());
+            newEntry.put("ImgDefinitionId1", sessionDetails.getImgDefinitionId1());
+            newEntry.put("ImgDefinitionId2", sessionDetails.getImgDefinitionId2());
+            newEntry.put("ImgDefinitionId3", sessionDetails.getImgDefinitionId3());
+            newEntry.put("ImgDefinitionId4", sessionDetails.getImgDefinitionId4());
+            newEntry.put("ImgDefinitionId5", sessionDetails.getImgDefinitionId1());
+            newEntry.put("ImgDefinitionId6", sessionDetails.getImgDefinitionId2());
+            newEntry.put("ImgDefinitionId7", sessionDetails.getImgDefinitionId3());
+            newEntry.put("ImgDefinitionId8", sessionDetails.getImgDefinitionId4());
+            newEntry.put("ImgExt1", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt2", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt3", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt4", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt5", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt6", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt7", ConstantField.IMAGE_FORMAT);
+            newEntry.put("ImgExt8", ConstantField.IMAGE_FORMAT);
+            newEntry.put("TeacherProductId1",sessionDetails.getTeacherProductId1());
+            newEntry.put("IsTeacherProductDistributed1",sessionDetails.getTeacherIsDistributed1());
+            newEntry.put("StudentProductId1",sessionDetails.getProductId1());
+            newEntry.put("IsStudentProductDistributed1",sessionDetails.getIsDistributed1());
+            newEntry.put("StudentProductId2",sessionDetails.getProductId2());
+            newEntry.put("IsStudentProductDistributed2",sessionDetails.getIsDistributed2());
+
+            long retVal = myDataBase.insertOrThrow("sp_session", null, newEntry);
+
+            if (retVal > 0)
+                dataSaved = true;
+
+            if (dataSaved) {
+                // create and save a communication message
+                dataSaved = false;
+
+                CommunicationSend commSend = sessionDetails.createFinalCommSend();
 
                 if (saveCommunicationSend(commSend) > 0)
                     dataSaved = true;
@@ -1103,6 +1180,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             newEntry.put("FmcgPurchaseFrom", retailsDetails.getFmcgpurchaseFrom());
             newEntry.put("DistributorDetails", retailsDetails.getDistributorDetails());
             newEntry.put("MarketDetails", retailsDetails.getMarketDetails());
+            newEntry.put("CommunicationGUID",retailsDetails.getCommunicationGuid());
+            newEntry.put("CommunicationAttempt",retailsDetails.getCommunicationAttempt());
+            newEntry.put("CommunicationStatus",retailsDetails.getCommunicationStatus());
+
 
             long retVal = myDataBase.insertOrThrow("sp_retailersdetails", null, newEntry);
 
@@ -1153,6 +1234,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getSchoolDetails() {
+        String sql = "SELECT * FROM sp_school";
+        return QueryDatabase(sql);
+    }
+
+    public Cursor getSchoolData() {
         String sql = "SELECT * FROM sp_school";
         return QueryDatabase(sql);
     }

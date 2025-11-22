@@ -88,6 +88,10 @@ public class RetailOutReachModel {
     @Expose(serialize = false)
     private String communicationGuid;
     @Expose(serialize = false)
+    private int communicationStatus;
+    @Expose(serialize = false)
+    private int communicationAttempt;
+    @Expose(serialize = false)
     private String createdOn;
     @Expose
     private String visitedOn;
@@ -423,6 +427,21 @@ public class RetailOutReachModel {
         this.schoolGuid = schoolGuid;
     }
 
+    public int getCommunicationStatus() {
+        return communicationStatus;
+    }
+
+    public void setCommunicationStatus(int communicationStatus) {
+        this.communicationStatus = communicationStatus;
+    }
+
+    public int getCommunicationAttempt() {
+        return communicationAttempt;
+    }
+
+    public void setCommunicationAttempt(int communicationAttempt) {
+        this.communicationAttempt = communicationAttempt;
+    }
 
     public CommunicationSend createCommSend() {
         CommunicationSend commSend = new CommunicationSend();

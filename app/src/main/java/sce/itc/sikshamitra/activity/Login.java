@@ -123,10 +123,8 @@ public class Login extends AppCompatActivity {
             handler = new Handler(Looper.getMainLooper());
 
             jsonObject.put(Command.USER_NAME, binding.editUsername.getText().toString().trim());
-            //jsonObject.put(Command.USER_NAME, ConstantField.USER_NAME);
             jsonObject.put(Command.PASSWORD, binding.editPwd.getText().toString().trim());
-            //jsonObject.put(Command.PASSWORD, ConstantField.PASSWORD);
-            jsonObject.put(Command.VERSION, ConstantField.APP_VERSION); //newly added to restrict others version
+            jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION); //newly added to restrict others version
 
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(JSON, jsonObject.toString());

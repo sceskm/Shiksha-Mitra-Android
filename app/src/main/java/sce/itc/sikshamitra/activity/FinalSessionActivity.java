@@ -243,14 +243,7 @@ public class FinalSessionActivity extends AppCompatActivity {
                             lastLatitude = gps.getLatitude();
                             lastLongitude = gps.getLongitude();
                         }
-
-                        if (Common.DEBUGGING) {
-                            lastLatitude = ConstantField.TEST_LATITUDE;
-                            lastLongitude = ConstantField.TEST_LONGITUDE;
-                        }
                     }
-
-                    //if (Common.checkLatLong(ConstantField.TEST_LATITUDE, ConstantField.TEST_LONGITUDE)) {
                     if (Common.checkLatLong(lastLatitude, lastLongitude)) {
                         if (checkValidation()) {
                             try {
@@ -580,10 +573,9 @@ public class FinalSessionActivity extends AppCompatActivity {
         Session session = new Session();
 
         String studentNo = Common.getString(binding.editNoOfStudents.getText().toString().trim());
-        //int sessionNo = Common.getInt(Common.getString(binding.edit.getText().toString().trim()));
-        session.setSessionNo(7);
+        session.setSessionNo(ConstantField.FINAL_NO_SESSION_ALLOWED_AGENCY);
         session.setNoOfStudent(Common.getInt(studentNo));
-        session.setSchoolName("Test School Name");
+        session.setSchoolName(selectedSchool);
 
         session.setImg1(uriCompressedImage1.toString());
         session.setImgDefinitionId1(ConstantField.FINAL_SESSION_IMAGE_EXTERIOR);
@@ -609,9 +601,8 @@ public class FinalSessionActivity extends AppCompatActivity {
         session.setImg8(uriCompressedImage8.toString());
         session.setImgDefinitionId8(ConstantField.FINAL_SESSION_HW_SAMPLE);
 
-
         session.setSessionGuid(Common.createGuid());
-        session.setSchoolGuid("schoolGuid");
+        session.setSchoolGuid(selectedSchoolGuid);
         session.setUserGuid(PreferenceCommon.getInstance().getUserGUID());
 
         session.setLatitude(Common.fourDecimalRoundOff(lastLatitude));
@@ -620,15 +611,40 @@ public class FinalSessionActivity extends AppCompatActivity {
         session.setSessionStart(startDate);
         session.setSessionEnd(Common.iso8601Format.format(new Date()));
 
-        session.setRemarks(Common.getString(binding.editRemarks.getText().toString().trim()));
+        //Teacher (SM) product
+        session.setTeacherProductId1(8);
+        if (binding.chkTeacherProduct1.isChecked()) {
+            session.setTeacherIsDistributed1(1);
+        }else {
+            session.setTeacherIsDistributed1(0);
+        }
+
+        //Students product
+        session.setProductId1(9);
+        if (binding.chkStudentProduct1.isChecked()) {
+            session.setIsDistributed1(1);
+        }else {
+            session.setIsDistributed1(0);
+        }
+        session.setProductId2(1);
+        if (binding.chkStudentProduct2.isChecked()) {
+            session.setIsDistributed2(1);
+        }else {
+            session.setIsDistributed2(0);
+        }
+
+        if (binding.editRemarks.getText().toString().trim().isEmpty())
+            session.setRemarks("");
+        else
+            session.setRemarks(Common.getString(binding.editRemarks.getText().toString().trim()));
 
         //Communication
         session.setCommunicationAttempt(0);
         session.setCommunicationGuid(Common.createGuid());
         session.setCommunicationStatus(ConstantField.COMM_STATUS_NOT_PROCESSED);
 
-        if (dbHelper.saveSession(session)) {
-            PreferenceCommon.getInstance().setLastSessionCount(7);
+        if (dbHelper.saveFinalSession(session)) {
+            PreferenceCommon.getInstance().setLastSessionCount(ConstantField.FINAL_NO_SESSION_ALLOWED_AGENCY);
             showSuccessAlert("Data saved successfully. Please upload the data from the 'Synchronise' page.");
             Toast.makeText(this, "Data saved successfully.", Toast.LENGTH_SHORT).show();
         } else {
@@ -957,6 +973,50 @@ public class FinalSessionActivity extends AppCompatActivity {
     }
 
     private boolean checkValidation() {
+        if (selectedSchool.isEmpty() || selectedSchoolGuid.isEmpty() || selectedSchoolId <= 0) {
+            Toast.makeText(FinalSessionActivity.this, "Select associate school.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage1 == null || uriCompressedImage1.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 1", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (uriCompressedImage2 == null || uriCompressedImage2.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 2", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (uriCompressedImage3 == null || uriCompressedImage3.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 3", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (uriCompressedImage4 == null || uriCompressedImage4.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 4", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (uriCompressedImage5 == null || uriCompressedImage5.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 5", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (uriCompressedImage6 == null || uriCompressedImage6.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 6", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (uriCompressedImage7 == null || uriCompressedImage7.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 7", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCompressedImage8 == null || uriCompressedImage8.toString().isEmpty()) {
+            Toast.makeText(this, "Capture image 8", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+
         return true;
     }
 
@@ -1054,6 +1114,10 @@ public class FinalSessionActivity extends AppCompatActivity {
             savedInstanceState.putString("Img2", imgImage2);
             savedInstanceState.putString("Img3", imgImage3);
             savedInstanceState.putString("Img4", imgImage4);
+            savedInstanceState.putString("Img5", imgImage5);
+            savedInstanceState.putString("Img6", imgImage6);
+            savedInstanceState.putString("Img7", imgImage7);
+            savedInstanceState.putString("Img8", imgImage8);
 
             savedInstanceState.putString("capturedImg1", capturedImgStoragePathImage1);
             savedInstanceState.putString("capturedImg2", capturedImgStoragePathImage2);
@@ -1103,6 +1167,10 @@ public class FinalSessionActivity extends AppCompatActivity {
             imgImage2 = savedInstanceState.getString("Img2");
             imgImage3 = savedInstanceState.getString("Img3");
             imgImage4 = savedInstanceState.getString("Img4");
+            imgImage5 = savedInstanceState.getString("Img5");
+            imgImage6 = savedInstanceState.getString("Img6");
+            imgImage7 = savedInstanceState.getString("Img7");
+            imgImage8 = savedInstanceState.getString("Img8");
 
             capturedImgStoragePathImage1 = savedInstanceState.getString("capturedImg1");
             capturedImgStoragePathImage2 = savedInstanceState.getString("capturedImg2");

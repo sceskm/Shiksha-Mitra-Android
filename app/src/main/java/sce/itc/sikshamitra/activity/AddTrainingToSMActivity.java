@@ -385,7 +385,7 @@ public class AddTrainingToSMActivity extends AppCompatActivity {
             jsonObject.put(Command.DATA, trainingData.getJson());
             jsonObject.put(Command.COMMAND_GUID, Common.createGuid());
             jsonObject.put(Command.PROCESS_COUNT, 0);
-            jsonObject.put(Command.VERSION, ConstantField.APP_VERSION);
+            jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             RequestBody body = RequestBody.create(JSON, jsonObject.toString());
             final OkHttpClient client = new OkHttpClient()

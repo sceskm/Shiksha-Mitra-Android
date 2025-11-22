@@ -12,6 +12,7 @@ public class Command {
     public static final String SCHOOL_LIST = "SCHOOLLIST";
     public static final String ADD_RETAIL = "ADDREALTOR";
     public static final String ADD_TRAINING = "ADDTRAINING";
+    public static final String ADD_FINAL_SESSION = "ADDFINALSESSION";
 
 
     public static final String COMMAND = "command";
