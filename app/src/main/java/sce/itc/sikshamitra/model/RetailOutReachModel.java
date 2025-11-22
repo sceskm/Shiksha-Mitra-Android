@@ -21,7 +21,7 @@ public class RetailOutReachModel {
     private String userGuid;
     @Expose
     private int organizationId;
-    @Expose
+    @Expose(serialize = false)
     private String nearbySchool;
     @Expose
     private String schoolGuid;
@@ -70,6 +70,7 @@ public class RetailOutReachModel {
     private int poster;
     @Expose
     private int bunting;
+    @Expose(serialize = false)
     private int isKeepCompetitorProduct;
 
 

@@ -232,11 +232,11 @@ public class AddTrainingToSMActivity extends AppCompatActivity {
         binding.btnCapture1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                startedOn = Common.iso8601Format.format(new Date());
                 if (binding.btnCapture1.getText().toString().trim().equalsIgnoreCase(ConstantField.CAPTURE)) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                                 == PackageManager.PERMISSION_GRANTED) {
-                            startedOn = Common.iso8601Format.format(new Date());
                             launchCamera(ConstantField.REQUEST_TRAINING_1);
                         } else {
                             ActivityCompat.requestPermissions(AddTrainingToSMActivity.this,

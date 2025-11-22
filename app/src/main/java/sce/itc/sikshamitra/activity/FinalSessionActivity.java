@@ -615,7 +615,7 @@ public class FinalSessionActivity extends AppCompatActivity {
         session.setTeacherProductId1(8);
         if (binding.chkTeacherProduct1.isChecked()) {
             session.setTeacherIsDistributed1(1);
-        }else {
+        } else {
             session.setTeacherIsDistributed1(0);
         }
 
@@ -623,13 +623,13 @@ public class FinalSessionActivity extends AppCompatActivity {
         session.setProductId1(9);
         if (binding.chkStudentProduct1.isChecked()) {
             session.setIsDistributed1(1);
-        }else {
+        } else {
             session.setIsDistributed1(0);
         }
         session.setProductId2(1);
         if (binding.chkStudentProduct2.isChecked()) {
             session.setIsDistributed2(1);
-        }else {
+        } else {
             session.setIsDistributed2(0);
         }
 
@@ -977,6 +977,17 @@ public class FinalSessionActivity extends AppCompatActivity {
             Toast.makeText(FinalSessionActivity.this, "Select associate school.", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if (binding.editNoOfStudents.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Please fill the no. of student.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!binding.editNoOfStudents.getText().toString().isEmpty()) {
+            int count = Common.getInt(binding.editNoOfStudents.getText().toString().trim());
+            if (count <= 0) {
+                Toast.makeText(FinalSessionActivity.this, "Correct the student count.", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
         if (uriCompressedImage1 == null || uriCompressedImage1.toString().isEmpty()) {
             Toast.makeText(this, "Capture image 1", Toast.LENGTH_SHORT).show();
             return false;
@@ -1013,6 +1024,10 @@ public class FinalSessionActivity extends AppCompatActivity {
         }
         if (uriCompressedImage8 == null || uriCompressedImage8.toString().isEmpty()) {
             Toast.makeText(this, "Capture image 8", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (binding.editRemarks.getText().toString().isEmpty()){
+            Toast.makeText(FinalSessionActivity.this,"Please fill the remarks.",Toast.LENGTH_SHORT).show();
             return false;
         }
 

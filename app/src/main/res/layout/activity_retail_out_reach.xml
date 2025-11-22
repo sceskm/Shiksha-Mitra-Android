@@ -89,7 +89,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Address line 2 (Optional)" />
+                    android:text="Address line 2*" />
 
                 <EditText
                     android:id="@+id/edit_address_line_2"
@@ -194,7 +194,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nearby School" />
+                    android:text="Nearby School*" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/edit_school_layout"
@@ -232,7 +232,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Does the outlet keep ITC products?" />
+                    android:text="Does the outlet keep ITC products?*" />
 
                 <RadioGroup
                     android:layout_width="wrap_content"
@@ -351,7 +351,7 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Is retailer interested in branding / decor?" />
+                    android:text="Is retailer interested in branding / decor?*" />
 
 
                 <RadioGroup
@@ -415,7 +415,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Where do you buy FMCG product from?" />
+                    android:text="Where do you buy FMCG product from?*" />
 
                 <EditText
                     android:id="@+id/edit_fmcg_product_source"
@@ -443,7 +443,7 @@
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nearby whole sale market details" />
+                    android:text="Nearby whole sale market details*" />
 
                 <EditText
                     android:id="@+id/edit_nearby_whole_sale_market"

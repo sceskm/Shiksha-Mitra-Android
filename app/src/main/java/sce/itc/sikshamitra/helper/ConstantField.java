@@ -2,7 +2,7 @@ package sce.itc.sikshamitra.helper;
 
 public class ConstantField {
     public static final int SPLASH_TIME_OUT = 3000;
-    public static final String APP_VERSION = "2.1.0";
+    public static final String APP_VERSION = "2.1.1";
     public static final String SERVER_APP_VERSION = "2.0";
 
     public static final String IMAGE_FORMAT = "jpg";

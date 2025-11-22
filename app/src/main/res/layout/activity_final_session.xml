@@ -435,16 +435,16 @@
                     android:layout_height="wrap_content"
                     android:text="Handed over item to SM" />
 
+                <!--
+                Handed over to Students
+                -->
                 <CheckBox
                     android:id="@+id/chk_teacher_product_1"
                     style="@style/CheckboxTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Clocked" />
+                    android:text="Clock" />
 
-                <!--
-                Handed over to Students
-                -->
                 <TextView
                     style="@style/SubHeadingTextStyle"
                     android:layout_width="wrap_content"
