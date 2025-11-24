@@ -256,6 +256,8 @@ public class AddSMRegisterActivity extends AppCompatActivity {
         addIfChecked(binding.checkboxItem2, 1, comboProductList, sendComboProductList);
         addIfChecked(binding.checkboxItem3, 2, comboProductList, sendComboProductList);
         addIfChecked(binding.checkboxItem4, 3, comboProductList, sendComboProductList);
+        addIfChecked(binding.checkboxItem5, 4, comboProductList, sendComboProductList);
+        addIfChecked(binding.checkboxItem6, 5, comboProductList, sendComboProductList);
 
 
         preRegistration.setComboProduct(sendComboProductList);

@@ -345,16 +345,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (retVal > 0)
                 dataSaved = true;
 
-            if (dataSaved) {
-                // create and save a communication message
-                dataSaved = false;
-
-                CommunicationSend commSend = venueDetails.createCommSend();
-
-                if (saveCommunicationSend(commSend) > 0)
-                    dataSaved = true;
-            }
-
         } catch (SQLException ex) {
             Log.e(TAG, "saveVenueData: EXCEPTION", ex);
             throw ex;
@@ -536,7 +526,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean dataSaved = false;
 
         try {
-            //deleteDownloadedSchool();
             ContentValues newEntry = new ContentValues();
             newEntry.put("SchoolId", schoolDetails.getSchoolId());
             newEntry.put("AssociateSchool", schoolDetails.getSchoolName());
@@ -887,6 +876,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //communicationOn
             sql = "DELETE FROM sp_settings ";
+            myDataBase.execSQL(sql);
+
+            //communicationOn
+            sql = "DELETE FROM sp_school ";
             myDataBase.execSQL(sql);
 
         } catch (Exception ex) {

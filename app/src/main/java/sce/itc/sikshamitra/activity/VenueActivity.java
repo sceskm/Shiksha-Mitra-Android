@@ -319,13 +319,13 @@ public class VenueActivity extends AppCompatActivity {
     /*
      * Call network api to upload data
      * */
-    private void callNetworkApi(Venue attendanceDetail) {
+    private void callNetworkApi(Venue venue) {
         progressDialog.setMessage("Saving venue data...");
         progressDialog.show();
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(Command.COMMAND, Command.ADD_VENUE);
-            jsonObject.put(Command.DATA, attendanceDetail.getJson());
+            jsonObject.put(Command.DATA, venue.getJson());
             jsonObject.put(Command.COMMAND_GUID, Common.createGuid());
             jsonObject.put(Command.PROCESS_COUNT, 0);
             jsonObject.put(Command.VERSION, ConstantField.SERVER_APP_VERSION);
@@ -357,7 +357,7 @@ public class VenueActivity extends AppCompatActivity {
                                 if (progressDialog.isShowing()) progressDialog.dismiss();
                                 binding.btnRegister.setEnabled(true);
                                 if (response.isSuccessful()) {
-                                    if (dbHelper.saveVenueData(attendanceDetail))
+                                    if (dbHelper.saveVenueData(venue))
                                         showSuccessAlert("Venue Created", "Venue details have been saved successfully.");
                                     else
                                         Toast.makeText(VenueActivity.this, "Failed to save venue data locally.", Toast.LENGTH_LONG).show();

@@ -165,6 +165,9 @@ public class Login extends AppCompatActivity {
         LoginData loginData = LoginData.downloadLoginUser(Common.getJsonObject(response));
 
         if (loginData != null && loginData.getUser() != null) {
+
+            dbHelper.resetDatabase(loginData.getUser().getUserGUID());
+
             dbHelper.saveUser(loginData.getUser());
 
             for (Settings setting : loginData.getSettings()) {

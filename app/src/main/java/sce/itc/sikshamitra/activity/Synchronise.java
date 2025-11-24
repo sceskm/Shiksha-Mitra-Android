@@ -394,7 +394,7 @@ public class Synchronise extends AppCompatActivity {
                 communicationSend.populateFromCursor(cursor);
 
                 if (!communicationSend.getCommandDetails().isEmpty()) {
-                    String attendanceResponse = "";
+                    String fSessionResponse = "";
                     boolean isSuccess = false;
                     Session sessionData = Session.fromJson(communicationSend.getCommandDetails());
 
@@ -432,7 +432,7 @@ public class Synchronise extends AppCompatActivity {
                         isTeacherDistributed = cursor1.getInt(cursor1.getColumnIndex("IsTeacherProductDistributed1"));
                         studentProdId1 = cursor1.getInt(cursor1.getColumnIndex("StudentProductId1"));
                         isStudentDistributed1 = cursor1.getInt(cursor1.getColumnIndex("IsStudentProductDistributed1"));
-                        studentProdId2 = cursor1.getInt(cursor1.getColumnIndex("StudentProductId1"));
+                        studentProdId2 = cursor1.getInt(cursor1.getColumnIndex("StudentProductId2"));
                         isStudentDistributed2 = cursor1.getInt(cursor1.getColumnIndex("IsStudentProductDistributed2"));
 
                     }
@@ -485,13 +485,13 @@ public class Synchronise extends AppCompatActivity {
                             ResponseBody responseBody = response.body();
                             if (response.isSuccessful()) {
                                 isSuccess = true;
-                                attendanceResponse = responseBody.string();
+                                fSessionResponse = responseBody.string();
                             } else {
                                 //just increase the error count
-                                attendanceResponse = responseBody.string();
+                                fSessionResponse = responseBody.string();
                                 errorCount++;
                             }
-                            Log.d(TAG, "onResponse: uploadAttendanceData" + attendanceResponse);
+                            Log.d(TAG, "onResponse: finalSession()" + fSessionResponse);
                         }
                     } catch (Exception e) {
                         errorCount++;
@@ -529,7 +529,7 @@ public class Synchronise extends AppCompatActivity {
                 communicationSend.populateFromCursor(cursor);
 
                 if (!communicationSend.getCommandDetails().isEmpty()) {
-                    String attendanceResponse = "";
+                    String retailsResponse = "";
                     boolean isSuccess = false;
                     RetailOutReachModel retailData = RetailOutReachModel.fromJson(communicationSend.getCommandDetails());
 
@@ -569,13 +569,13 @@ public class Synchronise extends AppCompatActivity {
                             ResponseBody responseBody = response.body();
                             if (response.isSuccessful()) {
                                 isSuccess = true;
-                                attendanceResponse = responseBody.string();
+                                retailsResponse = responseBody.string();
                             } else {
                                 //just increase the error count
-                                attendanceResponse = responseBody.string();
+                                retailsResponse = responseBody.string();
                                 errorCount++;
                             }
-                            Log.d(TAG, "onResponse: uploadAttendanceData" + attendanceResponse);
+                            Log.d(TAG, "onResponse: uploadRetailsData" + retailsResponse);
                         }
                     } catch (Exception e) {
                         errorCount++;
@@ -597,7 +597,7 @@ public class Synchronise extends AppCompatActivity {
             cursor.close();
 
         } else {
-            Log.d(TAG, "uploadSessionData: ");
+            Log.d(TAG, "uploadRetailsData: ");
         }
     }
 
